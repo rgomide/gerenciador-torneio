@@ -1,0 +1,15 @@
+name: 'Ping Server'
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/12 10-20 * * 1-5'
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Display date time
+        run: date
+      - name: Ping server
+        run: curl https://www.google.com # TODO: Change to the server URL
