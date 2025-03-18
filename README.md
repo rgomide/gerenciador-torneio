@@ -112,9 +112,12 @@ erDiagram
     matches {
       bigint id PK
       bigint tournament_id FK
+      bigint player_id FK
       date date
       string location
       boolean finished
+      string occurrences
+      integer round_number
       date created_at
       date updated_at
     }
