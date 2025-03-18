@@ -112,7 +112,6 @@ erDiagram
     matches {
       bigint id PK
       bigint tournament_id FK
-      bigint player_id FK
       date date
       string location
       boolean finished
@@ -125,6 +124,7 @@ erDiagram
     matches_teams {
       bigint match_id FK
       bigint team_id FK
+      bigint player_id FK
       date created_at
       date updated_at
     }
@@ -149,6 +149,7 @@ erDiagram
     tournaments ||--o{ matches : has
     matches ||--o{ matches_teams : has
     teams ||--o{ matches_teams : has
+    players ||--o{ matches_teams : has
     matches ||--o{ scores : has
     teams ||--o{ scores : has
     players ||--o{ scores : has
