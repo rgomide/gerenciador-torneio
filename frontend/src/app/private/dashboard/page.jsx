@@ -26,7 +26,7 @@ function page() {
 
   return (
     <div className='flex min-h-screen flex-col items-center justify-center p-24'>
-      <Button onClick={deleteSession}>press me to logout</Button>
+      <Button onClick={deleteSession}>press me to logout!</Button>
     </div>
   )
 }

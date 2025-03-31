@@ -18,6 +18,7 @@ import axios from "axios";
 import { getCookie, setCookie } from "cookies-next";
 import { useEffect } from "react";
 import { toast } from "sonner";
+import { auth } from "@/services/apiService";
 
 export default function Home() {
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function Home() {
 
   const formSchema = z.object({
     username: z.string().min(3, "Preencha corretamente seu username"),
-    password: z.string().min(6, "Preencha a senha corrretamente"),
+    password: z.string().min(3, "Preencha a senha corrretamente"),
   });
 
   const form = useForm({
@@ -41,22 +42,7 @@ export default function Home() {
   });
 
   async function onSubmit(values) {
-    try {
-      const resp = await axios.post("http://localhost:3000/api/auth/login", {
-        userName: values.username,
-        password: values.password
-      })
-
-      if (resp.status === 200) {
-        const token = resp.data.token;
-        
-        setCookie("token", token, { maxAge: 60 * 60 * 24, path: "/", secure: true, httpOnly: false });
-
-        window.location.href = "/private/dashboard";
-      }
-    } catch (e) {
-      console.error(`Erro ao realizar login: ${e}`);
-    }
+    auth(values.username, values.password)
   }
 
   return (
