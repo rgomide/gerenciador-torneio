@@ -5,12 +5,15 @@ const authController = require('@server/controllers/auth.controller')
 const loggerMiddleware = require('@server/middleware/logger')
 const authMiddleware = require('@server/middleware/auth')
 const institutionController = require('@server/controllers/institution.controller')
+const unitController = require('@server/controllers/unit.controller')
+
 router.use(loggerMiddleware)
 router.use(authMiddleware)
 
 router.use('/users', usersController)
 router.use('/auth', authController)
 router.use('/institutions', institutionController)
+router.use('/', unitController)
 
 router.get('/ping', (req, res) => {
   res.send('pong')

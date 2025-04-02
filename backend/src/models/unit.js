@@ -1,16 +1,16 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class Institution extends Model {
+  class Unit extends Model {
     static associate(models) {
-      this.hasMany(models.Unit, {
+      this.belongsTo(models.Institution, {
         foreignKey: 'institutionId',
-        as: 'units'
+        as: 'institution'
       })
     }
   }
 
-  Institution.init(
+  Unit.init(
     {
       id: {
         allowNull: false,
@@ -27,6 +27,15 @@ module.exports = (sequelize, DataTypes) => {
         },
         validate: { notEmpty: true }
       },
+      institutionId: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+        field: 'institution_id',
+        references: {
+          model: 'institutions',
+          key: 'id'
+        }
+      },
       createdAt: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -42,10 +51,10 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Institution',
-      tableName: 'institutions'
+      modelName: 'Unit',
+      tableName: 'units'
     }
   )
 
-  return Institution
+  return Unit
 }
