@@ -14,8 +14,6 @@ function page() {
     if (!token) {
       router.push("/");
     }
-
-    toast.success("Login realizado com sucesso!");
   }, []);
 
   const deleteSession = () => {

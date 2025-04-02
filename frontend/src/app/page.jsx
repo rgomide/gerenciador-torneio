@@ -19,8 +19,11 @@ import { getCookie, setCookie } from "cookies-next";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { auth } from "@/services/apiService";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  const router = useRouter();
+
   useEffect(() => {
     const token = getCookie("token");
     if (token) {
@@ -42,7 +45,12 @@ export default function Home() {
   });
 
   async function onSubmit(values) {
-    auth(values.username, values.password)
+    const success = auth(values.username, values.password)
+
+    if (success) {
+      router.push("/private/dashboard")
+      toast.success("Login realizado com sucesso!");
+    }
   }
 
   return (
