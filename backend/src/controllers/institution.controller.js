@@ -1,4 +1,10 @@
-const { create, findAll, findById, update, remove } = require('@server/services/institution.service')
+const {
+  create,
+  findAll,
+  findById,
+  update,
+  remove
+} = require('@server/services/institution.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
 const {

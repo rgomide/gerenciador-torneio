@@ -43,5 +43,4 @@ const remove = async (id) => {
   return true
 }
 
-
-module.exports = { create, findAll, findById, update, remove } 
+module.exports = { create, findAll, findById, update, remove }
