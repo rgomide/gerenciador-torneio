@@ -1,5 +1,6 @@
 'use client'
 import { Button } from '@/components/ui/button';
+import { deleteSession } from '@/services/apiService';
 import { deleteCookie, getCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react'
@@ -12,19 +13,13 @@ function page() {
     const token = getCookie("token");
 
     if (!token) {
-      router.push("/");
+      router.replace("/");
     }
   }, []);
 
-  const deleteSession = () => {
-    deleteCookie("token", { path: "/" });
-    toast.success("Sessão encerrada com sucesso!")
-    router.push("/");
-  }
-
   return (
     <div className='flex min-h-screen flex-col items-center justify-center p-24'>
-      <Button onClick={deleteSession}>press me to logout!</Button>
+      <p>Tela dashboard</p>
     </div>
   )
 }
