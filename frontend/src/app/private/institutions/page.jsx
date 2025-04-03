@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { DialogClose } from '@radix-ui/react-dialog';
-import { createInstitution, formatDate, getInstitutions, updateInstitutions } from '@/services/apiService';
+import { createInstitution, formatDate, getInstitutions } from '@/services/apiService';
 import { toast } from 'sonner';
 import {
   Table,
@@ -27,7 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Pencil } from 'lucide-react';
 
 
 function page() {
@@ -50,14 +49,7 @@ function page() {
     name: z.string().min(3, "O nome da Instituição deve ter pelo menos 3 caracteres"),
   });
 
-  const createInstitution = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-    },
-  });
-
-  const updateInstitution = useForm({
+  const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -69,22 +61,7 @@ function page() {
       const success = createInstitution(values.name);
 
       if (success) {
-        createInstitution.reset();
-        toast.success("Instituição criada com sucesso!");
-        await fetchInstitutions();
-      }
-    } catch (error) {
-      toast.error("Erro ao criar instituição");
-      console.error(error);
-    }
-  }
-
-  async function onSubmitEditInstitution(values, id) {
-    try {
-      const success = updateInstitution(id, values.name);
-
-      if (success) {
-        updateInstitution.reset();
+        form.reset();
         toast.success("Instituição criada com sucesso!");
         await fetchInstitutions();
       }
@@ -113,41 +90,6 @@ function page() {
               <TableCell className="font-medium">{institution.name}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.createdAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.updatedAt)}</TableCell>
-              <TableCell>
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button variant='outline' size='icon'> <Pencil /> </Button>
-                  </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px]">
-                    <DialogHeader>
-                      <DialogTitle>Editar: {institution.name}</DialogTitle>
-                      <DialogDescription>
-                        Altere o nome da instituição e clique em salvar para aplicar as alterações.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <Form {...updateInstitution}>
-                      <form onSubmit={updateInstitution.handleSubmit((values) => onSubmitEditInstitution(values, institution.id))} className="space-y-4">
-                        <FormField
-                          control={updateInstitution.control}
-                          name="name"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Nome atualizado da Instituição</FormLabel>
-                              <FormControl>
-                                <Input placeholder={institution.name} {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <DialogTrigger asChild>
-                          <Button onClick={()=> alert(institution.id)} type={'submit'}>Salvar</Button>
-                        </DialogTrigger>
-                      </form>
-                    </Form>
-                  </DialogContent>
-                </Dialog>
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -164,10 +106,10 @@ function page() {
               Preencha os dados corretamente, as Instituições podem ser editadas posteriormente mas não podem ser excluidas do sistema.
             </DialogDescription>
           </DialogHeader>
-          <Form {...createInstitution}>
-            <form onSubmit={createInstitution.handleSubmit(onSubmit)} className="space-y-4">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
-                control={createInstitution.control}
+                control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
