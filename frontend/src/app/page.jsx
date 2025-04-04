@@ -27,7 +27,7 @@ export default function Home() {
   useEffect(() => {
     const token = getCookie("token");
     if (token) {
-      window.location.href = "/private/dashboard";
+      router.replace("/private/dashboard")
     }
   }, [])
 
