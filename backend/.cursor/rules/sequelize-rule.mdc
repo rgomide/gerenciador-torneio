@@ -1,0 +1,35 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# Directives for sequelize
+
+- This project use Sequelize v6 as ORM
+- Here is the documentation page: https://sequelize.org/docs/v6/
+
+## Model definition
+- Everytime you create models, user standarts like in [event.js](mdc:src/models/event.js)
+- Declare fields as camel case and use the `field` attribute to define the real name
+
+## Seeders
+- The seeder files should use queryInterface when it needs to query other models
+- Don't import files from project
+- The [20250402000003-demo-events.js](mdc:src/seeders/20250402000003-demo-events.js) file is a good reference
+
+## Services
+- Services should be module with functions, not classes
+- Use [AppError.js](mdc:src/utils/AppError.js) to throw errors
+
+## Tests
+
+### Models
+- Tests for models should be atomic, dont use beforeEach and afterEach sections
+- It should use `toEqual` to check object content instead of check field by field value.
+- Use `expect.any()` to check dynamic values as ids, updated at dates...
+
+### Services
+- Tests for models should be atomic, dont use beforeEach and afterEach sections
+- Use a `describe` section per service function
+- It should use `toEqual` to check object content instead of check field by field value.

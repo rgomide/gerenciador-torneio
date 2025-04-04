@@ -1,21 +1,16 @@
 const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
-  class Event extends Model {
+  class Tournament extends Model {
     static associate(models) {
-      Event.belongsTo(models.Unit, {
-        foreignKey: 'unit_id',
-        as: 'unit'
-      })
-
-      Event.hasMany(models.Tournament, {
+      Tournament.belongsTo(models.Event, {
         foreignKey: 'event_id',
-        as: 'tournaments'
+        as: 'event'
       })
     }
   }
 
-  Event.init(
+  Tournament.init(
     {
       id: {
         type: DataTypes.BIGINT,
@@ -26,12 +21,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false
       },
-      unitId: {
+      eventId: {
         type: DataTypes.BIGINT,
         allowNull: false,
-        field: 'unit_id',
+        field: 'event_id',
         references: {
-          model: 'units',
+          model: 'events',
           key: 'id'
         }
       },
@@ -58,11 +53,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: 'Event',
-      tableName: 'events',
+      modelName: 'Tournament',
+      tableName: 'tournaments',
       underscored: true
     }
   )
 
-  return Event
+  return Tournament
 }

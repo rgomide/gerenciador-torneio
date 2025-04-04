@@ -83,6 +83,8 @@ erDiagram
       bigint id PK
       string name
       bigint event_id FK
+      date start_date
+      date end_date
       date created_at
       date updated_at
     }
