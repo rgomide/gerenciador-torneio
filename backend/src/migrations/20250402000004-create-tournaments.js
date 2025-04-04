@@ -1,0 +1,46 @@
+module.exports = {
+  up: async (queryInterface, Sequelize) => {
+    await queryInterface.createTable('tournaments', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.BIGINT
+      },
+      name: {
+        allowNull: false,
+        type: Sequelize.STRING
+      },
+      event_id: {
+        allowNull: false,
+        type: Sequelize.BIGINT,
+        references: {
+          model: 'events',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+      start_date: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      end_date: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      created_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updated_at: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
+    })
+  },
+
+  down: async (queryInterface, Sequelize) => {
+    await queryInterface.dropTable('tournaments')
+  }
+}
