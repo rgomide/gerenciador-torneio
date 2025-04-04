@@ -7,6 +7,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'institutionId',
         as: 'institution'
       })
+      this.hasMany(models.Event, {
+        foreignKey: 'unitId',
+        as: 'events'
+      })
     }
   }
 
