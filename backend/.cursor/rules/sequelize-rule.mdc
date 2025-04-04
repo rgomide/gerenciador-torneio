@@ -7,6 +7,7 @@ alwaysApply: true
 # Directives for sequelize
 
 - This project use Sequelize v6 as ORM
+- Here is the documentation page: https://sequelize.org/docs/v6/
 
 ## Model definition
 - Everytime you create models, user standarts like in [event.js](mdc:src/models/event.js)
