@@ -1,7 +1,7 @@
-const { default: axios } = require("axios");
-const { setCookie, getCookie } = require("cookies-next");
+import axios from "axios";
+import { setCookie, getCookie } from "cookies-next";
 
-const baseURL = 'http://localhost:3000/api';
+const baseURL = process.env.NEXT_PUBLIC_API_SERVER;
 
 const encodeString = async (string) => {
   const encoder = new TextEncoder();
