@@ -27,6 +27,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import CreateInstitution from '@/components/InstitutionsComponents/CreateInstitution';
+import UpdateInstitution from '@/components/InstitutionsComponents/UpdateInstitution';
 
 
 function page() {
@@ -45,34 +47,8 @@ function page() {
     }
   }
 
-  const formSchema = z.object({
-    name: z.string().min(3, "O nome da Instituição deve ter pelo menos 3 caracteres"),
-  });
-
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-    },
-  });
-
-  async function onSubmit(values) {
-    try {
-      const success = createInstitution(values.name);
-
-      if (success) {
-        form.reset();
-        toast.success("Instituição criada com sucesso!");
-        await fetchInstitutions();
-      }
-    } catch (error) {
-      toast.error("Erro ao criar instituição");
-      console.error(error);
-    }
-  }
-
   return (
-    <div className='flex flex-col h-screen w-full p-12 gap-8'>
+    <div className='flex flex-col items-center self-center h-screen w-full p-12 gap-8'>
       <h1>Instituições</h1>
 
       <Table className='w-full'>
@@ -82,6 +58,9 @@ function page() {
             <TableHead className="w-[100px]">Nome</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
+            <TableHead>
+              <CreateInstitution fetchFunction={fetchInstitutions} />
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -90,44 +69,13 @@ function page() {
               <TableCell className="font-medium">{institution.name}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.createdAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.updatedAt)}</TableCell>
+              <TableCell className="font-medium">
+                <UpdateInstitution fetchFunction={fetchInstitutions} prevName={institution.name} id={institution.id} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button className='bg-emerald-600 hover:bg-emerald-700 w-full'>Adicionar nova Instituição</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Nova Instituição</DialogTitle>
-            <DialogDescription>
-              Preencha os dados corretamente, as Instituições podem ser editadas posteriormente mas não podem ser excluidas do sistema.
-            </DialogDescription>
-          </DialogHeader>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome da Instituição</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nome da instituição" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <DialogTrigger asChild>
-                <Button type={'submit'}>Salvar</Button>
-              </DialogTrigger>
-            </form>
-          </Form>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }

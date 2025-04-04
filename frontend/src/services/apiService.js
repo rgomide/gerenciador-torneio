@@ -36,27 +36,6 @@ export const auth = async (userName, password) => {
   }
 }
 
-
-export const createInstitution = async (name) => {
-  try {
-    const resp = await axios.post(`${baseURL}/institutions`, {
-      name: name,
-    },
-      {
-        headers: {
-          Authorization: `Bearer ${getCookie("token")}`,
-        }
-      }
-    )
-
-    if (resp.status === 200) {
-      return 'Instituição criada com sucesso!';
-    }
-  } catch (e) {
-    console.error(`Erro ao criar instituição: ${e}`);
-  }
-}
-
 export const getInstitutions = async () => {
   try {
     const resp = await axios.get(`${baseURL}/institutions`, {
@@ -73,6 +52,28 @@ export const getInstitutions = async () => {
   }
 }
 
+export const createInstitution = async (name) => {
+  try {
+    const resp = await axios.post(
+      `${baseURL}/institutions`,
+      { name },
+      {
+        headers: { Authorization: `Bearer ${getCookie("token")}` },
+      }
+    );
+
+    if (resp.status === 201) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao criar instituição");
+    }
+  } catch (e) {
+    console.error("Erro ao criar instituição:", e);
+  }
+};
+
+
+
 export const updateInstitution = async (id, name) => {
   try {
     const resp = await axios.put(
@@ -88,7 +89,9 @@ export const updateInstitution = async (id, name) => {
     )
 
     if (resp.status === 200) {
-      return 'Instituição atualizada com sucesso!';
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao atualizar instituição");
     }
   } catch (e) {
     console.error(`Erro ao criar instituição: ${e}`);
