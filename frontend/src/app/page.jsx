@@ -44,11 +44,13 @@ export default function Home() {
   });
 
   async function onSubmit(values) {
-    const success = auth(values.username, values.password)
+    try {
+      await auth(values.username, values.password);
 
-    if (success) {
-      router.push("/private/dashboard")
-      toast.success("Login realizado com sucesso!");
+      toast.success("Login realizado com sucesso!")
+      router.replace("/private/dashboard")
+    } catch (error) {
+      console.error("Erro ao realizar login:", error);
     }
   }
 

@@ -72,8 +72,6 @@ export const createInstitution = async (name) => {
   }
 };
 
-
-
 export const updateInstitution = async (id, name) => {
   try {
     const resp = await axios.put(
@@ -95,5 +93,70 @@ export const updateInstitution = async (id, name) => {
     }
   } catch (e) {
     console.error(`Erro ao criar instituição: ${e}`);
+  }
+}
+
+
+
+export const getUnitsByInstitutionId = async (institutionId) => {
+  try {
+    const resp = await axios.get(`${baseURL}/institutions/${institutionId}/units`, {
+      headers: {
+        Authorization: `Bearer ${getCookie("token")}`,
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data;
+    }
+  } catch (e) {
+    console.error(`Erro ao obter unidades: ${e}`);
+  }
+}
+
+export const createUnit = async (name, institutionId) => {
+  try {
+    const resp = await axios.post(
+      `${baseURL}/units`,
+      { 
+        name,
+        institutionId
+       },
+      {
+        headers: { Authorization: `Bearer ${getCookie("token")}` },
+      }
+    );
+
+    if (resp.status === 201) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao criar instituição");
+    }
+  } catch (e) {
+    console.error("Erro ao criar unidade:", e);
+  }
+};
+
+export const updateUnit = async (id, name) => {
+  try {
+    const resp = await axios.put(
+      `${baseURL}/units/${id}`,
+      {
+        name: name,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`,
+        }
+      }
+    )
+
+    if (resp.status === 200) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao atualizar unidade");
+    }
+  } catch (e) {
+    console.error(`Erro ao criar unidade: ${e}`);
   }
 }

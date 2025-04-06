@@ -12,6 +12,9 @@ import {
 } from "@/components/ui/table"
 import CreateInstitution from '@/components/InstitutionsComponents/CreateInstitution';
 import UpdateInstitution from '@/components/InstitutionsComponents/UpdateInstitution';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { SquareArrowUpRight } from 'lucide-react';
 
 
 function page() {
@@ -41,6 +44,7 @@ function page() {
             <TableHead className="w-[100px]">Nome</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
+            <TableHead>Unidades</TableHead>
             <TableHead>
               <CreateInstitution fetchFunction={fetchInstitutions} />
             </TableHead>
@@ -52,6 +56,13 @@ function page() {
               <TableCell className="font-medium">{institution.name}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.createdAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.updatedAt)}</TableCell>
+              <TableCell className="font-medium">
+                <Link href={`./units/${institution.id}`}>
+                  <Button variant='outline' size='icon'>
+                    <SquareArrowUpRight/>
+                  </Button>
+                </Link>
+              </TableCell>
               <TableCell className="font-medium">
                 <UpdateInstitution fetchFunction={fetchInstitutions} prevName={institution.name} id={institution.id} />
               </TableCell>
