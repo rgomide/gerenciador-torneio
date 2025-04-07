@@ -45,11 +45,17 @@ export default function Home() {
 
   async function onSubmit(values) {
     try {
-      await auth(values.username, values.password);
+      const resp = await auth(values.username, values.password);
+
+      if (!resp || resp.status !== 200) {
+        toast.error('Erro ao realizar login, verifique suas credenciais')
+        return
+      }
 
       toast.success("Login realizado com sucesso!")
       router.replace("/private/dashboard")
     } catch (error) {
+      toast.error(error)
       console.error("Erro ao realizar login:", error);
     }
   }

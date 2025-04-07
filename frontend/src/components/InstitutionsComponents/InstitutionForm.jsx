@@ -5,12 +5,12 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
-import { createInstitution, getInstitutions } from '@/services/apiService'
+import { createInstitution, updateInstitution } from '@/services/apiService'
 import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Plus } from 'lucide-react'
+import { Pencil, Plus } from 'lucide-react'
 
-function CreateInstitution({ fetchFunction }) {
+function InstitutionForm({ variant, fetchFunction, id, prevName }) {
   const formSchema = z.object({
     name: z.string().min(3, "O nome da Instituição deve ter pelo menos 3 caracteres"),
   });
@@ -22,14 +22,14 @@ function CreateInstitution({ fetchFunction }) {
     },
   });
 
-  async function onSubmit(values) {
+  async function onSubmitCreate(values) {
     try {
       const resp = await createInstitution(values.name);
-  
+
       if (!resp || resp.error) {
         throw new Error(resp?.error || "Erro ao criar instituição");
       }
-  
+
       form.reset();
       toast.success("Instituição criada com sucesso!");
       await fetchFunction();
@@ -38,24 +38,46 @@ function CreateInstitution({ fetchFunction }) {
       toast.error(error.message || "Erro ao criar instituição");
     }
   }
-  
+
+  async function onSubmitUpdate(values) {
+    try {
+      const resp = await updateInstitution(id, values.name);
+
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || "Erro ao editar instituição");
+      }
+
+      form.reset();
+      toast.success("Instituição editada com sucesso!");
+      await fetchFunction();
+    } catch (error) {
+      toast.error("Erro ao editar instituição");
+      console.error(error);
+    }
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant='outline' size='icon' className='bg-emerald-500 hover:bg-emerald-700'>
-          <Plus/>
-        </Button>
+        {variant === 'create' ? (
+          <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
+            <Plus className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" size="icon">
+            <Pencil />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Nova Instituição</DialogTitle>
+          <DialogTitle>{variant === 'create' ? 'Criar ' : 'Editar '} Instituição</DialogTitle>
           <DialogDescription>
             Preencha os dados corretamente, as Instituições podem ser editadas posteriormente mas não podem ser excluidas do sistema.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={variant === 'create' ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -63,7 +85,7 @@ function CreateInstitution({ fetchFunction }) {
                 <FormItem>
                   <FormLabel>Nome da Instituição</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nome da instituição" {...field} />
+                    <Input placeholder={variant === 'create' ? "Nome da instituição" : prevName} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -79,4 +101,4 @@ function CreateInstitution({ fetchFunction }) {
   )
 }
 
-export default CreateInstitution
+export default InstitutionForm

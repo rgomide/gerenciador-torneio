@@ -10,11 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import CreateInstitution from '@/components/InstitutionsComponents/CreateInstitution';
-import UpdateInstitution from '@/components/InstitutionsComponents/UpdateInstitution';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SquareArrowUpRight } from 'lucide-react';
+import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm';
 
 
 function page() {
@@ -46,7 +45,7 @@ function page() {
             <TableHead>Última atualização</TableHead>
             <TableHead>Unidades</TableHead>
             <TableHead>
-              <CreateInstitution fetchFunction={fetchInstitutions} />
+              <InstitutionForm variant='create' fetchFunction={fetchInstitutions} />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -59,12 +58,12 @@ function page() {
               <TableCell className="font-medium">
                 <Link href={`./units/${institution.id}`}>
                   <Button variant='outline' size='icon'>
-                    <SquareArrowUpRight/>
+                    <SquareArrowUpRight />
                   </Button>
                 </Link>
               </TableCell>
               <TableCell className="font-medium">
-                <UpdateInstitution fetchFunction={fetchInstitutions} prevName={institution.name} id={institution.id} />
+                <InstitutionForm fetchFunction={fetchInstitutions} prevName={institution.name} id={institution.id} />
               </TableCell>
             </TableRow>
           ))}

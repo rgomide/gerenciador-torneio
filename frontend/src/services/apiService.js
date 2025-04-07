@@ -31,6 +31,8 @@ export const auth = async (userName, password) => {
 
       setCookie("token", token, { maxAge: 60 * 60 * 24, path: "/", secure: true, httpOnly: false });
     }
+
+    return resp
   } catch (e) {
     console.error(`Erro ao realizar login: ${e}`);
   }
@@ -65,10 +67,10 @@ export const createInstitution = async (name) => {
     if (resp.status === 201) {
       return resp.data;
     } else {
-      throw new Error("Erro inesperado ao criar instituição");
+      throw new Error(resp.data.message);
     }
   } catch (e) {
-    console.error("Erro ao criar instituição:", e);
+    return { error: e.response?.data?.message || e.message }
   }
 };
 
@@ -92,7 +94,7 @@ export const updateInstitution = async (id, name) => {
       throw new Error("Erro inesperado ao atualizar instituição");
     }
   } catch (e) {
-    console.error(`Erro ao criar instituição: ${e}`);
+    return { error: e.response?.data?.message || e.message }
   }
 }
 
