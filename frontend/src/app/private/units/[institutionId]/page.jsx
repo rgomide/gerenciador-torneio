@@ -1,8 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import CreateUnit from '@/components/unitsComponents/CreateUnit'
-import UpdateUnit from '@/components/unitsComponents/UpdateUnit'
+import UnitForm from '@/components/unitsComponents/UnitForm'
 import { formatDate, getUnitsByInstitutionId } from '@/services/apiService'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -18,8 +17,12 @@ function page({ params }) {
   }, [])
 
   const fetchUnits = async () => {
-    const data = await getUnitsByInstitutionId(institutionId)
-    setUnits(data)
+    try {
+      const data = await getUnitsByInstitutionId(institutionId)
+      setUnits(data)
+    } catch (error) {
+      console.error(`Erro ao obter unidades: ${error}`);
+    }
   }
 
   return (
@@ -34,7 +37,7 @@ function page({ params }) {
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
             <TableHead>
-              <CreateUnit fetchFunction={fetchUnits} institutionId={institutionId} />
+              <UnitForm onClose={fetchUnits} institutionId={institutionId} />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -45,14 +48,14 @@ function page({ params }) {
               <TableCell className="font-medium">{formatDate(unit.createdAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(unit.updatedAt)}</TableCell>
               <TableCell className="font-medium">
-                <UpdateUnit fetchFunction={fetchUnits} prevName={unit.name} id={unit.id} />
+                <UnitForm record={unit} institutionId={institutionId} onClose={fetchUnits} />
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
 
-      <Button variant='outline' onClick={router.back}> <ArrowLeft/> Voltar para Instituições </Button>
+      <Button variant='outline' onClick={router.back}> <ArrowLeft /> Voltar para Instituições </Button>
     </div>
   )
 }

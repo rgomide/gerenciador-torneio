@@ -63,7 +63,7 @@ function page() {
                 </Link>
               </TableCell>
               <TableCell className="font-medium">
-                <InstitutionForm fetchFunction={fetchInstitutions} prevName={institution.name} id={institution.id} />
+                <InstitutionForm record={institution} onClose={fetchInstitutions} />
               </TableCell>
             </TableRow>
           ))}

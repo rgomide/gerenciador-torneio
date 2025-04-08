@@ -10,7 +10,9 @@ import { toast } from 'sonner'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 
-function InstitutionForm({ variant, fetchFunction, id, prevName }) {
+function InstitutionForm({ record, onClose }) {
+  const isCreate = record === undefined
+
   const formSchema = z.object({
     name: z.string().min(3, "O nome da Instituição deve ter pelo menos 3 caracteres"),
   });
@@ -32,7 +34,9 @@ function InstitutionForm({ variant, fetchFunction, id, prevName }) {
 
       form.reset();
       toast.success("Instituição criada com sucesso!");
-      await fetchFunction();
+      if (onClose) {
+        onClose()
+      }
     } catch (error) {
       console.error("Erro na criação:", error);
       toast.error(error.message || "Erro ao criar instituição");
@@ -41,7 +45,7 @@ function InstitutionForm({ variant, fetchFunction, id, prevName }) {
 
   async function onSubmitUpdate(values) {
     try {
-      const resp = await updateInstitution(id, values.name);
+      const resp = await updateInstitution(record.id, values.name);
 
       if (!resp || resp.error) {
         throw new Error(resp?.error || "Erro ao editar instituição");
@@ -49,7 +53,9 @@ function InstitutionForm({ variant, fetchFunction, id, prevName }) {
 
       form.reset();
       toast.success("Instituição editada com sucesso!");
-      await fetchFunction();
+      if (onClose) {
+        onClose()
+      }
     } catch (error) {
       toast.error("Erro ao editar instituição");
       console.error(error);
@@ -59,7 +65,7 @@ function InstitutionForm({ variant, fetchFunction, id, prevName }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {variant === 'create' ? (
+        {isCreate ? (
           <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
             <Plus className="h-4 w-4" />
           </Button>
@@ -71,13 +77,13 @@ function InstitutionForm({ variant, fetchFunction, id, prevName }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{variant === 'create' ? 'Criar ' : 'Editar '} Instituição</DialogTitle>
+          <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Instituição</DialogTitle>
           <DialogDescription>
             Preencha os dados corretamente, as Instituições podem ser editadas posteriormente mas não podem ser excluidas do sistema.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={variant === 'create' ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)} className="space-y-4">
+          <form onSubmit={isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)} className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -85,7 +91,7 @@ function InstitutionForm({ variant, fetchFunction, id, prevName }) {
                 <FormItem>
                   <FormLabel>Nome da Instituição</FormLabel>
                   <FormControl>
-                    <Input placeholder={variant === 'create' ? "Nome da instituição" : prevName} {...field} />
+                    <Input placeholder={isCreate ? "Nome da instituição" : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
