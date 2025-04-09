@@ -98,7 +98,21 @@ export const updateInstitution = async (id, name) => {
   }
 }
 
+export const getUnits = async () => {
+  try {
+    const resp = await axios.get(`${baseURL}/units`, {
+      headers: {
+        Authorization: `Bearer ${getCookie("token")}`,
+      }
+    })
 
+    if (resp.status === 200) {
+      return resp.data;
+    }
+  } catch (e) {
+    console.error(`Erro ao obter unidades: ${e}`);
+  }
+}
 
 export const getUnitsByInstitutionId = async (institutionId) => {
   try {
@@ -120,10 +134,10 @@ export const createUnit = async (name, institutionId) => {
   try {
     const resp = await axios.post(
       `${baseURL}/units`,
-      { 
+      {
         name,
         institutionId
-       },
+      },
       {
         headers: { Authorization: `Bearer ${getCookie("token")}` },
       }
@@ -132,7 +146,7 @@ export const createUnit = async (name, institutionId) => {
     if (resp.status === 201) {
       return resp.data;
     } else {
-      throw new Error("Erro inesperado ao criar instituição");
+      throw new Error("Erro inesperado ao criar unidade");
     }
   } catch (e) {
     console.error("Erro ao criar unidade:", e);
@@ -160,5 +174,88 @@ export const updateUnit = async (id, name) => {
     }
   } catch (e) {
     console.error(`Erro ao criar unidade: ${e}`);
+  }
+}
+
+export const getEventsByUnitId = async (unitId) => {
+  try {
+    const resp = await axios.get(`${baseURL}/units/${unitId}/events`, {
+      headers: {
+        Authorization: `Bearer ${getCookie("token")}`,
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data;
+    }
+  } catch (e) {
+    console.error(`Erro ao obter eventos: ${e}`);
+  }
+}
+
+export const createEvent = async (name, unitId, startDate, endDate) => {
+  try {
+    const resp = await axios.post(
+      `${baseURL}/events`,
+      {
+        name,
+        unitId,
+        startDate,
+        endDate
+      },
+      {
+        headers: { Authorization: `Bearer ${getCookie("token")}` },
+      }
+    );
+
+    if (resp.status === 201) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao criar evento");
+    }
+  } catch (e) {
+    console.error("Erro ao criar evento:", e);
+  }
+};
+
+export const updateEvent = async (id, name, unitId, startDate, endDate) => {
+  try {
+    const resp = await axios.put(`${baseURL}/events/${id}`,
+      {
+        name: name,
+        unitId: unitId,
+        startDate: startDate,
+        endDate: endDate
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`,
+        }
+      }
+    )
+
+    if (resp.status === 200) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao atualizar evento");
+    }
+  } catch (e) {
+    console.error(`Erro ao atualizar evento: ${e}`);
+  }
+}
+
+export const deleteEventById = async (eventId) => {
+  try {
+    const resp = await axios.delete(`${baseURL}/events/${eventId}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie("token")}`,
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data;
+    }
+  } catch (e) {
+    console.error(`Erro ao deletar evento: ${e}`);
   }
 }
