@@ -31,6 +31,8 @@ export const auth = async (userName, password) => {
 
       setCookie("token", token, { maxAge: 60 * 60 * 24, path: "/", secure: true, httpOnly: false });
     }
+
+    return resp
   } catch (e) {
     console.error(`Erro ao realizar login: ${e}`);
   }
@@ -65,14 +67,12 @@ export const createInstitution = async (name) => {
     if (resp.status === 201) {
       return resp.data;
     } else {
-      throw new Error("Erro inesperado ao criar instituição");
+      throw new Error(resp.data.message);
     }
   } catch (e) {
-    console.error("Erro ao criar instituição:", e);
+    return { error: e.response?.data?.message || e.message }
   }
 };
-
-
 
 export const updateInstitution = async (id, name) => {
   try {
@@ -94,6 +94,71 @@ export const updateInstitution = async (id, name) => {
       throw new Error("Erro inesperado ao atualizar instituição");
     }
   } catch (e) {
-    console.error(`Erro ao criar instituição: ${e}`);
+    return { error: e.response?.data?.message || e.message }
+  }
+}
+
+
+
+export const getUnitsByInstitutionId = async (institutionId) => {
+  try {
+    const resp = await axios.get(`${baseURL}/institutions/${institutionId}/units`, {
+      headers: {
+        Authorization: `Bearer ${getCookie("token")}`,
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data;
+    }
+  } catch (e) {
+    console.error(`Erro ao obter unidades: ${e}`);
+  }
+}
+
+export const createUnit = async (name, institutionId) => {
+  try {
+    const resp = await axios.post(
+      `${baseURL}/units`,
+      { 
+        name,
+        institutionId
+       },
+      {
+        headers: { Authorization: `Bearer ${getCookie("token")}` },
+      }
+    );
+
+    if (resp.status === 201) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao criar instituição");
+    }
+  } catch (e) {
+    console.error("Erro ao criar unidade:", e);
+  }
+};
+
+export const updateUnit = async (id, name) => {
+  try {
+    const resp = await axios.put(
+      `${baseURL}/units/${id}`,
+      {
+        name: name,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie("token")}`,
+        }
+      }
+    )
+
+    if (resp.status === 200) {
+      return resp.data;
+    } else {
+      throw new Error("Erro inesperado ao atualizar unidade");
+    }
+  } catch (e) {
+    console.error(`Erro ao criar unidade: ${e}`);
   }
 }

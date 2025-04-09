@@ -10,8 +10,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import CreateInstitution from '@/components/InstitutionsComponents/CreateInstitution';
-import UpdateInstitution from '@/components/InstitutionsComponents/UpdateInstitution';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { SquareArrowUpRight } from 'lucide-react';
+import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm';
 
 
 function page() {
@@ -41,8 +43,9 @@ function page() {
             <TableHead className="w-[100px]">Nome</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
+            <TableHead>Unidades</TableHead>
             <TableHead>
-              <CreateInstitution fetchFunction={fetchInstitutions} />
+              <InstitutionForm variant='create' fetchFunction={fetchInstitutions} />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -53,7 +56,14 @@ function page() {
               <TableCell className="font-medium">{formatDate(institution.createdAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(institution.updatedAt)}</TableCell>
               <TableCell className="font-medium">
-                <UpdateInstitution fetchFunction={fetchInstitutions} prevName={institution.name} id={institution.id} />
+                <Link href={`./units/${institution.id}`}>
+                  <Button variant='outline' size='icon'>
+                    <SquareArrowUpRight />
+                  </Button>
+                </Link>
+              </TableCell>
+              <TableCell className="font-medium">
+                <InstitutionForm record={institution} onClose={fetchInstitutions} />
               </TableCell>
             </TableRow>
           ))}

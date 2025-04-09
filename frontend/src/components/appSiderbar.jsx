@@ -35,7 +35,7 @@ const items = [
     icon: Home,
   },
   {
-    title: "Instituições",
+    title: "Instituições e Unidades",
     url: "/private/institutions",
     icon: Landmark,
   },
