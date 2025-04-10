@@ -5,17 +5,17 @@ const AppError = require('@server/utils/AppError')
 
 const login = async (userName, password) => {
   if (!userName || !password) {
-    throw new AppError('User name and password are required', 400)
+    throw new AppError('Nome de usuário e senha são obrigatórios', 400)
   }
 
   const user = await User.findOne({ where: { userName }, include: [{ model: Role, as: 'roles' }] })
 
   if (!user) {
-    throw new AppError('User not found', 404)
+    throw new AppError('Usuário não encontrado', 404)
   }
 
   if (user.password !== password) {
-    throw new AppError('Invalid password', 401)
+    throw new AppError('Senha inválida', 401)
   }
 
   const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
