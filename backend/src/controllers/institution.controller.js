@@ -149,7 +149,7 @@ router.get('/:institutionId', authorizationMiddleware([ADMIN, MANAGER]), async (
     const institution = await findById(institutionId)
 
     if (!institution) {
-      return res.status(404).json({ error: 'Institution not found' })
+      return res.status(404).json({ error: 'Instituição não encontrada' })
     }
     const institutionVO = new InstitutionVO(institution)
 

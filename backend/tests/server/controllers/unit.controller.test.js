@@ -168,7 +168,7 @@ describe('Unit Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -258,7 +258,7 @@ describe('Unit Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Unit not found')
+      expect(response.body.message).toBe('Unidade não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -362,7 +362,7 @@ describe('Unit Controller', () => {
         .send({ name: 'New Unit', institutionId: '999999' })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
   })
 
@@ -461,7 +461,7 @@ describe('Unit Controller', () => {
         .send({ name: 'Updated Unit', institutionId: institution.id })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Unit not found')
+      expect(response.body.message).toBe('Unidade não encontrada')
     })
 
     it('should return 404 when new institution does not exist', async () => {
@@ -487,7 +487,7 @@ describe('Unit Controller', () => {
         .send({ name: 'Updated Unit', institutionId: '999999' })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
   })
 })

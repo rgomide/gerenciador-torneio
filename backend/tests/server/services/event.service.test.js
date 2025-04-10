@@ -38,7 +38,7 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(eventService.create(eventData)).rejects.toThrow('Unit not found')
+      await expect(eventService.create(eventData)).rejects.toThrow('Unidade não encontrada')
     })
 
     it('should throw AppError when name is not provided', async () => {
@@ -51,7 +51,7 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(eventService.create(eventData)).rejects.toThrow('Name is required')
+      await expect(eventService.create(eventData)).rejects.toThrow('Nome é obrigatório')
     })
 
     it('should throw AppError when name is empty', async () => {
@@ -65,7 +65,7 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(eventService.create(eventData)).rejects.toThrow('Name is required')
+      await expect(eventService.create(eventData)).rejects.toThrow('Nome é obrigatório')
     })
 
     it('should throw AppError when name is only whitespace', async () => {
@@ -79,7 +79,7 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(eventService.create(eventData)).rejects.toThrow('Name cannot be empty')
+      await expect(eventService.create(eventData)).rejects.toThrow('Nome não pode estar vazio')
     })
 
     it('should throw AppError when start date is not provided', async () => {
@@ -92,7 +92,7 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(eventService.create(eventData)).rejects.toThrow('Start date is required')
+      await expect(eventService.create(eventData)).rejects.toThrow('Data de início é obrigatória')
     })
 
     it('should throw AppError when end date is not provided', async () => {
@@ -105,7 +105,7 @@ describe('Event Service', () => {
         startDate: new Date('2024-01-01')
       }
 
-      await expect(eventService.create(eventData)).rejects.toThrow('End date is required')
+      await expect(eventService.create(eventData)).rejects.toThrow('Data de término é obrigatória')
     })
 
     it('should throw AppError when start date is after end date', async () => {
@@ -120,7 +120,7 @@ describe('Event Service', () => {
       }
 
       await expect(eventService.create(eventData)).rejects.toThrow(
-        'Start date cannot be after end date'
+        'Data de início não pode ser posterior à data de término'
       )
     })
   })
@@ -271,9 +271,13 @@ describe('Event Service', () => {
     })
 
     it('should throw AppError when event does not exist', async () => {
-      await expect(eventService.update('999999', { name: 'Updated Event' })).rejects.toThrow(
-        AppError
-      )
+      await expect(
+        eventService.update('999999', {
+          name: 'Updated Event',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Evento não encontrado')
     })
 
     it('should throw AppError when updating to non-existent unit', async () => {
@@ -287,8 +291,13 @@ describe('Event Service', () => {
       })
 
       await expect(
-        eventService.update(event.id, { unitId: '999999', name: 'ABc' })
-      ).rejects.toThrow(AppError)
+        eventService.update(event.id, {
+          unitId: '999999',
+          name: 'Updated Event',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Unidade não encontrada')
     })
 
     it('should throw AppError when name is empty', async () => {
@@ -301,7 +310,9 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       })
 
-      await expect(eventService.update(event.id, { name: '' })).rejects.toThrow('Name is required')
+      await expect(eventService.update(event.id, { name: '' })).rejects.toThrow(
+        'Nome é obrigatório'
+      )
     })
 
     it('should throw AppError when name is only whitespace', async () => {
@@ -315,7 +326,7 @@ describe('Event Service', () => {
       })
 
       await expect(eventService.update(event.id, { name: '   ' })).rejects.toThrow(
-        'Name cannot be empty'
+        'Nome não pode estar vazio'
       )
     })
 
@@ -335,7 +346,7 @@ describe('Event Service', () => {
           startDate: new Date('2024-01-03'),
           endDate: new Date('2024-01-02')
         })
-      ).rejects.toThrow('Start date cannot be after end date')
+      ).rejects.toThrow('Data de início não pode ser posterior à data de término')
     })
   })
 

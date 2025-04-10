@@ -3,22 +3,22 @@ const AppError = require('@server/utils/AppError')
 
 const validateName = (name) => {
   if (!name) {
-    throw new AppError('Name is required', 400)
+    throw new AppError('Nome é obrigatório', 400)
   }
   if (name.trim() === '') {
-    throw new AppError('Name cannot be empty', 400)
+    throw new AppError('Nome não pode estar vazio', 400)
   }
 }
 
 const validateDates = (startDate, endDate) => {
   if (!startDate) {
-    throw new AppError('Start date is required', 400)
+    throw new AppError('Data de início é obrigatória', 400)
   }
   if (!endDate) {
-    throw new AppError('End date is required', 400)
+    throw new AppError('Data de término é obrigatória', 400)
   }
   if (startDate > endDate) {
-    throw new AppError('Start date cannot be after end date', 400)
+    throw new AppError('Data de início não pode ser posterior à data de término', 400)
   }
 }
 
@@ -28,7 +28,7 @@ const create = async (eventData) => {
 
   const unit = await Unit.findByPk(eventData.unitId)
   if (!unit) {
-    throw new AppError('Unit not found', 404)
+    throw new AppError('Unidade não encontrada', 404)
   }
 
   return Event.create(eventData)
@@ -48,7 +48,7 @@ const findAll = async () => {
 const findByUnit = async (unitId) => {
   const unit = await Unit.findByPk(unitId)
   if (!unit) {
-    throw new AppError('Unit not found', 404)
+    throw new AppError('Unidade não encontrada', 404)
   }
 
   return Event.findAll({
@@ -73,7 +73,7 @@ const findById = async (id) => {
   })
 
   if (!event) {
-    throw new AppError('Event not found', 404)
+    throw new AppError('Evento não encontrado', 404)
   }
 
   return event
@@ -85,7 +85,7 @@ const update = async (id, eventData) => {
 
   const event = await Event.findByPk(id)
   if (!event) {
-    throw new AppError('Event not found', 404)
+    throw new AppError('Evento não encontrado', 404)
   }
 
   if (!eventData.unitId) {
@@ -95,7 +95,7 @@ const update = async (id, eventData) => {
   const unit = await Unit.findByPk(eventData.unitId)
 
   if (!unit) {
-    throw new AppError('Unit not found', 404)
+    throw new AppError('Unidade não encontrada', 404)
   }
 
   await event.update(eventData)
@@ -106,7 +106,7 @@ const update = async (id, eventData) => {
 const remove = async (id) => {
   const event = await Event.findByPk(id)
   if (!event) {
-    throw new AppError('Event not found', 404)
+    throw new AppError('Evento não encontrado', 404)
   }
 
   await event.destroy()

@@ -145,7 +145,7 @@ router.get('/units/:unitId', authorizationMiddleware([ADMIN, MANAGER]), async (r
     const unit = await findById(unitId)
 
     if (!unit) {
-      return res.status(404).json({ error: 'Unit not found' })
+      return res.status(404).json({ error: 'Unidade não encontrada' })
     }
 
     const unitVO = new UnitVO(unit)
