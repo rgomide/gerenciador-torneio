@@ -1,5 +1,4 @@
 'use client'
-import React from 'react'
 import { deleteEventById, formatDate, getEventsByUnitId, getUnits } from '@/services/apiService';
 import {
   Table,
@@ -15,17 +14,19 @@ import EventsForm from '@/components/EventsComponents/EventsForm';
 import { Trash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 function page() {
-  const [events, setEvents] = React.useState([])
-  const [units, setUnits] = React.useState([])
-  const [selectedUnit, setSelectedUnit] = React.useState(null)
+  const [events, setEvents] = useState([])
+  const [units, setUnits] = useState([])
+  const [selectedUnit, setSelectedUnit] = useState(null)
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchUnits()
   }, [])
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchEvents()
     fetchUnits()
   }, [selectedUnit])
@@ -45,12 +46,11 @@ function page() {
 
   const deleteEvent = async (id) => {
     if (!selectedUnit) return;
-  
+
     try {
       await deleteEventById(id);
       toast.success("Evento deletado com sucesso!");
-  
-      // 🟢 Atualiza a lista:
+
       fetchEvents();
     } catch (e) {
       console.error(`Erro ao deletar evento: ${e}`);
@@ -115,7 +115,25 @@ function page() {
               <TableCell className="font-medium">{formatDate(event.updatedAt)}</TableCell>
               <TableCell className="font-medium space-x-2">
                 <EventsForm variant='edit' record={event} unitId={selectedUnit} onClose={fetchEvents} />
-                <Button onClick={()=> deleteEvent(event.id)} variant='destructive' size='icon'> <Trash/> </Button>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant='destructive' size='icon'> <Trash /> </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Deletar evento?</DialogTitle>
+                      <DialogDescription>Você tem certeza que deseja deletar esse evento?</DialogDescription>
+                    </DialogHeader>
+
+                    <div className='flex gap-4'>
+                      <DialogTrigger asChild>
+                        <Button className='bg-emerald-600 hover:bg-emerald-600'>Cancelar</Button>
+                      </DialogTrigger>
+                      <Button type='submit' onClick={() => deleteEvent(event.id)} variant='destructive'>Deletar</Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+
               </TableCell>
             </TableRow>
           ))}

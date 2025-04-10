@@ -5,14 +5,14 @@ import UnitForm from '@/components/unitsComponents/UnitForm'
 import { formatDate, getUnitsByInstitutionId } from '@/services/apiService'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import React from 'react'
+import { use, useEffect, useState } from 'react'
 
 function page({ params }) {
   const router = useRouter()
-  const { institutionId } = React.use(params)
-  const [units, setUnits] = React.useState([])
+  const { institutionId } = use(params)
+  const [units, setUnits] = useState([])
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchUnits()
   }, [])
 

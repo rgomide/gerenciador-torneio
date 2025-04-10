@@ -1,5 +1,4 @@
 'use client'
-import React from 'react'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
@@ -16,8 +15,8 @@ function EventsForm({ record, onClose, unitId }) {
 
   const formSchema = z.object({
     name: z.string().min(3, "O nome do Evento deve ter pelo menos 3 caracteres"),
-    startDate: z.string("A data de início é obrigatória"),
-    endDate: z.string("A data de término \é obrigatória"),
+    startDate: z.string().min(1, "A data de início é obrigatória"),
+    endDate: z.string().min(1, "A data de término \é obrigatória"),
   });
 
   const form = useForm({
