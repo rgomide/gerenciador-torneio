@@ -58,6 +58,37 @@ describe('Unit Service', () => {
 
       await expect(create(unitData)).rejects.toThrow('Institution not found')
     })
+
+    it('should throw an error if name is not provided', async () => {
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      await expect(create({ institutionId: institution.id })).rejects.toThrow('Name is required')
+      await institution.destroy()
+    })
+
+    it('should throw an error if name is empty string', async () => {
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      await expect(create({ name: '', institutionId: institution.id })).rejects.toThrow(
+        'Name is required'
+      )
+      await institution.destroy()
+    })
+
+    it('should throw an error if name is only whitespace', async () => {
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      await expect(create({ name: '   ', institutionId: institution.id })).rejects.toThrow(
+        'Name cannot be empty'
+      )
+      await institution.destroy()
+    })
   })
 
   describe('findAll', () => {
@@ -225,9 +256,41 @@ describe('Unit Service', () => {
         institutionId: institution.id
       })
 
-      await expect(update(unit.id, { institutionId: '999999' })).rejects.toThrow(
+      await expect(update(unit.id, { institutionId: '999999', name: 'ABc' })).rejects.toThrow(
         'Institution not found'
       )
+
+      await unit.destroy()
+      await institution.destroy()
+    })
+
+    it('should throw an error if name is empty string', async () => {
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      const unit = await Unit.create({
+        name: 'Test Unit',
+        institutionId: institution.id
+      })
+
+      await expect(update(unit.id, { name: '' })).rejects.toThrow('Name is required')
+
+      await unit.destroy()
+      await institution.destroy()
+    })
+
+    it('should throw an error if name is only whitespace', async () => {
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      const unit = await Unit.create({
+        name: 'Test Unit',
+        institutionId: institution.id
+      })
+
+      await expect(update(unit.id, { name: '   ' })).rejects.toThrow('Name cannot be empty')
 
       await unit.destroy()
       await institution.destroy()

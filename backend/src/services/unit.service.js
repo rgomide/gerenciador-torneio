@@ -1,7 +1,18 @@
 const { Unit, Institution } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
+const validateName = (name) => {
+  if (!name) {
+    throw new AppError('Name is required', 400)
+  }
+  if (name.trim() === '') {
+    throw new AppError('Name cannot be empty', 400)
+  }
+}
+
 const create = async ({ name, institutionId }) => {
+  validateName(name)
+
   const institution = await Institution.findByPk(institutionId)
   if (!institution) {
     throw new AppError('Institution not found', 404)
@@ -59,6 +70,8 @@ const findByInstitution = async (institutionId) => {
 }
 
 const update = async (id, data) => {
+  validateName(data.name)
+
   const unit = await Unit.findByPk(id)
   if (!unit) {
     throw new AppError('Unit not found', 404)

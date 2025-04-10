@@ -32,6 +32,18 @@ describe('Institution Service', () => {
       await create(institutionData)
       await expect(create(institutionData)).rejects.toThrow('Institution already exists')
     })
+
+    it('should throw an error if name is not provided', async () => {
+      await expect(create({})).rejects.toThrow('Name is required')
+    })
+
+    it('should throw an error if name is empty string', async () => {
+      await expect(create({ name: '' })).rejects.toThrow('Name is required')
+    })
+
+    it('should throw an error if name is only whitespace', async () => {
+      await expect(create({ name: '   ' })).rejects.toThrow('Name cannot be empty')
+    })
   })
 
   describe('findAll', () => {
@@ -100,6 +112,22 @@ describe('Institution Service', () => {
 
     it('should throw an error if institution is not found', async () => {
       await expect(update('123', { name: 'New Name' })).rejects.toThrow('Institution not found')
+    })
+
+    it('should throw an error if name is empty string', async () => {
+      const institution = await Institution.create({
+        name: 'Original Name'
+      })
+
+      await expect(update(institution.id, { name: '' })).rejects.toThrow('Name is required')
+    })
+
+    it('should throw an error if name is only whitespace', async () => {
+      const institution = await Institution.create({
+        name: 'Original Name'
+      })
+
+      await expect(update(institution.id, { name: '   ' })).rejects.toThrow('Name cannot be empty')
     })
   })
 
