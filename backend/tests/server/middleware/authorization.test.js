@@ -22,7 +22,7 @@ describe('Authorization Middleware', () => {
     authorizationMiddleware([ADMIN])(req, res, next)
 
     expect(res.status).toHaveBeenCalledWith(403)
-    expect(res.json).toHaveBeenCalledWith({ message: 'Forbidden' })
+    expect(res.json).toHaveBeenCalledWith({ message: 'Acesso negado' })
   })
 
   it('should bypass when no required roles are provided', () => {

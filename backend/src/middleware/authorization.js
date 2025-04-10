@@ -13,7 +13,7 @@ const authorizationMiddleware = (requiredRoles = []) => {
     })
 
     if (!hasPermission) {
-      return res.status(403).json({ message: 'Forbidden' })
+      return res.status(403).json({ message: 'Acesso negado' })
     }
 
     next()

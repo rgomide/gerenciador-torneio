@@ -97,7 +97,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).get('/api/tournaments')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -224,7 +224,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).get(`/api/events/${event.id}/tournaments`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -304,7 +304,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).get('/api/tournaments/1')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -420,7 +420,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).post('/api/tournaments').send({})
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -557,7 +557,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).put('/api/tournaments/1').send({})
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -627,7 +627,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).delete('/api/tournaments/1')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 })
