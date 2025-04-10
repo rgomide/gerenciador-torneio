@@ -27,7 +27,7 @@ describe('Auth Service', () => {
     })
 
     it('should throw an error if user is not found', async () => {
-      await expect(login('admin', '111')).rejects.toThrow('User not found')
+      await expect(login('admin', '111')).rejects.toThrow('Usuário não encontrado')
     })
 
     it('should throw an error if password is incorrect', async () => {
@@ -39,11 +39,11 @@ describe('Auth Service', () => {
         password: '111'
       })
 
-      await expect(login(user.userName, '123')).rejects.toThrow('Invalid password')
+      await expect(login(user.userName, '123')).rejects.toThrow('Senha inválida')
     })
 
     it('should throw an error if user name and password are not provided', async () => {
-      await expect(login('', '')).rejects.toThrow('User name and password are required')
+      await expect(login('', '')).rejects.toThrow('Nome de usuário e senha são obrigatórios')
     })
   })
 })

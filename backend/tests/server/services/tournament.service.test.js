@@ -44,7 +44,9 @@ describe('Tournament Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Event not found')
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Evento não encontrado'
+      )
     })
 
     it('should throw AppError when name is not provided', async () => {
@@ -63,7 +65,7 @@ describe('Tournament Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Name is required')
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Nome é obrigatório')
     })
 
     it('should throw AppError when name is empty', async () => {
@@ -83,7 +85,7 @@ describe('Tournament Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Name is required')
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Nome é obrigatório')
     })
 
     it('should throw AppError when name is only whitespace', async () => {
@@ -103,7 +105,9 @@ describe('Tournament Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Name cannot be empty')
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Nome não pode estar vazio'
+      )
     })
 
     it('should throw AppError when start date is not provided', async () => {
@@ -123,7 +127,7 @@ describe('Tournament Service', () => {
       }
 
       await expect(tournamentService.create(tournamentData)).rejects.toThrow(
-        'Start date is required'
+        'Data de início é obrigatória'
       )
     })
 
@@ -143,7 +147,9 @@ describe('Tournament Service', () => {
         startDate: new Date('2024-01-01')
       }
 
-      await expect(tournamentService.create(tournamentData)).rejects.toThrow('End date is required')
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Data de término é obrigatória'
+      )
     })
 
     it('should throw AppError when start date is after end date', async () => {
@@ -164,7 +170,7 @@ describe('Tournament Service', () => {
       }
 
       await expect(tournamentService.create(tournamentData)).rejects.toThrow(
-        'Start date cannot be after end date'
+        'Data de início não pode ser posterior à data de término'
       )
     })
   })
@@ -342,8 +348,12 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when tournament does not exist', async () => {
       await expect(
-        tournamentService.update('999999', { name: 'Updated Tournament' })
-      ).rejects.toThrow(AppError)
+        tournamentService.update('999999', {
+          name: 'Updated Tournament',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Torneio não encontrado')
     })
 
     it('should throw AppError when updating to non-existent event', async () => {
@@ -363,8 +373,13 @@ describe('Tournament Service', () => {
       })
 
       await expect(
-        tournamentService.update(tournament.id, { eventId: '999999', name: 'Updated Tournament' })
-      ).rejects.toThrow(AppError)
+        tournamentService.update(tournament.id, {
+          eventId: '999999',
+          name: 'Updated Tournament',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Evento não encontrado')
     })
 
     it('should throw AppError when name is empty', async () => {
@@ -384,7 +399,7 @@ describe('Tournament Service', () => {
       })
 
       await expect(tournamentService.update(tournament.id, { name: '' })).rejects.toThrow(
-        'Name is required'
+        'Nome é obrigatório'
       )
     })
 
@@ -405,7 +420,7 @@ describe('Tournament Service', () => {
       })
 
       await expect(tournamentService.update(tournament.id, { name: '   ' })).rejects.toThrow(
-        'Name cannot be empty'
+        'Nome não pode estar vazio'
       )
     })
 
@@ -431,7 +446,7 @@ describe('Tournament Service', () => {
           startDate: new Date('2024-01-03'),
           endDate: new Date('2024-01-02')
         })
-      ).rejects.toThrow('Start date cannot be after end date')
+      ).rejects.toThrow('Data de início não pode ser posterior à data de término')
     })
   })
 

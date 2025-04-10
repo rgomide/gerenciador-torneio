@@ -213,7 +213,7 @@ describe('Institution Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -304,7 +304,7 @@ describe('Institution Controller', () => {
         .send({ name: 'Updated Institution' })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {

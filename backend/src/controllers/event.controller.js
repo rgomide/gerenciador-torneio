@@ -146,7 +146,7 @@ router.get(
       const event = await findById(eventId)
 
       if (!event) {
-        return res.status(404).json({ error: 'Event not found' })
+        return res.status(404).json({ error: 'Evento não encontrado' })
       }
 
       const eventVO = new EventVO(event)

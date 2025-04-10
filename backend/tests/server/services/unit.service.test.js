@@ -45,7 +45,7 @@ describe('Unit Service', () => {
       }
 
       await create(unitData)
-      await expect(create(unitData)).rejects.toThrow('Unit already exists in this institution')
+      await expect(create(unitData)).rejects.toThrow('Unidade já existe nesta instituição')
 
       await institution.destroy()
     })
@@ -56,7 +56,7 @@ describe('Unit Service', () => {
         institutionId: '999999'
       }
 
-      await expect(create(unitData)).rejects.toThrow('Institution not found')
+      await expect(create(unitData)).rejects.toThrow('Instituição não encontrada')
     })
 
     it('should throw an error if name is not provided', async () => {
@@ -64,7 +64,7 @@ describe('Unit Service', () => {
         name: 'Test Institution'
       })
 
-      await expect(create({ institutionId: institution.id })).rejects.toThrow('Name is required')
+      await expect(create({ institutionId: institution.id })).rejects.toThrow('Nome é obrigatório')
       await institution.destroy()
     })
 
@@ -74,7 +74,7 @@ describe('Unit Service', () => {
       })
 
       await expect(create({ name: '', institutionId: institution.id })).rejects.toThrow(
-        'Name is required'
+        'Nome é obrigatório'
       )
       await institution.destroy()
     })
@@ -85,7 +85,7 @@ describe('Unit Service', () => {
       })
 
       await expect(create({ name: '   ', institutionId: institution.id })).rejects.toThrow(
-        'Name cannot be empty'
+        'Nome não pode estar vazio'
       )
       await institution.destroy()
     })
@@ -164,7 +164,7 @@ describe('Unit Service', () => {
     })
 
     it('should throw an error if unit is not found', async () => {
-      await expect(findById('123')).rejects.toThrow('Unit not found')
+      await expect(findById('123')).rejects.toThrow('Unidade não encontrada')
     })
   })
 
@@ -211,7 +211,7 @@ describe('Unit Service', () => {
     })
 
     it('should throw an error if institution is not found', async () => {
-      await expect(findByInstitution('123')).rejects.toThrow('Institution not found')
+      await expect(findByInstitution('123')).rejects.toThrow('Instituição não encontrada')
     })
   })
 
@@ -237,13 +237,10 @@ describe('Unit Service', () => {
           institutionId: institution.id
         })
       )
-
-      await unit.destroy()
-      await institution.destroy()
     })
 
     it('should throw an error if unit is not found', async () => {
-      await expect(update('123', { name: 'New Name' })).rejects.toThrow('Unit not found')
+      await expect(update('123', { name: 'New Name' })).rejects.toThrow('Unidade não encontrada')
     })
 
     it('should throw an error if new institution does not exist', async () => {
@@ -257,14 +254,11 @@ describe('Unit Service', () => {
       })
 
       await expect(update(unit.id, { institutionId: '999999', name: 'ABc' })).rejects.toThrow(
-        'Institution not found'
+        'Instituição não encontrada'
       )
-
-      await unit.destroy()
-      await institution.destroy()
     })
 
-    it('should throw an error if name is empty string', async () => {
+    it('should throw an error if name is empty', async () => {
       const institution = await Institution.create({
         name: 'Test Institution'
       })
@@ -274,10 +268,7 @@ describe('Unit Service', () => {
         institutionId: institution.id
       })
 
-      await expect(update(unit.id, { name: '' })).rejects.toThrow('Name is required')
-
-      await unit.destroy()
-      await institution.destroy()
+      await expect(update(unit.id, { name: '' })).rejects.toThrow('Nome é obrigatório')
     })
 
     it('should throw an error if name is only whitespace', async () => {
@@ -290,10 +281,7 @@ describe('Unit Service', () => {
         institutionId: institution.id
       })
 
-      await expect(update(unit.id, { name: '   ' })).rejects.toThrow('Name cannot be empty')
-
-      await unit.destroy()
-      await institution.destroy()
+      await expect(update(unit.id, { name: '   ' })).rejects.toThrow('Nome não pode estar vazio')
     })
   })
 
@@ -319,7 +307,7 @@ describe('Unit Service', () => {
     })
 
     it('should throw an error if unit is not found', async () => {
-      await expect(remove('123')).rejects.toThrow('Unit not found')
+      await expect(remove('123')).rejects.toThrow('Unidade não encontrada')
     })
   })
 })
