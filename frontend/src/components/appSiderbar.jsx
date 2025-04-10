@@ -1,18 +1,6 @@
 'use client'
 
 import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -21,52 +9,63 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem
+} from '@/components/ui/sidebar'
 import { deleteCookie } from 'cookies-next'
-import { toast } from 'sonner'
+import { Calendar, FileUser, Home, Landmark, ShieldHalf, Trophy, UserRoundX } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { Calendar, FileUser, Home, Landmark, ShieldHalf, Trophy, UserRoundX } from "lucide-react"
+import { toast } from 'sonner'
 
 const items = [
   {
-    title: "Início",
-    url: "/private/dashboard",
-    icon: Home,
+    title: 'Início',
+    url: '/private/dashboard',
+    icon: Home
   },
   {
-    title: "Instituições e Unidades",
-    url: "/private/institutions",
-    icon: Landmark,
+    title: 'Instituições e Unidades',
+    url: '/private/institutions',
+    icon: Landmark
   },
   {
-    title: "Eventos",
-    url: "/private/events",
-    icon: Calendar,
+    title: 'Eventos',
+    url: '/private/events',
+    icon: Calendar
   },
   {
-    title: "Torneios",
-    url: "/private/tournaments",
-    icon: Trophy,
+    title: 'Torneios',
+    url: '/private/tournaments',
+    icon: Trophy
   },
   {
-    title: "Equipes",
-    url: "/private/teams",
-    icon: ShieldHalf,
+    title: 'Equipes',
+    url: '/private/teams',
+    icon: ShieldHalf
   },
   {
-    title: "Jogadores",
-    url: "/private/players",
-    icon: FileUser,
-  },
+    title: 'Jogadores',
+    url: '/private/players',
+    icon: FileUser
+  }
 ]
 
 export function AppSidebar() {
   const router = useRouter()
 
   const deleteSession = () => {
-    deleteCookie("token", { path: "/" });
-    toast.success("Sessão deletada com sucesso!")
+    deleteCookie('token', { path: '/' })
+    toast.success('Sessão deletada com sucesso!')
     router.replace('/')
   }
 
@@ -93,20 +92,20 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <AlertDialog>
-          <AlertDialogTrigger className='bg-red-500 text-white rounded-sm py-1 flex items-center justify-center gap-2 cursor-pointer'>
+          <AlertDialogTrigger className="bg-red-500 text-white rounded-sm py-1 flex items-center justify-center gap-2 cursor-pointer">
             Sair
             <UserRoundX size={16} />
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Você tem certeza?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Você realmente deseja sair?
-              </AlertDialogDescription>
+              <AlertDialogDescription>Você realmente deseja sair?</AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-              <AlertDialogAction onClick={deleteSession} className={'bg-red-500 hover:bg-red-700'}>Sair</AlertDialogAction>
+              <AlertDialogAction onClick={deleteSession} className={'bg-red-500 hover:bg-red-700'}>
+                Sair
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

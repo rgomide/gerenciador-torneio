@@ -1,5 +1,6 @@
 'use client'
-import { formatDate, getInstitutions } from '@/services/apiService';
+import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -7,14 +8,12 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { SquareArrowUpRight } from 'lucide-react';
-import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm';
-import { useEffect, useState } from 'react';
-
+  TableRow
+} from '@/components/ui/table'
+import { formatDate, getInstitutions } from '@/services/apiService'
+import { SquareArrowUpRight } from 'lucide-react'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
 
 function page() {
   const [institutions, setInstitutions] = useState([])
@@ -28,15 +27,15 @@ function page() {
       const data = await getInstitutions()
       setInstitutions(data)
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`);
+      console.error(`Erro ao obter instituições: ${e}`)
     }
   }
 
   return (
-    <div className='flex flex-col items-center self-center h-screen w-full p-12 gap-8'>
+    <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
       <h1>Instituições</h1>
 
-      <Table className='w-full'>
+      <Table className="w-full">
         <TableCaption>Lista de Instituições cadastradas no sistema</TableCaption>
         <TableHeader>
           <TableRow>
@@ -45,7 +44,7 @@ function page() {
             <TableHead>Última atualização</TableHead>
             <TableHead>Unidades</TableHead>
             <TableHead>
-              <InstitutionForm variant='create' fetchFunction={fetchInstitutions} />
+              <InstitutionForm variant="create" fetchFunction={fetchInstitutions} />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -57,7 +56,7 @@ function page() {
               <TableCell className="font-medium">{formatDate(institution.updatedAt)}</TableCell>
               <TableCell className="font-medium">
                 <Link href={`./units/${institution.id}`}>
-                  <Button variant='outline' size='icon'>
+                  <Button variant="outline" size="icon">
                     <SquareArrowUpRight />
                   </Button>
                 </Link>

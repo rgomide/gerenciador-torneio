@@ -1,69 +1,81 @@
 'use client'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { Button } from '../ui/button'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { Input } from '../ui/input'
-import { z } from 'zod'
-import { useForm } from 'react-hook-form'
-import { createEvent, updateEvent, updateUnit } from '@/services/apiService'
-import { toast } from 'sonner'
+import { createEvent, updateEvent } from '@/services/apiService'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
+import { Button } from '../ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '../ui/dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
 
 function EventsForm({ record, onClose, unitId }) {
   const isCreate = record === undefined
 
   const formSchema = z.object({
-    name: z.string().min(3, "O nome do Evento deve ter pelo menos 3 caracteres"),
-    startDate: z.string().min(1, "A data de início é obrigatória"),
-    endDate: z.string().min(1, "A data de término \é obrigatória"),
-  });
+    name: z.string().min(3, 'O nome do Evento deve ter pelo menos 3 caracteres'),
+    startDate: z.string().min(1, 'A data de início é obrigatória'),
+    endDate: z.string().min(1, 'A data de término \é obrigatória')
+  })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      startDate: "",
-      endDate: "",
-    },
-  });
+      name: '',
+      startDate: '',
+      endDate: ''
+    }
+  })
 
   async function onSubmitCreate(values) {
     try {
-      const resp = await createEvent(values.name, unitId, values.startDate, values.endDate);
+      const resp = await createEvent(values.name, unitId, values.startDate, values.endDate)
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || "Erro ao criar evento");
+        throw new Error(resp?.error || 'Erro ao criar evento')
       }
 
-      form.reset();
-      toast.success("Evento criado com sucesso!");
+      form.reset()
+      toast.success('Evento criado com sucesso!')
       if (onClose) {
         onClose()
       }
-
     } catch (error) {
-      console.error("Erro na criação:", error);
-      toast.error(error.message || "Erro ao criar evento");
+      console.error('Erro na criação:', error)
+      toast.error(error.message || 'Erro ao criar evento')
     }
   }
 
   async function onSubmitUpdate(values) {
     try {
-      const resp = await updateEvent(record.id, values.name, record.unitId, values.startDate, values.endDate);
+      const resp = await updateEvent(
+        record.id,
+        values.name,
+        record.unitId,
+        values.startDate,
+        values.endDate
+      )
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || "Erro ao editar evento");
+        throw new Error(resp?.error || 'Erro ao editar evento')
       }
 
-      form.reset();
-      toast.success("Evento editado com sucesso!");
+      form.reset()
+      toast.success('Evento editado com sucesso!')
       if (onClose) {
         onClose()
       }
     } catch (error) {
-      toast.error("Erro ao editar evento");
-      console.error(error);
+      toast.error('Erro ao editar evento')
+      console.error(error)
     }
   }
 
@@ -83,12 +95,15 @@ function EventsForm({ record, onClose, unitId }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Evento</DialogTitle>
-          <DialogDescription>
-            Preencha os dados corretamente.
-          </DialogDescription>
+          <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)} className="flex flex-col gap-4 space-y-4">
+          <form
+            onSubmit={
+              isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
+            }
+            className="flex flex-col gap-4 space-y-4"
+          >
             <FormField
               control={form.control}
               name="name"
@@ -96,7 +111,7 @@ function EventsForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Nome do evento</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? "Nome do evento" : record.name} {...field} />
+                    <Input placeholder={isCreate ? 'Nome do evento' : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -109,7 +124,12 @@ function EventsForm({ record, onClose, unitId }) {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Data de início</FormLabel>
-                  <input type='date' className='rounded-sm bg-gray-100 p-2' placeholder={isCreate ? null : record.startDate} {...field} />
+                  <input
+                    type="date"
+                    className="rounded-sm bg-gray-100 p-2"
+                    placeholder={isCreate ? null : record.startDate}
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
@@ -121,14 +141,21 @@ function EventsForm({ record, onClose, unitId }) {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Data de término</FormLabel>
-                  <input type='date' className='rounded-sm bg-gray-100 p-2' placeholder={isCreate ? null : record.endDate} {...field} />
+                  <input
+                    type="date"
+                    className="rounded-sm bg-gray-100 p-2"
+                    placeholder={isCreate ? null : record.endDate}
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
             />
 
             <DialogTrigger asChild>
-              <Button type={'submit'} className='bg-emerald-600 hover:bg-emerald-700'>Salvar</Button>
+              <Button type={'submit'} className="bg-emerald-600 hover:bg-emerald-700">
+                Salvar
+              </Button>
             </DialogTrigger>
           </form>
         </Form>
