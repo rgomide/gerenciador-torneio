@@ -1,5 +1,4 @@
 'use client'
-import React from 'react'
 import { formatDate, getInstitutions } from '@/services/apiService';
 import {
   Table,
@@ -14,12 +13,13 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SquareArrowUpRight } from 'lucide-react';
 import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm';
+import { useEffect, useState } from 'react';
 
 
 function page() {
-  const [institutions, setInstitutions] = React.useState([])
+  const [institutions, setInstitutions] = useState([])
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchInstitutions()
   }, [])
 
