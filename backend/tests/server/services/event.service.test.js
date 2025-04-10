@@ -40,6 +40,89 @@ describe('Event Service', () => {
 
       await expect(eventService.create(eventData)).rejects.toThrow('Unit not found')
     })
+
+    it('should throw AppError when name is not provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+
+      const eventData = {
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(eventService.create(eventData)).rejects.toThrow('Name is required')
+    })
+
+    it('should throw AppError when name is empty', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+
+      const eventData = {
+        name: '',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(eventService.create(eventData)).rejects.toThrow('Name is required')
+    })
+
+    it('should throw AppError when name is only whitespace', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+
+      const eventData = {
+        name: '   ',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(eventService.create(eventData)).rejects.toThrow('Name cannot be empty')
+    })
+
+    it('should throw AppError when start date is not provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+
+      const eventData = {
+        name: 'Test Event',
+        unitId: unit.id,
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(eventService.create(eventData)).rejects.toThrow('Start date is required')
+    })
+
+    it('should throw AppError when end date is not provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+
+      const eventData = {
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01')
+      }
+
+      await expect(eventService.create(eventData)).rejects.toThrow('End date is required')
+    })
+
+    it('should throw AppError when start date is after end date', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+
+      const eventData = {
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-02'),
+        endDate: new Date('2024-01-01')
+      }
+
+      await expect(eventService.create(eventData)).rejects.toThrow(
+        'Start date cannot be after end date'
+      )
+    })
   })
 
   describe('findAll', () => {
@@ -203,7 +286,56 @@ describe('Event Service', () => {
         endDate: new Date('2024-01-02')
       })
 
-      await expect(eventService.update(event.id, { unitId: '999999' })).rejects.toThrow(AppError)
+      await expect(
+        eventService.update(event.id, { unitId: '999999', name: 'ABc' })
+      ).rejects.toThrow(AppError)
+    })
+
+    it('should throw AppError when name is empty', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await expect(eventService.update(event.id, { name: '' })).rejects.toThrow('Name is required')
+    })
+
+    it('should throw AppError when name is only whitespace', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await expect(eventService.update(event.id, { name: '   ' })).rejects.toThrow(
+        'Name cannot be empty'
+      )
+    })
+
+    it('should throw AppError when start date is after end date', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await expect(
+        eventService.update(event.id, {
+          name: 'Updated Event',
+          startDate: new Date('2024-01-03'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Start date cannot be after end date')
     })
   })
 

@@ -1,7 +1,31 @@
 const { Event, Unit } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
+const validateName = (name) => {
+  if (!name) {
+    throw new AppError('Name is required', 400)
+  }
+  if (name.trim() === '') {
+    throw new AppError('Name cannot be empty', 400)
+  }
+}
+
+const validateDates = (startDate, endDate) => {
+  if (!startDate) {
+    throw new AppError('Start date is required', 400)
+  }
+  if (!endDate) {
+    throw new AppError('End date is required', 400)
+  }
+  if (startDate > endDate) {
+    throw new AppError('Start date cannot be after end date', 400)
+  }
+}
+
 const create = async (eventData) => {
+  validateName(eventData.name)
+  validateDates(eventData.startDate, eventData.endDate)
+
   const unit = await Unit.findByPk(eventData.unitId)
   if (!unit) {
     throw new AppError('Unit not found', 404)
@@ -56,6 +80,9 @@ const findById = async (id) => {
 }
 
 const update = async (id, eventData) => {
+  validateName(eventData.name)
+  validateDates(eventData.startDate, eventData.endDate)
+
   const event = await Event.findByPk(id)
   if (!event) {
     throw new AppError('Event not found', 404)
