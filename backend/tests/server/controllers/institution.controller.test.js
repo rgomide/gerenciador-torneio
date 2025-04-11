@@ -56,7 +56,7 @@ describe('Institution Controller', () => {
         .send({ name: 'New Institution' })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -65,7 +65,7 @@ describe('Institution Controller', () => {
         .send({ name: 'New Institution' })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -135,7 +135,7 @@ describe('Institution Controller', () => {
       const response = await request(app).get('/api/institutions')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -213,7 +213,7 @@ describe('Institution Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -222,7 +222,7 @@ describe('Institution Controller', () => {
       const response = await request(app).get(`/api/institutions/${institution.id}`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -281,7 +281,7 @@ describe('Institution Controller', () => {
         .send({ name: 'Updated Institution' })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 404 when institution is not found', async () => {
@@ -304,7 +304,7 @@ describe('Institution Controller', () => {
         .send({ name: 'Updated Institution' })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Institution not found')
+      expect(response.body.message).toBe('Instituição não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -315,7 +315,7 @@ describe('Institution Controller', () => {
         .send({ name: 'Updated Institution' })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 })

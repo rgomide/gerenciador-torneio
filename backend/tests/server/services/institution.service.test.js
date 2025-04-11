@@ -24,13 +24,25 @@ describe('Institution Service', () => {
       )
     })
 
-    it('should throw an error if institution already exists', async () => {
+    it('should throw an error if Instituição já existe', async () => {
       const institutionData = {
         name: 'Test Institution'
       }
 
       await create(institutionData)
-      await expect(create(institutionData)).rejects.toThrow('Institution already exists')
+      await expect(create(institutionData)).rejects.toThrow('Instituição já existe')
+    })
+
+    it('should throw an error if name is not provided', async () => {
+      await expect(create({})).rejects.toThrow('Nome é obrigatório')
+    })
+
+    it('should throw an error if name is empty string', async () => {
+      await expect(create({ name: '' })).rejects.toThrow('Nome é obrigatório')
+    })
+
+    it('should throw an error if name is only whitespace', async () => {
+      await expect(create({ name: '   ' })).rejects.toThrow('Nome não pode estar vazio')
     })
   })
 
@@ -76,7 +88,7 @@ describe('Institution Service', () => {
     })
 
     it('should throw an error if institution is not found', async () => {
-      await expect(findById('123')).rejects.toThrow('Institution not found')
+      await expect(findById('123')).rejects.toThrow('Instituição não encontrada')
     })
   })
 
@@ -99,7 +111,27 @@ describe('Institution Service', () => {
     })
 
     it('should throw an error if institution is not found', async () => {
-      await expect(update('123', { name: 'New Name' })).rejects.toThrow('Institution not found')
+      await expect(update('123', { name: 'New Name' })).rejects.toThrow(
+        'Instituição não encontrada'
+      )
+    })
+
+    it('should throw an error if name is empty', async () => {
+      const institution = await Institution.create({
+        name: 'Original Name'
+      })
+
+      await expect(update(institution.id, { name: '' })).rejects.toThrow('Nome é obrigatório')
+    })
+
+    it('should throw an error if name is only whitespace', async () => {
+      const institution = await Institution.create({
+        name: 'Original Name'
+      })
+
+      await expect(update(institution.id, { name: '   ' })).rejects.toThrow(
+        'Nome não pode estar vazio'
+      )
     })
   })
 
@@ -118,7 +150,7 @@ describe('Institution Service', () => {
     })
 
     it('should throw an error if institution is not found', async () => {
-      await expect(remove('123')).rejects.toThrow('Institution not found')
+      await expect(remove('123')).rejects.toThrow('Instituição não encontrada')
     })
   })
 })

@@ -85,7 +85,7 @@ describe('Event Controller', () => {
       const response = await request(app).get('/api/events')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -184,7 +184,7 @@ describe('Event Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Unit not found')
+      expect(response.body.message).toBe('Unidade não encontrada')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -194,7 +194,7 @@ describe('Event Controller', () => {
       const response = await request(app).get(`/api/units/${unit.id}/events`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -291,7 +291,7 @@ describe('Event Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -307,7 +307,7 @@ describe('Event Controller', () => {
       const response = await request(app).get(`/api/events/${event.id}`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -383,7 +383,7 @@ describe('Event Controller', () => {
         })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -400,7 +400,7 @@ describe('Event Controller', () => {
         })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 404 when unit does not exist', async () => {
@@ -428,7 +428,7 @@ describe('Event Controller', () => {
         })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Unit not found')
+      expect(response.body.message).toBe('Unidade não encontrada')
     })
   })
 
@@ -539,7 +539,7 @@ describe('Event Controller', () => {
         })
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 404 when event is not found', async () => {
@@ -570,7 +570,7 @@ describe('Event Controller', () => {
         })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
 
     it('should return 404 when new unit does not exist', async () => {
@@ -608,7 +608,7 @@ describe('Event Controller', () => {
         })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Unit not found')
+      expect(response.body.message).toBe('Unidade não encontrada')
     })
   })
 
@@ -673,7 +673,7 @@ describe('Event Controller', () => {
         .set('Authorization', `Bearer ${managerToken}`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -689,7 +689,7 @@ describe('Event Controller', () => {
       const response = await request(app).delete(`/api/events/${event.id}`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
 
     it('should return 404 when event is not found', async () => {
@@ -711,7 +711,7 @@ describe('Event Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
   })
 })

@@ -227,10 +227,12 @@ export const createEvent = async (name, unitId, startDate, endDate) => {
     if (resp.status === 201) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao criar evento')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error('Erro ao criar evento:', e)
+    const message = e?.response?.data?.message || e?.message || e
+    console.error(message)
+    return { error: message }
   }
 }
 

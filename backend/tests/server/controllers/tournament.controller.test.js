@@ -97,7 +97,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).get('/api/tournaments')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -208,7 +208,7 @@ describe('Tournament Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -224,7 +224,7 @@ describe('Tournament Controller', () => {
       const response = await request(app).get(`/api/events/${event.id}/tournaments`)
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -297,14 +297,14 @@ describe('Tournament Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Tournament not found')
+      expect(response.body.message).toBe('Torneio não encontrado')
     })
 
     it('should return 403 when no token is provided', async () => {
       const response = await request(app).get('/api/tournaments/1')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -375,10 +375,15 @@ describe('Tournament Controller', () => {
       const response = await request(app)
         .post('/api/tournaments')
         .set('Authorization', `Bearer ${adminToken}`)
-        .send({})
+        .send({
+          name: 'New Tournament',
+          eventId: '999999',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
 
     it('should return 404 when event does not exist', async () => {
@@ -408,14 +413,14 @@ describe('Tournament Controller', () => {
         .send(tournamentData)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
 
     it('should return 403 when no token is provided', async () => {
       const response = await request(app).post('/api/tournaments').send({})
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -489,7 +494,9 @@ describe('Tournament Controller', () => {
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
       const updatedData = {
-        name: 'Updated Tournament'
+        name: 'Updated Tournament',
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
       }
 
       const response = await request(app)
@@ -498,7 +505,7 @@ describe('Tournament Controller', () => {
         .send(updatedData)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Tournament not found')
+      expect(response.body.message).toBe('Torneio não encontrado')
     })
 
     it('should return 404 when updating to non-existent event', async () => {
@@ -531,7 +538,10 @@ describe('Tournament Controller', () => {
       })
 
       const updatedData = {
-        eventId: '999999'
+        eventId: '999999',
+        name: 'Updated Tournament',
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
       }
 
       const response = await request(app)
@@ -540,14 +550,14 @@ describe('Tournament Controller', () => {
         .send(updatedData)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Event not found')
+      expect(response.body.message).toBe('Evento não encontrado')
     })
 
     it('should return 403 when no token is provided', async () => {
       const response = await request(app).put('/api/tournaments/1').send({})
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -610,14 +620,14 @@ describe('Tournament Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Tournament not found')
+      expect(response.body.message).toBe('Torneio não encontrado')
     })
 
     it('should return 403 when no token is provided', async () => {
       const response = await request(app).delete('/api/tournaments/1')
 
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 })

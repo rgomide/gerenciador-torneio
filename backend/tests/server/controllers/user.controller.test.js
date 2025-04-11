@@ -37,7 +37,7 @@ describe('User Controller', () => {
     it('return 403 if user is not authorized', async () => {
       const response = await request(app).get('/api/users')
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 
@@ -100,7 +100,7 @@ describe('User Controller', () => {
     it('return 403 if user is not authorized', async () => {
       const response = await request(app).get('/api/users/1')
       expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Forbidden')
+      expect(response.body.message).toBe('Acesso negado')
     })
   })
 })

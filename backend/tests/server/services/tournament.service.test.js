@@ -44,7 +44,134 @@ describe('Tournament Service', () => {
         endDate: new Date('2024-01-02')
       }
 
-      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Event not found')
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Evento não encontrado'
+      )
+    })
+
+    it('should throw AppError when name is not provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournamentData = {
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Nome é obrigatório')
+    })
+
+    it('should throw AppError when name is empty', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournamentData = {
+        name: '',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow('Nome é obrigatório')
+    })
+
+    it('should throw AppError when name is only whitespace', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournamentData = {
+        name: '   ',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Nome não pode estar vazio'
+      )
+    })
+
+    it('should throw AppError when start date is not provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournamentData = {
+        name: 'Test Tournament',
+        eventId: event.id,
+        endDate: new Date('2024-01-02')
+      }
+
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Data de início é obrigatória'
+      )
+    })
+
+    it('should throw AppError when end date is not provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournamentData = {
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01')
+      }
+
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Data de término é obrigatória'
+      )
+    })
+
+    it('should throw AppError when start date is after end date', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournamentData = {
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-02'),
+        endDate: new Date('2024-01-01')
+      }
+
+      await expect(tournamentService.create(tournamentData)).rejects.toThrow(
+        'Data de início não pode ser posterior à data de término'
+      )
     })
   })
 
@@ -221,8 +348,12 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when tournament does not exist', async () => {
       await expect(
-        tournamentService.update('999999', { name: 'Updated Tournament' })
-      ).rejects.toThrow(AppError)
+        tournamentService.update('999999', {
+          name: 'Updated Tournament',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Torneio não encontrado')
     })
 
     it('should throw AppError when updating to non-existent event', async () => {
@@ -241,9 +372,81 @@ describe('Tournament Service', () => {
         endDate: new Date('2024-01-02')
       })
 
-      await expect(tournamentService.update(tournament.id, { eventId: '999999' })).rejects.toThrow(
-        AppError
+      await expect(
+        tournamentService.update(tournament.id, {
+          eventId: '999999',
+          name: 'Updated Tournament',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Evento não encontrado')
+    })
+
+    it('should throw AppError when name is empty', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await expect(tournamentService.update(tournament.id, { name: '' })).rejects.toThrow(
+        'Nome é obrigatório'
       )
+    })
+
+    it('should throw AppError when name is only whitespace', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await expect(tournamentService.update(tournament.id, { name: '   ' })).rejects.toThrow(
+        'Nome não pode estar vazio'
+      )
+    })
+
+    it('should throw AppError when start date is after end date', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await expect(
+        tournamentService.update(tournament.id, {
+          name: 'Updated Tournament',
+          startDate: new Date('2024-01-03'),
+          endDate: new Date('2024-01-02')
+        })
+      ).rejects.toThrow('Data de início não pode ser posterior à data de término')
     })
   })
 

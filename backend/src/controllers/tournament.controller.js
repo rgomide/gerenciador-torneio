@@ -146,7 +146,7 @@ router.get(
       const tournament = await findById(tournamentId)
 
       if (!tournament) {
-        return res.status(404).json({ error: 'Tournament not found' })
+        return res.status(404).json({ error: 'Torneio não encontrado' })
       }
 
       const tournamentVO = new TournamentVO(tournament)

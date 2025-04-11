@@ -1,15 +1,26 @@
 const { Unit, Institution } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
+const validateName = (name) => {
+  if (!name) {
+    throw new AppError('Nome é obrigatório', 400)
+  }
+  if (name.trim() === '') {
+    throw new AppError('Nome não pode estar vazio', 400)
+  }
+}
+
 const create = async ({ name, institutionId }) => {
+  validateName(name)
+
   const institution = await Institution.findByPk(institutionId)
   if (!institution) {
-    throw new AppError('Institution not found', 404)
+    throw new AppError('Instituição não encontrada', 404)
   }
 
   let unit = await Unit.findOne({ where: { name, institutionId } })
   if (unit) {
-    throw new AppError('Unit already exists in this institution', 400)
+    throw new AppError('Unidade já existe nesta instituição', 400)
   }
 
   return await Unit.create({ name, institutionId })
@@ -36,7 +47,7 @@ const findById = async (id) => {
     ]
   })
   if (!unit) {
-    throw new AppError('Unit not found', 404)
+    throw new AppError('Unidade não encontrada', 404)
   }
   return unit
 }
@@ -44,7 +55,7 @@ const findById = async (id) => {
 const findByInstitution = async (institutionId) => {
   const institution = await Institution.findByPk(institutionId)
   if (!institution) {
-    throw new AppError('Institution not found', 404)
+    throw new AppError('Instituição não encontrada', 404)
   }
 
   return await Unit.findAll({
@@ -59,15 +70,17 @@ const findByInstitution = async (institutionId) => {
 }
 
 const update = async (id, data) => {
+  validateName(data.name)
+
   const unit = await Unit.findByPk(id)
   if (!unit) {
-    throw new AppError('Unit not found', 404)
+    throw new AppError('Unidade não encontrada', 404)
   }
 
   if (data.institutionId) {
     const institution = await Institution.findByPk(data.institutionId)
     if (!institution) {
-      throw new AppError('Institution not found', 404)
+      throw new AppError('Instituição não encontrada', 404)
     }
   }
 
@@ -77,7 +90,7 @@ const update = async (id, data) => {
 const remove = async (id) => {
   const unit = await Unit.findByPk(id)
   if (!unit) {
-    throw new AppError('Unit not found', 404)
+    throw new AppError('Unidade não encontrada', 404)
   }
 
   await unit.destroy()
