@@ -1,5 +1,23 @@
 'use client'
-import { deleteEventById, formatDate, getEventsByUnitId, getUnits } from '@/services/apiService';
+import EventsForm from '@/components/EventsComponents/EventsForm'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 import {
   Table,
   TableBody,
@@ -7,15 +25,12 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import EventsForm from '@/components/EventsComponents/EventsForm';
-import { Trash } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-import { useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+  TableRow
+} from '@/components/ui/table'
+import { deleteEventById, formatDate, getEventsByUnitId, getUnits } from '@/services/apiService'
+import { Trash } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 function page() {
   const [events, setEvents] = useState([])
@@ -40,41 +55,43 @@ function page() {
       const data = await getEventsByUnitId(selectedUnit)
       setEvents(data)
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`);
+      console.error(`Erro ao obter instituições: ${e}`)
     }
   }
 
   const deleteEvent = async (id) => {
-    if (!selectedUnit) return;
+    if (!selectedUnit) return
 
     try {
-      await deleteEventById(id);
-      toast.success("Evento deletado com sucesso!");
+      await deleteEventById(id)
+      toast.success('Evento deletado com sucesso!')
 
-      fetchEvents();
+      fetchEvents()
     } catch (e) {
-      console.error(`Erro ao deletar evento: ${e}`);
-      toast.error("Erro ao deletar evento.");
+      console.error(`Erro ao deletar evento: ${e}`)
+      toast.error('Erro ao deletar evento.')
     }
-  };
+  }
 
   const fetchUnits = async () => {
     try {
       const data = await getUnits()
       setUnits(data)
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`);
+      console.error(`Erro ao obter instituições: ${e}`)
     }
   }
 
   return (
-    <div className='flex flex-col items-center self-center h-screen w-full p-12 gap-8'>
+    <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
       <h1>Eventos</h1>
 
-      <div className='flex flex-col gap-2'>
-        <Select onValueChange={(value) => {
-          setSelectedUnit(value)
-        }}>
+      <div className="flex flex-col gap-2">
+        <Select
+          onValueChange={(value) => {
+            setSelectedUnit(value)
+          }}
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Selecione a Unidade correspondente" />
           </SelectTrigger>
@@ -91,7 +108,7 @@ function page() {
         </Select>
       </div>
 
-      <Table className='w-full'>
+      <Table className="w-full">
         <TableCaption>Lista de Eventos cadastradas no sistema</TableCaption>
         <TableHeader>
           <TableRow>
@@ -101,7 +118,7 @@ function page() {
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
             <TableHead>
-              <EventsForm variant='create' unitId={selectedUnit} onClose={fetchEvents} />
+              <EventsForm variant="create" unitId={selectedUnit} onClose={fetchEvents} />
             </TableHead>
           </TableRow>
         </TableHeader>
@@ -114,26 +131,41 @@ function page() {
               <TableCell className="font-medium">{formatDate(event.updatedAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(event.updatedAt)}</TableCell>
               <TableCell className="font-medium space-x-2">
-                <EventsForm variant='edit' record={event} unitId={selectedUnit} onClose={fetchEvents} />
+                <EventsForm
+                  variant="edit"
+                  record={event}
+                  unitId={selectedUnit}
+                  onClose={fetchEvents}
+                />
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant='destructive' size='icon'> <Trash /> </Button>
+                    <Button variant="destructive" size="icon">
+                      {' '}
+                      <Trash />{' '}
+                    </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
                       <DialogTitle>Deletar evento?</DialogTitle>
-                      <DialogDescription>Você tem certeza que deseja deletar esse evento?</DialogDescription>
+                      <DialogDescription>
+                        Você tem certeza que deseja deletar esse evento?
+                      </DialogDescription>
                     </DialogHeader>
 
-                    <div className='flex gap-4'>
+                    <div className="flex gap-4">
                       <DialogTrigger asChild>
-                        <Button className='bg-emerald-600 hover:bg-emerald-600'>Cancelar</Button>
+                        <Button className="bg-emerald-600 hover:bg-emerald-600">Cancelar</Button>
                       </DialogTrigger>
-                      <Button type='submit' onClick={() => deleteEvent(event.id)} variant='destructive'>Deletar</Button>
+                      <Button
+                        type="submit"
+                        onClick={() => deleteEvent(event.id)}
+                        variant="destructive"
+                      >
+                        Deletar
+                      </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
-
               </TableCell>
             </TableRow>
           ))}

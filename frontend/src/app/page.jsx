@@ -1,62 +1,69 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useForm } from "react-hook-form";
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Button } from "@/components/ui/button";
-import { getCookie } from "cookies-next";
-import { useEffect } from "react";
-import { toast } from "sonner";
-import { auth } from "@/services/apiService";
-import { useRouter } from "next/navigation";
+  CardTitle
+} from '@/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { auth } from '@/services/apiService'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { getCookie } from 'cookies-next'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+import { z } from 'zod'
 
 export default function Home() {
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    const token = getCookie("token");
+    const token = getCookie('token')
     if (token) {
-      router.replace("/private/dashboard")
+      router.replace('/private/dashboard')
     }
   }, [])
 
   const formSchema = z.object({
-    username: z.string().min(3, "Preencha corretamente seu username"),
-    password: z.string().min(3, "Preencha a senha corrretamente"),
-  });
+    username: z.string().min(3, 'Preencha corretamente seu username'),
+    password: z.string().min(3, 'Preencha a senha corrretamente')
+  })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
-      password: ""
-    },
-  });
+      username: '',
+      password: ''
+    }
+  })
 
   async function onSubmit(values) {
     try {
-      const resp = await auth(values.username, values.password);
+      const resp = await auth(values.username, values.password)
 
       if (!resp || resp.status !== 200) {
         toast.error('Erro ao realizar login, verifique suas credenciais')
         return
       }
 
-      toast.success("Login realizado com sucesso!")
-      router.replace("/private/dashboard")
+      toast.success('Login realizado com sucesso!')
+      router.replace('/private/dashboard')
     } catch (error) {
       toast.error(error)
-      console.error("Erro ao realizar login:", error);
+      console.error('Erro ao realizar login:', error)
     }
   }
 
@@ -97,7 +104,12 @@ export default function Home() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full bg-emerald-700 hover:bg-emerald-600 cursor-pointer">Entrar</Button>
+              <Button
+                type="submit"
+                className="w-full bg-emerald-700 hover:bg-emerald-600 cursor-pointer"
+              >
+                Entrar
+              </Button>
             </form>
           </Form>
         </CardContent>
@@ -106,5 +118,5 @@ export default function Home() {
         </CardFooter>
       </Card>
     </main>
-  );
+  )
 }

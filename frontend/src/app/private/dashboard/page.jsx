@@ -1,21 +1,21 @@
 'use client'
-import { getCookie } from 'cookies-next';
-import { useRouter } from 'next/navigation';
-import React, { useEffect } from 'react'
+import { getCookie } from 'cookies-next'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 function page() {
-  const router = useRouter();
+  const router = useRouter()
 
   useEffect(() => {
-    const token = getCookie("token");
+    const token = getCookie('token')
 
     if (!token) {
-      router.replace("/");
+      router.replace('/')
     }
-  }, []);
+  }, [])
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center p-24'>
+    <div className="flex min-h-screen flex-col items-center justify-center p-24">
       <p>Tela dashboard</p>
     </div>
   )

@@ -1,6 +1,14 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import UnitForm from '@/components/unitsComponents/UnitForm'
 import { formatDate, getUnitsByInstitutionId } from '@/services/apiService'
 import { ArrowLeft } from 'lucide-react'
@@ -21,15 +29,15 @@ function page({ params }) {
       const data = await getUnitsByInstitutionId(institutionId)
       setUnits(data)
     } catch (error) {
-      console.error(`Erro ao obter unidades: ${error}`);
+      console.error(`Erro ao obter unidades: ${error}`)
     }
   }
 
   return (
-    <div className='flex flex-col items-center self-center h-screen w-full p-12 gap-8'>
+    <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
       <h1>Unidades</h1>
 
-      <Table className='w-full'>
+      <Table className="w-full">
         <TableCaption>Lista das unidades cadastradas no sistema</TableCaption>
         <TableHeader>
           <TableRow>
@@ -55,7 +63,10 @@ function page({ params }) {
         </TableBody>
       </Table>
 
-      <Button variant='outline' onClick={router.back}> <ArrowLeft /> Voltar para Instituições </Button>
+      <Button variant="outline" onClick={router.back}>
+        {' '}
+        <ArrowLeft /> Voltar para Instituições{' '}
+      </Button>
     </div>
   )
 }
