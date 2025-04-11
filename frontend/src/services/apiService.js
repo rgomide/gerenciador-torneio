@@ -177,6 +177,22 @@ export const updateUnit = async (id, name) => {
   }
 }
 
+export const getEvents = async () => {
+  try {
+    const resp = await axios.get(`${baseURL}/events`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data
+    }
+  } catch (e) {
+    console.error(`Erro ao obter eventos: ${e}`)
+  }
+}
+
 export const getEventsByUnitId = async (unitId) => {
   try {
     const resp = await axios.get(`${baseURL}/units/${unitId}/events`, {
@@ -258,5 +274,73 @@ export const deleteEventById = async (eventId) => {
     }
   } catch (e) {
     console.error(`Erro ao deletar evento: ${e}`)
+  }
+}
+
+export const getTournamentsByEventId = async (eventId) => {
+  try {
+    const resp = await axios.get(`${baseURL}/events/${eventId}/tournaments`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data
+    }
+  } catch (e) {
+    console.error(`Erro ao obter torneios: ${e}`)
+  }
+}
+
+export const createTournament = async (name, eventId, startDate, endDate) => {
+  try {
+    const resp = await axios.post(
+      `${baseURL}/tournaments`,
+      {
+        name,
+        eventId,
+        startDate,
+        endDate
+      },
+      {
+        headers: { Authorization: `Bearer ${getCookie('token')}` }
+      }
+    )
+
+    if (resp.status === 201) {
+      return resp.data
+    } else {
+      throw new Error('Erro inesperado ao criar torneio')
+    }
+  } catch (e) {
+    console.error('Erro ao criar torneio:', e)
+  }
+}
+
+export const updateTournament = async (id, name, eventId, startDate, endDate) => {
+  try {
+    const resp = await axios.put(
+      `${baseURL}/tournaments/${id}`,
+      {
+        name: name,
+        eventId: eventId,
+        startDate: startDate,
+        endDate: endDate
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie('token')}`
+        }
+      }
+    )
+
+    if (resp.status === 200) {
+      return resp.data
+    } else {
+      throw new Error('Erro inesperado ao atualizar torneio')
+    }
+  } catch (e) {
+    console.error(`Erro ao atualizar evento: ${e}`)
   }
 }

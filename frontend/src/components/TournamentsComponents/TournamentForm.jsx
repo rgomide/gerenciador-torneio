@@ -1,5 +1,5 @@
 'use client'
-import { createEvent, updateEvent } from '@/services/apiService'
+import { createEvent, createTournament, updateEvent, updateTournament } from '@/services/apiService'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -17,11 +17,11 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 
-function EventsForm({ record, onClose, unitId }) {
+function TournamentsForm({ record, onClose, eventId }) {
   const isCreate = record === undefined
 
   const formSchema = z.object({
-    name: z.string().min(3, 'O nome do Evento deve ter pelo menos 3 caracteres'),
+    name: z.string().min(3, 'O nome do Torneio deve ter pelo menos 3 caracteres'),
     startDate: z.string().min(1, 'A data de início é obrigatória'),
     endDate: z.string().min(1, 'A data de término \é obrigatória')
   })
@@ -37,44 +37,44 @@ function EventsForm({ record, onClose, unitId }) {
 
   async function onSubmitCreate(values) {
     try {
-      const resp = await createEvent(values.name, unitId, values.startDate, values.endDate)
+      const resp = await createTournament(values.name, eventId, values.startDate, values.endDate)
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar evento')
+        throw new Error(resp?.error || 'Erro ao criar torneio')
       }
 
       form.reset()
-      toast.success('Evento criado com sucesso!')
+      toast.success('Torneio criado com sucesso!')
       if (onClose) {
         onClose()
       }
     } catch (error) {
       console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar evento')
+      toast.error(error.message || 'Erro ao criar torneio')
     }
   }
 
   async function onSubmitUpdate(values) {
     try {
-      const resp = await updateEvent(
+      const resp = await updateTournament(
         record.id,
         values.name,
-        record.unitId,
+        record.eventId,
         values.startDate,
         values.endDate
       )
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar evento')
+        throw new Error(resp?.error || 'Erro ao editar torneio')
       }
 
       form.reset()
-      toast.success('Evento editado com sucesso!')
+      toast.success('Torneio editado com sucesso!')
       if (onClose) {
         onClose()
       }
     } catch (error) {
-      toast.error('Erro ao editar evento')
+      toast.error('Erro ao editar torneio')
       console.error(error)
     }
   }
@@ -94,7 +94,7 @@ function EventsForm({ record, onClose, unitId }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Evento</DialogTitle>
+          <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Torneio</DialogTitle>
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -109,9 +109,9 @@ function EventsForm({ record, onClose, unitId }) {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome do evento</FormLabel>
+                  <FormLabel>Nome do Torneio</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome do evento' : record.name} {...field} />
+                    <Input placeholder={isCreate ? 'Nome do torneio' : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -164,4 +164,4 @@ function EventsForm({ record, onClose, unitId }) {
   )
 }
 
-export default EventsForm
+export default TournamentsForm
