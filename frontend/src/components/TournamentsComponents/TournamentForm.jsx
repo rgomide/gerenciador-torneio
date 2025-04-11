@@ -1,5 +1,5 @@
 'use client'
-import { createEvent, createTournament, updateEvent, updateTournament } from '@/services/apiService'
+import { createTournament, updateTournament } from '@/services/apiService'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'

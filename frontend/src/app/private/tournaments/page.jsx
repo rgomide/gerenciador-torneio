@@ -1,5 +1,4 @@
 'use client'
-import EventsForm from '@/components/EventsComponents/EventsForm'
 import TournamentsForm from '@/components/TournamentsComponents/TournamentForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -28,7 +27,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { deleteEventById, formatDate, getEvents, getEventsByUnitId, getTournamentsByEventId, getUnits } from '@/services/apiService'
+import { formatDate, getEvents, getTournamentsByEventId } from '@/services/apiService'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -119,7 +118,11 @@ function page() {
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
             <TableHead>
-              <TournamentsForm variant="create" eventId={selectedEvent} onClose={fetchTournaments} />
+              <TournamentsForm
+                variant="create"
+                eventId={selectedEvent}
+                onClose={fetchTournaments}
+              />
             </TableHead>
           </TableRow>
         </TableHeader>
