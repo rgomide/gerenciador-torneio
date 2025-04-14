@@ -63,8 +63,8 @@ function UnitForm({ record, institutionId, onClose }) {
         onClose()
       }
     } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao editar unidade')
+      console.error('Erro ao editar:', error.error)
+      toast.error(error.error || 'Erro ao editar unidade')
     }
   }
 

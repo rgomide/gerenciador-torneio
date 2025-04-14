@@ -65,6 +65,10 @@ function page() {
     try {
       const resp = await deleteEventById(id)
 
+      if (resp.status !== 204) {
+        throw new Error(resp.message)
+      }
+
       toast.success('Evento deletado com sucesso!')
       fetchEvents()
     } catch (e) {
