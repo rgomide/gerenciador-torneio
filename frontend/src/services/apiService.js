@@ -19,8 +19,8 @@ export const formatDate = (dateString) => {
 
 const exctratErrorMessage = (error) => {
   return (
-    e?.response?.data?.message ||
-    e?.message ||
+    error?.response?.data?.message ||
+    error?.message ||
     'Erro inesperado, tente novamente mais tarde.'
   )
 }
@@ -88,7 +88,7 @@ export const createInstitution = async (name) => {
   } catch (e) {
     const message = exctratErrorMessage(e)
     console.error(`Erro ao criar instituição: ${message}`);
-    return { error: e.response?.data?.message || e.message }
+    return { error: message }
   }
 }
 
@@ -114,7 +114,7 @@ export const updateInstitution = async (id, name) => {
   } catch (e) {
     const message = exctratErrorMessage(e)
     console.error(`Erro ao criar instituição: ${message}`);
-    return { error: e.response?.data?.message || e.message }
+    return { error: message }
   }
 }
 
@@ -314,7 +314,7 @@ export const deleteEventById = async (eventId) => {
     })
 
     if (resp.status === 204) {
-      return resp.data
+      return { success: true }
     } else {
       throw new Error(resp.data.message)
     }
@@ -408,13 +408,13 @@ export const deleteTournamentById = async (tournamentId) => {
     })
 
     if (resp.status === 204) {
-      return resp.data
+      return { success: true }
     } else {
-      throw new Error('resp.data.message')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
     const message = e?.response?.data?.message || e?.message || e
     console.error(message)
-    return { error: 'message' }
+    return { error: message }
   }
 }

@@ -65,12 +65,12 @@ function page() {
     try {
       const resp = await deleteEventById(id)
 
-      if (resp.status !== 204) {
-        throw new Error(resp.message)
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || 'Erro ao deletar torneio');
+      } else {
+        toast.success('Torneio deletado com sucesso!')
+        await fetchEvents()
       }
-
-      toast.success('Evento deletado com sucesso!')
-      fetchEvents()
     } catch (e) {
       console.error(`Erro ao deletar evento: ${e}`)
       toast.error(e.message || 'Erro ao deletar evento')

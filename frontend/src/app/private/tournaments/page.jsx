@@ -55,7 +55,7 @@ function page() {
       const data = await getTournamentsByEventId(selectedEvent)
       setTournaments(data)
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`)
+      console.error(`Erro ao obter torneios: ${e}`)
     }
   }
 
@@ -65,15 +65,15 @@ function page() {
     try {
       const resp = await deleteTournamentById(id)
 
-      if (resp.status !== 204) {
-        throw new Error('Erro ao deletar torneio')
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || 'Erro ao deletar torneio');
+      } else {
+        toast.success('Torneio deletado com sucesso!')
+        await fetchTournaments()
       }
-
-      toast.success('Torneio deletado com sucesso!')
-      fetchEvents()
     } catch (e) {
       console.error(`Erro ao deletar evento: ${e}`)
-      toast.error(e.message || 'Erro ao deletar evento')
+      toast.error(e.message || 'Erro ao deletar torneio')
     }
   }
 
