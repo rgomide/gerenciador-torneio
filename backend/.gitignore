@@ -132,6 +132,7 @@ dist
 # env files
 .prod.env
 .env
+.dev.env
 
 # vercel files
 .vercel

@@ -17,6 +17,14 @@ export const formatDate = (dateString) => {
   return date.toLocaleDateString('pt-BR')
 }
 
+const exctratErrorMessage = (error) => {
+  return (
+    error?.response?.data?.message ||
+    error?.message ||
+    'Erro inesperado, tente novamente mais tarde.'
+  )
+}
+
 export const auth = async (userName, password) => {
   try {
     const encodedPassword = await encodeString(password)
@@ -28,13 +36,17 @@ export const auth = async (userName, password) => {
 
     if (resp.status === 200) {
       const token = resp.data.token
-
       setCookie('token', token, { maxAge: 60 * 60 * 24, path: '/', secure: true, httpOnly: false })
+      return resp
+    } else {
+      throw new Error(resp.data.message)
     }
 
-    return resp
+
   } catch (e) {
+    const message = exctratErrorMessage(e)
     console.error(`Erro ao realizar login: ${e}`)
+    return { error: message }
   }
 }
 
@@ -48,9 +60,13 @@ export const getInstitutions = async () => {
 
     if (resp.status === 200) {
       return resp.data
+    } else {
+      throw new Error(resp.data.message)
     }
   } catch (e) {
+    const message = exctratErrorMessage(e)
     console.error(`Erro ao obter instituições: ${e}`)
+    return { error: message }
   }
 }
 
@@ -70,7 +86,9 @@ export const createInstitution = async (name) => {
       throw new Error(resp.data.message)
     }
   } catch (e) {
-    return { error: e.response?.data?.message || e.message }
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -91,10 +109,12 @@ export const updateInstitution = async (id, name) => {
     if (resp.status === 200) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao atualizar instituição')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    return { error: e.response?.data?.message || e.message }
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -108,9 +128,13 @@ export const getUnits = async () => {
 
     if (resp.status === 200) {
       return resp.data
+    } else {
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao obter unidades: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -124,9 +148,13 @@ export const getUnitsByInstitutionId = async (institutionId) => {
 
     if (resp.status === 200) {
       return resp.data
+    } else {
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao obter unidades: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -146,10 +174,12 @@ export const createUnit = async (name, institutionId) => {
     if (resp.status === 201) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao criar unidade')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error('Erro ao criar unidade:', e)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -170,10 +200,12 @@ export const updateUnit = async (id, name) => {
     if (resp.status === 200) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao atualizar unidade')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao criar unidade: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -187,9 +219,13 @@ export const getEvents = async () => {
 
     if (resp.status === 200) {
       return resp.data
+    } else {
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao obter eventos: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -203,9 +239,13 @@ export const getEventsByUnitId = async (unitId) => {
 
     if (resp.status === 200) {
       return resp.data
+    } else {
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao obter eventos: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -256,10 +296,12 @@ export const updateEvent = async (id, name, unitId, startDate, endDate) => {
     if (resp.status === 200) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao atualizar evento')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao atualizar evento: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -271,11 +313,15 @@ export const deleteEventById = async (eventId) => {
       }
     })
 
-    if (resp.status === 200) {
-      return resp.data
+    if (resp.status === 204) {
+      return { success: true }
+    } else {
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao deletar evento: ${e}`)
+    const message = e?.response?.data?.message || e?.message || e
+    console.error(message)
+    return { error: message }
   }
 }
 
@@ -291,7 +337,9 @@ export const getTournamentsByEventId = async (eventId) => {
       return resp.data
     }
   } catch (e) {
-    console.error(`Erro ao obter torneios: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -313,10 +361,12 @@ export const createTournament = async (name, eventId, startDate, endDate) => {
     if (resp.status === 201) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao criar torneio')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error('Erro ao criar torneio:', e)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
   }
 }
 
@@ -340,9 +390,31 @@ export const updateTournament = async (id, name, eventId, startDate, endDate) =>
     if (resp.status === 200) {
       return resp.data
     } else {
-      throw new Error('Erro inesperado ao atualizar torneio')
+      throw new Error(resp.data.message)
     }
   } catch (e) {
-    console.error(`Erro ao atualizar evento: ${e}`)
+    const message = exctratErrorMessage(e)
+    console.error(`Erro ao criar instituição: ${message}`);
+    return { error: message }
+  }
+}
+
+export const deleteTournamentById = async (tournamentId) => {
+  try {
+    const resp = await axios.delete(`${baseURL}/tournaments/${tournamentId}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+
+    if (resp.status === 204) {
+      return { success: true }
+    } else {
+      throw new Error(resp.data.message)
+    }
+  } catch (e) {
+    const message = e?.response?.data?.message || e?.message || e
+    console.error(message)
+    return { error: message }
   }
 }
