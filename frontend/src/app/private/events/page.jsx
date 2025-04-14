@@ -63,13 +63,13 @@ function page() {
     if (!selectedUnit) return
 
     try {
-      await deleteEventById(id)
-      toast.success('Evento deletado com sucesso!')
+      const resp = await deleteEventById(id)
 
+      toast.success('Evento deletado com sucesso!')
       fetchEvents()
     } catch (e) {
       console.error(`Erro ao deletar evento: ${e}`)
-      toast.error('Erro ao deletar evento.')
+      toast.error(e.message || 'Erro ao deletar evento')
     }
   }
 
@@ -140,8 +140,7 @@ function page() {
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="destructive" size="icon">
-                      {' '}
-                      <Trash />{' '}
+                      <Trash />
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -158,7 +157,7 @@ function page() {
                       </DialogTrigger>
                       <Button
                         type="submit"
-                        onClick={() => deleteEvent(event.id)}
+                        onClick={() => { deleteEvent(event.id) }}
                         variant="destructive"
                       >
                         Deletar

@@ -63,8 +63,8 @@ function InstitutionForm({ record, onClose }) {
         onClose()
       }
     } catch (error) {
-      toast.error('Erro ao editar instituição')
-      console.error(error)
+      console.error('Erro ao editar:', error)
+      toast.error(error.message || 'Erro ao editar instituição')
     }
   }
 

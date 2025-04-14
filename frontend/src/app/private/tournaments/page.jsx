@@ -27,7 +27,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { formatDate, getEvents, getTournamentsByEventId } from '@/services/apiService'
+import { deleteTournamentById, formatDate, getEvents, getTournamentsByEventId } from '@/services/apiService'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -63,13 +63,13 @@ function page() {
     if (!selectedEvent) return
 
     try {
-      await deleteTournamentById(id)
-      toast.success('Torneio deletado com sucesso!')
+      const resp = await deleteTournamentById(id)
 
+      toast.success('Torneio deletado com sucesso!')
       fetchEvents()
     } catch (e) {
-      console.error(`Erro ao deletar torneio: ${e}`)
-      toast.error('Erro ao deletar torneio.')
+      console.error(`Erro ao deletar evento: ${e}`)
+      toast.error(e.message || 'Erro ao deletar evento')
     }
   }
 
@@ -159,13 +159,15 @@ function page() {
                       <DialogTrigger asChild>
                         <Button className="bg-emerald-600 hover:bg-emerald-600">Cancelar</Button>
                       </DialogTrigger>
-                      <Button
-                        type="submit"
-                        onClick={() => deleteEvent(event.id)}
-                        variant="destructive"
-                      >
-                        Deletar
-                      </Button>
+                      <DialogTrigger asChild>
+                        <Button
+                          type="submit"
+                          onClick={() => deleteTournament(tournament.id)}
+                          variant="destructive"
+                        >
+                          Deletar
+                        </Button>
+                      </DialogTrigger>
                     </div>
                   </DialogContent>
                 </Dialog>
