@@ -3,7 +3,10 @@ const { Model } = require('sequelize')
 module.exports = (sequelize, DataTypes) => {
   class Sport extends Model {
     static associate(models) {
-      // Add associations here if needed in the future
+      Sport.hasMany(models.Team, {
+        foreignKey: 'sportId',
+        as: 'teams'
+      })
     }
   }
 
