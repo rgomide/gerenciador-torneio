@@ -113,6 +113,14 @@ erDiagram
       date updated_at
     }
 
+    teams_players {
+      bigint team_id FK
+      bigint player_id FK
+      string details
+      date created_at
+      date updated_at
+    }
+
     matches {
       bigint id PK
       bigint tournament_id FK
@@ -149,7 +157,8 @@ erDiagram
     units ||--o{ events : has
     events ||--o{ tournaments : has
     sports ||--o{ teams : has
-    teams ||--o{ players : has
+    teams ||--o{ teams_players : has
+    players ||--o{ teams_players : has
     tournaments ||--o{ matches : has
     matches ||--o{ matches_teams : has
     teams ||--o{ matches_teams : has
