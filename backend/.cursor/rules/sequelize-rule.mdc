@@ -26,6 +26,8 @@ alwaysApply: true
 
 ## Tests
 
+- don't use `destroy` at the end of each test case
+
 ### Models
 - Tests for models should be atomic, dont use beforeEach and afterEach sections
 - It should use `toEqual` to check object content instead of check field by field value.
