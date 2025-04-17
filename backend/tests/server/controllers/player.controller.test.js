@@ -508,8 +508,6 @@ describe('DELETE /api/players/:playerId', () => {
       .delete('/api/players/6666')
       .set('Authorization', `Bearer ${adminToken}`)
 
-    console.log(response.body)
-
     expect(response.status).toBe(404)
     expect(response.body.message).toBe('Jogador não encontrado')
   })
