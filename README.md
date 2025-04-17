@@ -100,6 +100,7 @@ erDiagram
       bigint id PK
       string name
       bigint sport_id FK
+      bigint unit_id FK
       date created_at
       date updated_at
     }
@@ -157,6 +158,7 @@ erDiagram
     institutions ||--o{ units : has
     units ||--o{ events : has
     units ||--o{ players : has
+    units ||--o{ teams : has
     events ||--o{ tournaments : has
     sports ||--o{ teams : has
     teams ||--o{ teams_players : has
