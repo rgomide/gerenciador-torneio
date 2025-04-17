@@ -106,9 +106,10 @@ erDiagram
 
     players {
       bigint id PK
-      string first_name
-      string last_name
-      bigint team_id FK
+      string name
+      bigint unit_id FK
+      string email
+      string phone
       date created_at
       date updated_at
     }
@@ -155,6 +156,7 @@ erDiagram
     roles ||--o{ users_roles : has
     institutions ||--o{ units : has
     units ||--o{ events : has
+    units ||--o{ players : has
     events ||--o{ tournaments : has
     sports ||--o{ teams : has
     teams ||--o{ teams_players : has
