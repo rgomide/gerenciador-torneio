@@ -12,6 +12,7 @@ alwaysApply: true
 ## Model definition
 - Everytime you create models, user standarts like in [event.js](mdc:src/models/event.js)
 - Declare fields as camel case and use the `field` attribute to define the real name
+- All serial fields should be bigint
 
 ## Seeders
 - The seeder files should use queryInterface when it needs to query other models
@@ -20,6 +21,7 @@ alwaysApply: true
 
 ## Services
 - Services should be module with functions, not classes
+- All error messages should be in Brazilian Portuguese
 - Use [AppError.js](mdc:src/utils/AppError.js) to throw errors
 
 ## Tests

@@ -8,6 +8,7 @@ const institutionController = require('@server/controllers/institution.controlle
 const unitController = require('@server/controllers/unit.controller')
 const eventController = require('@server/controllers/event.controller')
 const tournamentController = require('@server/controllers/tournament.controller')
+const sportController = require('@server/controllers/sport.controller')
 
 router.use(loggerMiddleware)
 router.use(authMiddleware)
@@ -18,6 +19,7 @@ router.use('/institutions', institutionController)
 router.use('/', unitController)
 router.use('/', eventController)
 router.use('/', tournamentController)
+router.use('/sports', sportController)
 router.get('/ping', (req, res) => {
   res.send('pong')
 })

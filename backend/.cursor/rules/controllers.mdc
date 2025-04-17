@@ -8,6 +8,7 @@ alwaysApply: true
 
 - This project uses express
 - Each endpoint should have openapi docs. This project uses swagger-jsdoc v6 to autogenerate open api doc.
+- In swagger, describe the schema using `type:` instead of `$ref:`.
 - Use [event.controller.js](mdc:src/controllers/event.controller.js) as reference
 
 ## Tests
