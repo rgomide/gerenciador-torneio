@@ -435,6 +435,8 @@ router.delete(
  * /api/matches/{matchId}/participants/bulk:
  *   post:
  *     summary: Create multiple participants for a match
+ *     tags:
+ *       - Matches
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -542,6 +544,8 @@ router.post(
  * /api/matches/{matchId}/participants:
  *   post:
  *     summary: Create a single participant for a match
+ *     tags:
+ *       - Matches
  *     security:
  *       - bearerAuth: []
  *     parameters:
