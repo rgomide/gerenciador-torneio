@@ -40,15 +40,6 @@ describe('Team Controller', () => {
           updatedAt: expect.any(String)
         })
       ])
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
 
     it('should return all teams when user is manager', async () => {
@@ -77,15 +68,6 @@ describe('Team Controller', () => {
         .set('Authorization', `Bearer ${managerToken}`)
 
       expect(response.status).toBe(200)
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        managerUser.destroy(),
-        managerRole.destroy()
-      ])
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -129,15 +111,6 @@ describe('Team Controller', () => {
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
 
     it('should return team by id when user is manager', async () => {
@@ -166,15 +139,6 @@ describe('Team Controller', () => {
         .set('Authorization', `Bearer ${managerToken}`)
 
       expect(response.status).toBe(200)
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        managerUser.destroy(),
-        managerRole.destroy()
-      ])
     })
 
     it('should return 404 when team is not found', async () => {
@@ -197,8 +161,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Time não encontrado')
-
-      await Promise.all([adminUser.destroy(), adminRole.destroy()])
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -211,8 +173,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(403)
       expect(response.body.message).toBe('Acesso negado')
-
-      await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
     })
   })
 
@@ -251,15 +211,6 @@ describe('Team Controller', () => {
           updatedAt: expect.any(String)
         })
       ])
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
 
     it('should return teams for a unit when user is manager', async () => {
@@ -288,15 +239,6 @@ describe('Team Controller', () => {
         .set('Authorization', `Bearer ${managerToken}`)
 
       expect(response.status).toBe(200)
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        managerUser.destroy(),
-        managerRole.destroy()
-      ])
     })
 
     it('should return 404 when unit is not found', async () => {
@@ -319,8 +261,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Unidade não encontrada')
-
-      await Promise.all([adminUser.destroy(), adminRole.destroy()])
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -331,8 +271,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(403)
       expect(response.body.message).toBe('Acesso negado')
-
-      await Promise.all([unit.destroy(), institution.destroy()])
     })
   })
 
@@ -371,15 +309,6 @@ describe('Team Controller', () => {
           updatedAt: expect.any(String)
         })
       ])
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
 
     it('should return teams for a sport when user is manager', async () => {
@@ -408,15 +337,6 @@ describe('Team Controller', () => {
         .set('Authorization', `Bearer ${managerToken}`)
 
       expect(response.status).toBe(200)
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        managerUser.destroy(),
-        managerRole.destroy()
-      ])
     })
 
     it('should return 404 when sport is not found', async () => {
@@ -439,8 +359,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Esporte não encontrado')
-
-      await Promise.all([adminUser.destroy(), adminRole.destroy()])
     })
 
     it('should return 403 when no token is provided', async () => {
@@ -450,8 +368,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(403)
       expect(response.body.message).toBe('Acesso negado')
-
-      await sport.destroy()
     })
   })
 
@@ -488,16 +404,6 @@ describe('Team Controller', () => {
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })
-
-      const team = await Team.findByPk(response.body.id)
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
   })
 
@@ -535,15 +441,6 @@ describe('Team Controller', () => {
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })
-
-      await Promise.all([
-        team.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
 
     it('should return 404 when team is not found', async () => {
@@ -567,8 +464,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Time não encontrado')
-
-      await Promise.all([adminUser.destroy(), adminRole.destroy()])
     })
   })
 
@@ -597,14 +492,6 @@ describe('Team Controller', () => {
         .set('Authorization', `Bearer ${adminToken}`)
 
       expect(response.status).toBe(204)
-
-      await Promise.all([
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy(),
-        adminUser.destroy(),
-        adminRole.destroy()
-      ])
     })
 
     it('should return 404 when team is not found', async () => {
@@ -627,8 +514,6 @@ describe('Team Controller', () => {
 
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Time não encontrado')
-
-      await Promise.all([adminUser.destroy(), adminRole.destroy()])
     })
   })
 })

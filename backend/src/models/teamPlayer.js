@@ -62,4 +62,4 @@ module.exports = (sequelize, DataTypes) => {
   )
 
   return TeamPlayer
-} 
+}
