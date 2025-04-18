@@ -21,8 +21,6 @@ describe('Team Model', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })
-
-    await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
   })
 
   it('should update a team', async () => {
@@ -46,8 +44,6 @@ describe('Team Model', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })
-
-    await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
   })
 
   it('should delete a team', async () => {
@@ -64,8 +60,6 @@ describe('Team Model', () => {
 
     const foundTeam = await Team.findByPk(team.id)
     expect(foundTeam).toBeNull()
-
-    await Promise.all([sport.destroy(), unit.destroy(), institution.destroy()])
   })
 
   it('should find a team by id', async () => {
@@ -91,8 +85,6 @@ describe('Team Model', () => {
         updatedAt: expect.any(Date)
       })
     )
-
-    await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
   })
 
   it('should not create a team without required fields', async () => {
@@ -115,8 +107,6 @@ describe('Team Model', () => {
       expect(true).toBe(false)
     } catch (error) {
       expect(error).toBeDefined()
-    } finally {
-      await Promise.all([sport.destroy(), unit.destroy(), institution.destroy()])
     }
   })
 
@@ -129,8 +119,6 @@ describe('Team Model', () => {
       expect(true).toBe(false)
     } catch (error) {
       expect(error).toBeDefined()
-    } finally {
-      await Promise.all([unit.destroy(), institution.destroy()])
     }
   })
 
@@ -142,8 +130,6 @@ describe('Team Model', () => {
       expect(true).toBe(false)
     } catch (error) {
       expect(error).toBeDefined()
-    } finally {
-      await sport.destroy()
     }
   })
 
@@ -167,8 +153,6 @@ describe('Team Model', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })
-
-    await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
   })
 
   it('should load unit association', async () => {
@@ -192,7 +176,5 @@ describe('Team Model', () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })
-
-    await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
   })
 })

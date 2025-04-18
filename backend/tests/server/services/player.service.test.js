@@ -1,5 +1,5 @@
 const playerService = require('@server/services/player.service')
-const { Player, Unit, Institution } = require('@server/models')
+const { Player, Unit, Institution, Team, Sport, TeamPlayer } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 describe('Player Service', () => {
@@ -273,6 +273,67 @@ describe('Player Service', () => {
 
     it('should throw AppError when player does not exist', async () => {
       await expect(playerService.remove('999999')).rejects.toThrow(AppError)
+    })
+  })
+
+  describe('findByTeam', () => {
+    it('should return all players in a team', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Test Sport' })
+      const team = await Team.create({ name: 'Test Team', unitId: unit.id, sportId: sport.id })
+      const team2 = await Team.create({ name: 'Test Team 2', unitId: unit.id, sportId: sport.id })
+
+      const player1 = await Player.create({
+        name: 'Player 1',
+        email: 'player1@test.com',
+        unitId: unit.id
+      })
+      const player2 = await Player.create({
+        name: 'Player 2',
+        email: 'player2@test.com',
+        unitId: unit.id
+      })
+      const player3 = await Player.create({
+        name: 'Player 3',
+        email: 'player3@test.com',
+        unitId: unit.id
+      })
+
+      await TeamPlayer.create({ teamId: team.id, playerId: player1.id })
+      await TeamPlayer.create({ teamId: team.id, playerId: player2.id })
+      await TeamPlayer.create({ teamId: team2.id, playerId: player3.id })
+      const players = await playerService.findByTeam(team.id)
+
+      expect(players).toHaveLength(2)
+      expect(players).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: player1.id,
+            name: player1.name,
+            email: player1.email,
+            unitId: unit.id,
+            unit: expect.objectContaining({
+              id: unit.id,
+              name: unit.name
+            })
+          }),
+          expect.objectContaining({
+            id: player2.id,
+            name: player2.name,
+            email: player2.email,
+            unitId: unit.id,
+            unit: expect.objectContaining({
+              id: unit.id,
+              name: unit.name
+            })
+          })
+        ])
+      )
+    })
+
+    it('should throw error when team does not exist', async () => {
+      await expect(playerService.findByTeam(999)).rejects.toThrow('Time não encontrado')
     })
   })
 })

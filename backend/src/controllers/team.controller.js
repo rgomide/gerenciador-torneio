@@ -7,6 +7,7 @@ const {
   update,
   remove
 } = require('@server/services/team.service')
+const { findByTeam } = require('@server/services/player.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
 const {
@@ -14,6 +15,9 @@ const {
 } = require('@server/config/constants')
 
 const TeamVO = require('@server/vo/TeamVO')
+const PlayerVO = require('@server/vo/PlayerVO')
+const TeamPlayerVO = require('@server/vo/TeamPlayerVO')
+const teamPlayerService = require('@server/services/teamPlayer.service')
 
 /**
  * @openapi
@@ -376,5 +380,310 @@ router.delete('/teams/:teamId', authorizationMiddleware([ADMIN]), async (req, re
     next(error)
   }
 })
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players:
+ *   get:
+ *     description: Get all players in a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of players in the team
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   unitId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ */
+router.get(
+  '/teams/:teamId/players',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId } = req.params
+      const players = await findByTeam(teamId)
+      const playersVO = PlayerVO.parseCollection(players)
+
+      return res.json(playersVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players/{playerId}:
+ *   post:
+ *     description: Add a player to a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               number:
+ *                 type: integer
+ *               position:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Player added to team successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 teamId:
+ *                   type: string
+ *                 playerId:
+ *                   type: string
+ *                 number:
+ *                   type: integer
+ *                 position:
+ *                   type: string
+ *       404:
+ *         description: Team or player not found
+ *       400:
+ *         description: Player already in team
+ */
+router.post(
+  '/teams/:teamId/players/:playerId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId, playerId } = req.params
+      const { details } = req.body
+
+      const teamPlayer = await teamPlayerService.create({
+        teamId,
+        playerId,
+        details
+      })
+
+      const teamPlayerVO = new TeamPlayerVO(teamPlayer)
+
+      return res.status(201).json(teamPlayerVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players/{playerId}:
+ *   delete:
+ *     description: Remove a player from a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Player removed from team successfully
+ *       404:
+ *         description: Team-player relationship not found
+ */
+router.delete(
+  '/teams/:teamId/players/:playerId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId, playerId } = req.params
+
+      await teamPlayerService.remove(teamId, playerId)
+
+      return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players/{playerId}:
+ *   put:
+ *     description: Update a player's details in a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               details:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Player details updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 teamId:
+ *                   type: string
+ *                 playerId:
+ *                   type: string
+ *                 details:
+ *                   type: string
+ *       404:
+ *         description: Team-player relationship not found
+ */
+router.put(
+  '/teams/:teamId/players/:playerId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId, playerId } = req.params
+      const { details } = req.body
+
+      const teamPlayer = await teamPlayerService.update(teamId, playerId, { details })
+
+      const teamPlayerVO = new TeamPlayerVO(teamPlayer)
+      return res.json(teamPlayerVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players:
+ *   post:
+ *     description: Add multiple players to a team in bulk
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               players:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     details:
+ *                       type: string
+ *     responses:
+ *       201:
+ *         description: Players added to team successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   teamId:
+ *                     type: string
+ *                   playerId:
+ *                     type: string
+ *                   details:
+ *                     type: string
+ *       404:
+ *         description: Team or player not found
+ */
+router.post(
+  '/teams/:teamId/players',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId } = req.params
+      const { players } = req.body
+
+      const teamPlayers = await teamPlayerService.bulkInsert(teamId, players)
+
+      const teamPlayersVO = TeamPlayerVO.parseCollection(teamPlayers)
+      return res.status(201).json(teamPlayersVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 module.exports = router

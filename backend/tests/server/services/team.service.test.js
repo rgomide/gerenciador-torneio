@@ -27,8 +27,6 @@ describe('Team Service', () => {
           updatedAt: expect.any(Date)
         })
       )
-
-      await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when unit does not exist', async () => {
@@ -40,7 +38,6 @@ describe('Team Service', () => {
       }
 
       await expect(teamService.create(teamData)).rejects.toThrow('Unidade não encontrada')
-      await sport.destroy()
     })
 
     it('should throw AppError when sport does not exist', async () => {
@@ -53,7 +50,6 @@ describe('Team Service', () => {
       }
 
       await expect(teamService.create(teamData)).rejects.toThrow('Esporte não encontrado')
-      await Promise.all([unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when name is not provided', async () => {
@@ -66,7 +62,6 @@ describe('Team Service', () => {
       }
 
       await expect(teamService.create(teamData)).rejects.toThrow('Nome é obrigatório')
-      await Promise.all([sport.destroy(), unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when name is empty', async () => {
@@ -80,7 +75,6 @@ describe('Team Service', () => {
       }
 
       await expect(teamService.create(teamData)).rejects.toThrow('Nome é obrigatório')
-      await Promise.all([sport.destroy(), unit.destroy(), institution.destroy()])
     })
   })
 
@@ -123,14 +117,6 @@ describe('Team Service', () => {
           })
         )
       })
-
-      await Promise.all([
-        team1.destroy(),
-        team2.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy()
-      ])
     })
   })
 
@@ -164,14 +150,6 @@ describe('Team Service', () => {
           })
         )
       })
-
-      await Promise.all([
-        team1.destroy(),
-        team2.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy()
-      ])
     })
 
     it('should throw AppError when unit does not exist', async () => {
@@ -209,14 +187,6 @@ describe('Team Service', () => {
           })
         )
       })
-
-      await Promise.all([
-        team1.destroy(),
-        team2.destroy(),
-        sport.destroy(),
-        unit.destroy(),
-        institution.destroy()
-      ])
     })
 
     it('should throw AppError when sport does not exist', async () => {
@@ -253,8 +223,6 @@ describe('Team Service', () => {
           })
         })
       )
-
-      await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when team does not exist', async () => {
@@ -287,8 +255,6 @@ describe('Team Service', () => {
           sportId: sport.id
         })
       )
-
-      await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when team does not exist', async () => {
@@ -310,8 +276,6 @@ describe('Team Service', () => {
       await expect(teamService.update(team.id, { unitId: '999999' })).rejects.toThrow(
         'Unidade não encontrada'
       )
-
-      await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when sport does not exist', async () => {
@@ -327,8 +291,6 @@ describe('Team Service', () => {
       await expect(teamService.update(team.id, { sportId: '999999' })).rejects.toThrow(
         'Esporte não encontrado'
       )
-
-      await Promise.all([team.destroy(), sport.destroy(), unit.destroy(), institution.destroy()])
     })
   })
 
@@ -347,8 +309,6 @@ describe('Team Service', () => {
 
       const foundTeam = await Team.findByPk(team.id)
       expect(foundTeam).toBeNull()
-
-      await Promise.all([sport.destroy(), unit.destroy(), institution.destroy()])
     })
 
     it('should throw AppError when team does not exist', async () => {

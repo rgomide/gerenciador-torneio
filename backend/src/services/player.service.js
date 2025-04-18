@@ -1,4 +1,4 @@
-const { Player, Unit } = require('@server/models')
+const { Player, Unit, Team, TeamPlayer } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 const validateName = (name) => {
@@ -29,6 +29,29 @@ const create = async (playerData) => {
   }
 
   return Player.create(playerData)
+}
+
+const findByTeam = async (teamId) => {
+  const team = await Team.findByPk(teamId)
+  if (!team) {
+    throw new AppError('Time não encontrado', 404)
+  }
+
+  return Player.findAll({
+    include: [
+      {
+        model: Team,
+        as: 'teams',
+        where: {
+          id: teamId
+        }
+      },
+      {
+        model: Unit,
+        as: 'unit'
+      }
+    ]
+  })
 }
 
 const findAll = async () => {
@@ -114,5 +137,6 @@ module.exports = {
   findByUnit,
   findById,
   update,
-  remove
+  remove,
+  findByTeam
 }

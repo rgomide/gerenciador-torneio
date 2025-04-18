@@ -11,6 +11,12 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'unitId',
         as: 'unit'
       })
+      Team.belongsToMany(models.Player, {
+        through: models.TeamPlayer,
+        foreignKey: 'teamId',
+        otherKey: 'playerId',
+        as: 'players'
+      })
     }
   }
 
