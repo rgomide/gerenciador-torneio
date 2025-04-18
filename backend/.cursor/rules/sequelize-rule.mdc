@@ -28,6 +28,8 @@ alwaysApply: true
 ## Tests
 
 - don't use `destroy` at the end of each test case
+- all tests should be created inside `tests/` folder
+- all foreign key references should be records references, dont use hardcoded ids
 
 ### Models
 - Tests for models should be atomic, dont use beforeEach and afterEach sections
