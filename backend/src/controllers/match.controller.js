@@ -494,22 +494,8 @@ router.delete(
  *                     format: date-time
  *       400:
  *         description: Invalid request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  *       403:
  *         description: Forbidden
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  *       404:
  *         description: Match not found
  *         content:
@@ -799,6 +785,63 @@ router.post(
       const scoreVO = new MatchScoreVO(score)
 
       return res.status(201).json(scoreVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/scores/{scoreId}:
+ *   delete:
+ *     summary: Delete a specific score from a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: scoreId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Score successfully removed from match
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Match or score not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.delete(
+  '/matches/:matchId/scores/:scoreId',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { scoreId } = req.params
+      await matchScoreService.remove(scoreId)
+
+      return res.status(204).send()
     } catch (error) {
       next(error)
     }
