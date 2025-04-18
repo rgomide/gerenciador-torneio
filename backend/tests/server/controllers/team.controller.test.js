@@ -1,5 +1,5 @@
 const request = require('supertest')
-const { User, Role, Institution, Unit, Sport, Team } = require('@server/models')
+const { User, Role, Institution, Unit, Sport, Team, Player, TeamPlayer } = require('@server/models')
 const app = require('@server/app')
 const jwt = require('jsonwebtoken')
 const { JWT, ROLES } = require('@server/config/constants')
@@ -365,6 +365,137 @@ describe('Team Controller', () => {
       const sport = await Sport.create({ name: 'Futebol' })
 
       const response = await request(app).get(`/api/sports/${sport.id}/teams`)
+
+      expect(response.status).toBe(403)
+      expect(response.body.message).toBe('Acesso negado')
+    })
+  })
+
+  describe('GET /api/teams/:teamId/players', () => {
+    it('should return players in a team when user is admin', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+      const player1 = await Player.create({
+        name: 'Player 1',
+        email: 'player1@test.com',
+        unitId: unit.id
+      })
+      const player2 = await Player.create({
+        name: 'Player 2',
+        email: 'player2@test.com',
+        unitId: unit.id
+      })
+
+      await TeamPlayer.create({ teamId: team.id, playerId: player1.id })
+      await TeamPlayer.create({ teamId: team.id, playerId: player2.id })
+
+      const response = await request(app)
+        .get(`/api/teams/${team.id}/players`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual([
+        expect.objectContaining({
+          id: player1.id,
+          name: player1.name,
+          email: player1.email,
+          unitId: unit.id
+        }),
+        expect.objectContaining({
+          id: player2.id,
+          name: player2.name,
+          email: player2.email,
+          unitId: unit.id
+        })
+      ])
+    })
+
+    it('should return players in a team when user is manager', async () => {
+      const managerRole = await Role.create({ name: ROLES.MANAGER })
+      const managerUser = await User.create({
+        firstName: 'Manager',
+        lastName: 'User',
+        userName: 'manager',
+        email: 'manager@example.com',
+        password: 'password123'
+      })
+      await managerRole.addUser(managerUser, {
+        through: { userId: managerUser.id, roleId: managerRole.id }
+      })
+      const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+        expiresIn: JWT.EXPIRES_IN
+      })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+      const player1 = await Player.create({
+        name: 'Player 1',
+        email: 'player1@test.com',
+        unitId: unit.id
+      })
+      const player2 = await Player.create({
+        name: 'Player 2',
+        email: 'player2@test.com',
+        unitId: unit.id
+      })
+
+      await TeamPlayer.create({ teamId: team.id, playerId: player1.id })
+      await TeamPlayer.create({ teamId: team.id, playerId: player2.id })
+
+      const response = await request(app)
+        .get(`/api/teams/${team.id}/players`)
+        .set('Authorization', `Bearer ${managerToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toHaveLength(2)
+    })
+
+    it('should return 404 when team is not found', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .get('/api/teams/999999/players')
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(404)
+      expect(response.body.message).toBe('Time não encontrado')
+    })
+
+    it('should return 403 when no token is provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+
+      const response = await request(app).get(`/api/teams/${team.id}/players`)
 
       expect(response.status).toBe(403)
       expect(response.body.message).toBe('Acesso negado')

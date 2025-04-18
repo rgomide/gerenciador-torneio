@@ -7,6 +7,7 @@ const {
   update,
   remove
 } = require('@server/services/team.service')
+const { findByTeam } = require('@server/services/player.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
 const {
@@ -14,6 +15,7 @@ const {
 } = require('@server/config/constants')
 
 const TeamVO = require('@server/vo/TeamVO')
+const PlayerVO = require('@server/vo/PlayerVO')
 
 /**
  * @openapi
@@ -376,5 +378,61 @@ router.delete('/teams/:teamId', authorizationMiddleware([ADMIN]), async (req, re
     next(error)
   }
 })
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players:
+ *   get:
+ *     description: Get all players in a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of players in the team
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   unitId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ */
+router.get(
+  '/teams/:teamId/players',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId } = req.params
+      const players = await findByTeam(teamId)
+      const playersVO = PlayerVO.parseCollection(players)
+
+      return res.json(playersVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 module.exports = router
