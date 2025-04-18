@@ -835,13 +835,110 @@ router.post(
  */
 router.delete(
   '/matches/:matchId/scores/:scoreId',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
       const { scoreId } = req.params
       await matchScoreService.remove(scoreId)
 
       return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/scores/{scoreId}:
+ *   put:
+ *     summary: Update a specific score for a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: scoreId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               score:
+ *                 type: number
+ *               details:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Score updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 matchId:
+ *                   type: string
+ *                 participantType:
+ *                   type: string
+ *                   enum: [team, player]
+ *                 teamId:
+ *                   type: string
+ *                   nullable: true
+ *                 playerId:
+ *                   type: string
+ *                   nullable: true
+ *                 score:
+ *                   type: number
+ *                 details:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Match or score not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.put(
+  '/matches/:matchId/scores/:scoreId',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { scoreId } = req.params
+      const score = await matchScoreService.update(scoreId, req.body)
+      const scoreVO = new MatchScoreVO(score)
+
+      return res.json(scoreVO)
     } catch (error) {
       next(error)
     }

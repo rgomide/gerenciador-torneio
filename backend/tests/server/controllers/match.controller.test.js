@@ -2162,6 +2162,149 @@ describe('Match Controller', () => {
         expect(response.body.message).toBe('Pontuação não encontrada')
       })
 
+      it('should return 403 when no token is provided', async () => {
+        const response = await request(app).delete('/api/matches/1/scores/1')
+
+        expect(response.status).toBe(403)
+        expect(response.body.message).toBe('Acesso negado')
+      })
+    })
+
+    describe('PUT /api/matches/:matchId/scores/:scoreId', () => {
+      it('should update match score when user is admin', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const tournament = await Tournament.create({
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const match = await Match.create({
+          tournamentId: tournament.id,
+          date: new Date('2024-01-01'),
+          location: 'Test Location',
+          finished: false,
+          occurrences: 'Test Occurrences',
+          roundNumber: 1
+        })
+
+        const sport = await Sport.create({
+          name: 'Test Sport',
+          description: 'Test Description'
+        })
+
+        const team = await Team.create({
+          name: 'Test Team',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+
+        const score = await MatchScore.create({
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team.id,
+          score: 10,
+          details: 'Test details'
+        })
+
+        const updateData = {
+          score: 15,
+          details: 'Updated details'
+        }
+
+        const response = await request(app)
+          .put(`/api/matches/${match.id}/scores/${score.id}`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send(updateData)
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            id: score.id,
+            matchId: match.id,
+            participantType: 'team',
+            teamId: team.id,
+            playerId: null,
+            score: 15,
+            details: 'Updated details',
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
+      })
+
+      it('should return 404 when match score is not found', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const tournament = await Tournament.create({
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const match = await Match.create({
+          tournamentId: tournament.id,
+          date: new Date('2024-01-01'),
+          location: 'Test Location',
+          finished: false,
+          occurrences: 'Test Occurrences',
+          roundNumber: 1
+        })
+
+        const updateData = {
+          score: 15,
+          details: 'Updated details'
+        }
+
+        const response = await request(app)
+          .put(`/api/matches/${match.id}/scores/999999`)
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send(updateData)
+
+        expect(response.status).toBe(404)
+        expect(response.body.message).toBe('Pontuação não encontrada')
+      })
+
       it('should return 403 when user is manager', async () => {
         const managerRole = await Role.create({ name: ROLES.MANAGER })
         const managerUser = await User.create({
@@ -2221,16 +2364,24 @@ describe('Match Controller', () => {
           details: 'Test details'
         })
 
+        const updateData = {
+          score: 15,
+          details: 'Updated details'
+        }
+
         const response = await request(app)
-          .delete(`/api/matches/${match.id}/scores/${score.id}`)
+          .put(`/api/matches/${match.id}/scores/${score.id}`)
           .set('Authorization', `Bearer ${managerToken}`)
+          .send(updateData)
 
         expect(response.status).toBe(403)
         expect(response.body.message).toBe('Acesso negado')
       })
 
       it('should return 403 when no token is provided', async () => {
-        const response = await request(app).delete('/api/matches/1/scores/1')
+        const response = await request(app)
+          .put('/api/matches/1/scores/1')
+          .send({ score: 15, details: 'Updated details' })
 
         expect(response.status).toBe(403)
         expect(response.body.message).toBe('Acesso negado')
