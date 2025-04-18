@@ -33,6 +33,11 @@ describe('Match Controller', () => {
       })
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+
       const institution = await Institution.create({ name: 'Test Institution' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
@@ -55,7 +60,39 @@ describe('Match Controller', () => {
         occurrences: 'Test Occurrences',
         roundNumber: 1
       })
-
+      const team1 = await Team.create({
+        name: 'Test Team',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+      const team2 = await Team.create({
+        name: 'Test Team 2',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+      await MatchScore.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team1.id,
+        score: 10,
+        details: 'Test details'
+      })
+      await MatchScore.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team2.id,
+        score: 20,
+        details: 'Test details'
+      })
+      await MatchScore.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team2.id,
+        score: 5,
+        details: 'Test details'
+      })
       const response = await request(app)
         .get('/api/matches')
         .set('Authorization', `Bearer ${adminToken}`)
@@ -70,6 +107,18 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1,
+          totalScores: [
+            {
+              id: team1.id,
+              name: 'Test Team',
+              totalScore: 10
+            },
+            {
+              id: team2.id,
+              name: 'Test Team 2',
+              totalScore: 25
+            }
+          ],
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
         })
@@ -145,6 +194,11 @@ describe('Match Controller', () => {
       })
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+
       const institution = await Institution.create({ name: 'Test Institution' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
@@ -168,6 +222,35 @@ describe('Match Controller', () => {
         roundNumber: 1
       })
 
+      const team1 = await Team.create({
+        name: 'Test Team',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+      const team2 = await Team.create({
+        name: 'Test Team 2',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+
+      await MatchScore.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team1.id,
+        score: 10,
+        details: 'Test details'
+      })
+
+      await MatchScore.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team2.id,
+        score: 5,
+        details: 'Test details'
+      })
+
       const response = await request(app)
         .get(`/api/matches/${match.id}`)
         .set('Authorization', `Bearer ${adminToken}`)
@@ -182,6 +265,18 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1,
+          totalScores: [
+            {
+              id: team1.id,
+              name: 'Test Team',
+              totalScore: 10
+            },
+            {
+              id: team2.id,
+              name: 'Test Team 2',
+              totalScore: 5
+            }
+          ],
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
         })
