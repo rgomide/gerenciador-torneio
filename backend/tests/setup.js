@@ -16,9 +16,11 @@ afterAll(async () => {
 
 // Clean up tables after each test
 afterEach(async () => {
-  await Promise.all(
-    Object.values(sequelize.models).map((model) => {
-      model.destroy({ truncate: { cascade: true }, force: true })
-    })
-  )
+  // Get all models in reverse order to handle foreign key constraints
+  const models = Object.values(sequelize.models).reverse()
+  
+  // Truncate each model with cascade
+  for (const model of models) {
+    await model.truncate({ cascade: true, force: true })
+  }
 })
