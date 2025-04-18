@@ -1,4 +1,8 @@
 const { create, findAll, findById, update, remove } = require('@server/services/match.service')
+const {
+  findByMatch,
+  remove: removeParticipant
+} = require('@server/services/matchParticipant.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
 const {
@@ -6,6 +10,7 @@ const {
 } = require('@server/config/constants')
 
 const MatchVO = require('@server/vo/MatchVO')
+const MatchParticipantVO = require('@server/vo/MatchParticipantVO')
 
 /**
  * @openapi
@@ -309,5 +314,123 @@ router.delete('/matches/:matchId', authorizationMiddleware([ADMIN]), async (req,
     next(error)
   }
 })
+
+/**
+ * @openapi
+ * /api/matches/{matchId}/participants:
+ *   get:
+ *     description: Get all participants for a specific match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: matchId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of match participants
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   matchId:
+ *                     type: string
+ *                   participantType:
+ *                     type: string
+ *                     enum: [team, player]
+ *                   teamId:
+ *                     type: string
+ *                     nullable: true
+ *                   playerId:
+ *                     type: string
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       404:
+ *         description: Match not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.get(
+  '/matches/:matchId/participants',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const participants = await findByMatch(matchId)
+      const participantsVO = MatchParticipantVO.parseCollection(participants)
+
+      return res.json(participantsVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/matches/{matchId}/participants/{participantId}:
+ *   delete:
+ *     description: Delete a specific participant from a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: matchId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: participantId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Participant successfully removed from match
+ *       404:
+ *         description: Match or participant not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.delete(
+  '/matches/:matchId/participants/:participantId',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { matchId, participantId } = req.params
+      await removeParticipant(participantId)
+
+      return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 module.exports = router
