@@ -6,6 +6,7 @@ const {
   update,
   remove
 } = require('@server/services/tournament.service')
+const { findByTournament } = require('@server/services/match.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
 const {
@@ -13,6 +14,7 @@ const {
 } = require('@server/config/constants')
 
 const TournamentVO = require('@server/vo/TournamentVO')
+const MatchVO = require('@server/vo/MatchVO')
 
 /**
  * @openapi
@@ -325,6 +327,69 @@ router.delete(
       await remove(tournamentId)
 
       return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/tournaments/{tournamentId}/matches:
+ *   get:
+ *     description: Get all matches of a tournament
+ *     tags:
+ *       - Tournaments
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: tournamentId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of matches
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   tournamentId:
+ *                     type: string
+ *                   date:
+ *                     type: string
+ *                     format: date-time
+ *                   location:
+ *                     type: string
+ *                   finished:
+ *                     type: boolean
+ *                   occurrences:
+ *                     type: string
+ *                   roundNumber:
+ *                     type: integer
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ */
+router.get(
+  '/tournaments/:tournamentId/matches',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { tournamentId } = req.params
+      const matches = await findByTournament(tournamentId)
+      const matchesVO = MatchVO.parseCollection(matches)
+
+      return res.json(matchesVO)
     } catch (error) {
       next(error)
     }

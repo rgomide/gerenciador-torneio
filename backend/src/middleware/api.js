@@ -11,6 +11,7 @@ const tournamentController = require('@server/controllers/tournament.controller'
 const sportController = require('@server/controllers/sport.controller')
 const playerController = require('@server/controllers/player.controller')
 const teamController = require('@server/controllers/team.controller')
+const matchController = require('@server/controllers/match.controller')
 
 router.use(loggerMiddleware)
 router.use(authMiddleware)
@@ -24,6 +25,7 @@ router.use('/', tournamentController)
 router.use('/sports', sportController)
 router.use('/', playerController)
 router.use('/', teamController)
+router.use('/', matchController)
 
 router.get('/ping', (req, res) => {
   res.send('pong')
