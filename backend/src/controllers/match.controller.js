@@ -1,4 +1,5 @@
 const { create, findAll, findById, update, remove } = require('@server/services/match.service')
+const matchParticipantService = require('@server/services/matchParticipant.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
 const {
@@ -6,6 +7,7 @@ const {
 } = require('@server/config/constants')
 
 const MatchVO = require('@server/vo/MatchVO')
+const MatchParticipantVO = require('@server/vo/MatchParticipantVO')
 
 /**
  * @openapi
@@ -309,5 +311,316 @@ router.delete('/matches/:matchId', authorizationMiddleware([ADMIN]), async (req,
     next(error)
   }
 })
+
+/**
+ * @openapi
+ * /api/matches/{matchId}/participants:
+ *   get:
+ *     description: Get all participants for a specific match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: matchId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of match participants
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   matchId:
+ *                     type: string
+ *                   participantType:
+ *                     type: string
+ *                     enum: [team, player]
+ *                   teamId:
+ *                     type: string
+ *                     nullable: true
+ *                   playerId:
+ *                     type: string
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       404:
+ *         description: Match not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.get(
+  '/matches/:matchId/participants',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const participants = await matchParticipantService.findByMatch(matchId)
+      const participantsVO = MatchParticipantVO.parseCollection(participants)
+
+      return res.json(participantsVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/matches/{matchId}/participants/{participantId}:
+ *   delete:
+ *     description: Delete a specific participant from a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: matchId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: participantId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Participant successfully removed from match
+ *       404:
+ *         description: Match or participant not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+router.delete(
+  '/matches/:matchId/participants/:participantId',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { matchId, participantId } = req.params
+      await matchParticipantService.remove(participantId)
+
+      return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/participants/bulk:
+ *   post:
+ *     summary: Create multiple participants for a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items:
+ *               type: object
+ *               required:
+ *                 - participantType
+ *               properties:
+ *                 participantType:
+ *                   type: string
+ *                   enum: [team, player]
+ *                 teamId:
+ *                   type: string
+ *                 playerId:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: Participants created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   matchId:
+ *                     type: string
+ *                   participantType:
+ *                     type: string
+ *                     enum: [team, player]
+ *                   teamId:
+ *                     type: string
+ *                   playerId:
+ *                     type: string
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Match not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.post(
+  '/matches/:matchId/participants/bulk',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const participantsData = req.body.map((participant) => ({
+        ...participant,
+        matchId
+      }))
+
+      const participants = await matchParticipantService.bulkCreate(participantsData)
+      const participantsVO = participants.map((participant) => new MatchParticipantVO(participant))
+
+      res.status(201).json(participantsVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/participants:
+ *   post:
+ *     summary: Create a single participant for a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - participantType
+ *             properties:
+ *               participantType:
+ *                 type: string
+ *                 enum: [team, player]
+ *               teamId:
+ *                 type: string
+ *               playerId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Participant created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 matchId:
+ *                   type: string
+ *                 participantType:
+ *                   type: string
+ *                   enum: [team, player]
+ *                 teamId:
+ *                   type: string
+ *                 playerId:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Invalid request
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Match not found
+ */
+router.post(
+  '/matches/:matchId/participants',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const participantData = {
+        ...req.body,
+        matchId
+      }
+
+      const participant = await matchParticipantService.create(participantData)
+      const participantVO = new MatchParticipantVO(participant)
+
+      return res.status(201).json(participantVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 module.exports = router

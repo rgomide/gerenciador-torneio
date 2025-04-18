@@ -1,30 +1,3 @@
-
-## Admin endpoints
-
-- `GET /auth/login`: Login to the admin panel
-- CRUD Institutions
-- CRUD Units
-- CRUD Events
-- CRUD Tournaments
-- CRUD Sports
-- CRUD Teams*
-- CRUD Players*
-- CRUD Matches*
-- CRUD Scores*
-
-\* Available for `manager` users
-
-## Webpage endpoints (open access)
-
-- `GET /events`: List all events
-- `GET /events/:id/tournaments`: List all tournaments for an event
-- `GET /sports`: List all sports
-- `GET /sprots/:id/teams`: List all teams of a sport
-- `GET /teams/:id/players`: List all players of a team
-- `GET /matches`: List all matches
-- `GET /tournaments/:id/matches`: List all matches of a tournament
-- `GET /matches/:id`: Show the defails of a match with scores 
-
 ## ER Diagram
 
 ```mermaid
@@ -135,10 +108,12 @@ erDiagram
       date updated_at
     }
 
-    matches_teams {
+    matches_participants {
+      bigint id PK
       bigint match_id FK
       bigint team_id FK
       bigint player_id FK
+      string participant_type
       date created_at
       date updated_at
     }
@@ -164,9 +139,9 @@ erDiagram
     teams ||--o{ teams_players : has
     players ||--o{ teams_players : has
     tournaments ||--o{ matches : has
-    matches ||--o{ matches_teams : has
-    teams ||--o{ matches_teams : has
-    players ||--o{ matches_teams : has
+    matches ||--o{ matches_participants : has
+    teams ||--o{ matches_participants : has
+    players ||--o{ matches_participants : has
     matches ||--o{ scores : has
     teams ||--o{ scores : has
     players ||--o{ scores : has

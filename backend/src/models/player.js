@@ -13,6 +13,10 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'teamId',
         as: 'teams'
       })
+      Player.hasMany(models.MatchParticipant, {
+        foreignKey: 'playerId',
+        as: 'matchParticipations'
+      })
     }
   }
 
