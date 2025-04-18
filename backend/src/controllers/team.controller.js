@@ -16,6 +16,8 @@ const {
 
 const TeamVO = require('@server/vo/TeamVO')
 const PlayerVO = require('@server/vo/PlayerVO')
+const TeamPlayerVO = require('@server/vo/TeamPlayerVO')
+const teamPlayerService = require('@server/services/teamPlayer.service')
 
 /**
  * @openapi
@@ -429,6 +431,81 @@ router.get(
       const playersVO = PlayerVO.parseCollection(players)
 
       return res.json(playersVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/teams/{teamId}/players/{playerId}:
+ *   post:
+ *     description: Add a player to a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               number:
+ *                 type: integer
+ *               position:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Player added to team successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 teamId:
+ *                   type: string
+ *                 playerId:
+ *                   type: string
+ *                 number:
+ *                   type: integer
+ *                 position:
+ *                   type: string
+ *       404:
+ *         description: Team or player not found
+ *       400:
+ *         description: Player already in team
+ */
+router.post(
+  '/teams/:teamId/players/:playerId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId, playerId } = req.params
+      const { details } = req.body
+
+      const teamPlayer = await teamPlayerService.create({
+        teamId,
+        playerId,
+        details
+      })
+
+      const teamPlayerVO = new TeamPlayerVO(teamPlayer)
+
+      return res.status(201).json(teamPlayerVO)
     } catch (error) {
       next(error)
     }
