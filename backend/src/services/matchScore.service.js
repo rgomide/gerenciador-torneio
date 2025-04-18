@@ -1,6 +1,19 @@
 const { MatchScore, Match, Team, Player } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
+const findByMatch = async (matchId) => {
+  const match = await Match.findByPk(matchId)
+  if (!match) {
+    throw new AppError('Partida não encontrada', 404)
+  }
+
+  const scores = await MatchScore.findAll({
+    where: { matchId },
+    include: ['team', 'player']
+  })
+  return scores
+}
+
 const create = async (scoreData) => {
   const match = await Match.findByPk(scoreData.matchId)
   if (!match) {
@@ -103,5 +116,6 @@ module.exports = {
   update,
   remove,
   removeByMatch,
-  bulkCreate
+  bulkCreate,
+  findByMatch
 }

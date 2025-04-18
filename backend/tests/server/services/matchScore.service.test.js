@@ -12,6 +12,101 @@ const {
 const matchScoreService = require('@server/services/matchScore.service')
 
 describe('MatchScore Service', () => {
+  describe('findByMatch', () => {
+    it('should return all scores for a match', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: false,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      })
+
+      const team = await Team.create({
+        name: 'Test Team',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+
+      const player = await Player.create({
+        name: 'Test Player',
+        email: 'test@example.com',
+        unitId: unit.id
+      })
+
+      const score1 = await MatchScore.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team.id,
+        score: 10
+      })
+
+      const score2 = await MatchScore.create({
+        matchId: match.id,
+        participantType: 'player',
+        playerId: player.id,
+        score: 10
+      })
+
+      const scores = await matchScoreService.findByMatch(match.id)
+
+      expect(scores).toHaveLength(2)
+
+      expect(scores[0].toJSON()).toEqual(
+        expect.objectContaining({
+          id: score1.id,
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team.id,
+          playerId: null,
+          team: expect.objectContaining({
+            id: team.id,
+            name: team.name,
+            unitId: team.unitId,
+            sportId: team.sportId
+          }),
+          score: 10
+        })
+      )
+      expect(scores[1].toJSON()).toEqual(
+        expect.objectContaining({
+          id: score2.id,
+          matchId: match.id,
+          participantType: 'player',
+          teamId: null,
+          playerId: player.id,
+          player: expect.objectContaining({
+            id: player.id,
+            name: player.name,
+            email: player.email,
+            unitId: player.unitId
+          }),
+          score: 10
+        })
+      )
+    })
+  })
+
   describe('create', () => {
     it('should create a team score', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
