@@ -11,6 +11,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'matchId',
         as: 'participants'
       })
+      Match.hasMany(models.MatchScore, {
+        foreignKey: 'matchId',
+        as: 'scores'
+      })
     }
   }
 

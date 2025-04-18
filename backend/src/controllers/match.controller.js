@@ -8,6 +8,8 @@ const {
 
 const MatchVO = require('@server/vo/MatchVO')
 const MatchParticipantVO = require('@server/vo/MatchParticipantVO')
+const MatchScoreVO = require('@server/vo/MatchScoreVO')
+const matchScoreService = require('@server/services/matchScore.service')
 
 /**
  * @openapi
@@ -492,22 +494,8 @@ router.delete(
  *                     format: date-time
  *       400:
  *         description: Invalid request
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  *       403:
  *         description: Forbidden
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
  *       404:
  *         description: Match not found
  *         content:
@@ -617,6 +605,340 @@ router.post(
       const participantVO = new MatchParticipantVO(participant)
 
       return res.status(201).json(participantVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/scores:
+ *   get:
+ *     summary: Get all scores for a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: List of scores for the match
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   matchId:
+ *                     type: string
+ *                   participantType:
+ *                     type: string
+ *                     enum: [team, player]
+ *                   teamId:
+ *                     type: string
+ *                     nullable: true
+ *                   playerId:
+ *                     type: string
+ *                     nullable: true
+ *                   score:
+ *                     type: number
+ *                   details:
+ *                     type: string
+ *                     nullable: true
+ *                   createdAt:
+ *                     type: string
+ *                     format: date-time
+ *                   updatedAt:
+ *                     type: string
+ *                     format: date-time
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Match not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.get(
+  '/matches/:matchId/scores',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const scores = await matchScoreService.findByMatch(matchId)
+      const scoresVO = scores.map((score) => new MatchScoreVO(score))
+
+      return res.json(scoresVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/scores:
+ *   post:
+ *     summary: Create a score for a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - participantType
+ *               - score
+ *             properties:
+ *               participantType:
+ *                 type: string
+ *                 enum: [team, player]
+ *               teamId:
+ *                 type: string
+ *               playerId:
+ *                 type: string
+ *               score:
+ *                 type: number
+ *               details:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Score created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 matchId:
+ *                   type: string
+ *                 participantType:
+ *                   type: string
+ *                   enum: [team, player]
+ *                 teamId:
+ *                   type: string
+ *                   nullable: true
+ *                 playerId:
+ *                   type: string
+ *                   nullable: true
+ *                 score:
+ *                   type: number
+ *                 details:
+ *                   type: string
+ *                   nullable: true
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *       400:
+ *         description: Invalid request
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Match not found
+ */
+router.post(
+  '/matches/:matchId/scores',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const scoreData = {
+        ...req.body,
+        matchId
+      }
+
+      const score = await matchScoreService.create(scoreData)
+      const scoreVO = new MatchScoreVO(score)
+
+      return res.status(201).json(scoreVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/scores/{scoreId}:
+ *   delete:
+ *     summary: Delete a specific score from a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: scoreId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Score successfully removed from match
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Match or score not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.delete(
+  '/matches/:matchId/scores/:scoreId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { scoreId } = req.params
+      await matchScoreService.remove(scoreId)
+
+      return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @swagger
+ * /api/matches/{matchId}/scores/{scoreId}:
+ *   put:
+ *     summary: Update a specific score for a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: matchId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: scoreId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               score:
+ *                 type: number
+ *               details:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Score updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 matchId:
+ *                   type: string
+ *                 participantType:
+ *                   type: string
+ *                   enum: [team, player]
+ *                 teamId:
+ *                   type: string
+ *                   nullable: true
+ *                 playerId:
+ *                   type: string
+ *                   nullable: true
+ *                 score:
+ *                   type: number
+ *                 details:
+ *                   type: string
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ *       403:
+ *         description: Forbidden
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: Match or score not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+router.put(
+  '/matches/:matchId/scores/:scoreId',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { scoreId } = req.params
+      const score = await matchScoreService.update(scoreId, req.body)
+      const scoreVO = new MatchScoreVO(score)
+
+      return res.json(scoreVO)
     } catch (error) {
       next(error)
     }

@@ -118,12 +118,13 @@ erDiagram
       date updated_at
     }
 
-    scores {
+    match_scores {
       bigint id PK
       bigint match_id FK
       bigint team_id FK
       bigint player_id FK
       integer score
+      text details
       date created_at
       date updated_at
     }
@@ -142,7 +143,7 @@ erDiagram
     matches ||--o{ matches_participants : has
     teams ||--o{ matches_participants : has
     players ||--o{ matches_participants : has
-    matches ||--o{ scores : has
-    teams ||--o{ scores : has
-    players ||--o{ scores : has
+    matches ||--o{ match_scores : has
+    teams ||--o{ match_scores : has
+    players ||--o{ match_scores : has
 ```

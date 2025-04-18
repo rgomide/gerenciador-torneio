@@ -1,4 +1,4 @@
-const { Match, Tournament } = require('@server/models')
+const { Match, Tournament, MatchScore, Team, Player } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 const validateTournament = async (tournamentId) => {
@@ -22,11 +22,51 @@ const create = async (matchData) => {
 }
 
 const findAll = async () => {
-  return Match.findAll()
+  const matches = await Match.findAll({
+    include: [
+      {
+        model: MatchScore,
+        as: 'scores',
+        include: [
+          {
+            model: Team,
+            as: 'team',
+            attributes: ['id', 'name']
+          },
+          {
+            model: Player,
+            as: 'player',
+            attributes: ['id', 'name']
+          }
+        ]
+      }
+    ]
+  })
+
+  return matches
 }
 
 const findById = async (id) => {
-  const match = await Match.findByPk(id)
+  const match = await Match.findByPk(id, {
+    include: [
+      {
+        model: MatchScore,
+        as: 'scores',
+        include: [
+          {
+            model: Team,
+            as: 'team',
+            attributes: ['id', 'name']
+          },
+          {
+            model: Player,
+            as: 'player',
+            attributes: ['id', 'name']
+          }
+        ]
+      }
+    ]
+  })
 
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
