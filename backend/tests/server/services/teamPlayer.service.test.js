@@ -371,8 +371,16 @@ describe('TeamPlayer Service', () => {
       })
 
       // Create initial relationships
-      await teamPlayerService.create({ teamId: team.id, playerId: player1.id, details: 'old details' })
-      await teamPlayerService.create({ teamId: team.id, playerId: player2.id, details: 'old details' })
+      await teamPlayerService.create({
+        teamId: team.id,
+        playerId: player1.id,
+        details: 'old details'
+      })
+      await teamPlayerService.create({
+        teamId: team.id,
+        playerId: player2.id,
+        details: 'old details'
+      })
 
       // Bulk insert new relationships
       const players = [
@@ -405,10 +413,10 @@ describe('TeamPlayer Service', () => {
     })
 
     it('should throw error when team does not exist', async () => {
-      const players = [
-        { id: 1, details: 'details' }
-      ]
-      await expect(teamPlayerService.bulkInsert(999, players)).rejects.toThrow('Time não encontrado')
+      const players = [{ id: 1, details: 'details' }]
+      await expect(teamPlayerService.bulkInsert(999, players)).rejects.toThrow(
+        'Time não encontrado'
+      )
     })
 
     it('should throw error when player does not exist', async () => {
@@ -417,10 +425,10 @@ describe('TeamPlayer Service', () => {
       const sport = await Sport.create({ name: 'Test Sport' })
       const team = await Team.create({ name: 'Test Team', unitId: unit.id, sportId: sport.id })
 
-      const players = [
-        { id: 999, details: 'details' }
-      ]
-      await expect(teamPlayerService.bulkInsert(team.id, players)).rejects.toThrow('Jogador não encontrado')
+      const players = [{ id: 999, details: 'details' }]
+      await expect(teamPlayerService.bulkInsert(team.id, players)).rejects.toThrow(
+        'Jogador não encontrado'
+      )
     })
   })
 })

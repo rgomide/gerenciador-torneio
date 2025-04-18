@@ -1257,9 +1257,7 @@ describe('Team Controller', () => {
         .post('/api/teams/999999/players')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          players: [
-            { id: 1, details: 'details' }
-          ]
+          players: [{ id: 1, details: 'details' }]
         })
 
       expect(response.status).toBe(404)
@@ -1289,9 +1287,7 @@ describe('Team Controller', () => {
         .post(`/api/teams/${team.id}/players`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
-          players: [
-            { id: 999999, details: 'details' }
-          ]
+          players: [{ id: 999999, details: 'details' }]
         })
 
       expect(response.status).toBe(404)
@@ -1307,9 +1303,7 @@ describe('Team Controller', () => {
       const response = await request(app)
         .post(`/api/teams/${team.id}/players`)
         .send({
-          players: [
-            { id: 1, details: 'details' }
-          ]
+          players: [{ id: 1, details: 'details' }]
         })
 
       expect(response.status).toBe(403)
