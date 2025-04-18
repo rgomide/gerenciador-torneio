@@ -439,6 +439,74 @@ router.get(
 
 /**
  * @openapi
+ * /api/teams/{teamId}/players:
+ *   post:
+ *     description: Add multiple players to a team in bulk
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               players:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     details:
+ *                       type: string
+ *     responses:
+ *       201:
+ *         description: Players added to team successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   teamId:
+ *                     type: string
+ *                   playerId:
+ *                     type: string
+ *                   details:
+ *                     type: string
+ *       404:
+ *         description: Team or player not found
+ */
+router.post(
+  '/teams/:teamId/players/bulk',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId } = req.params
+      const { players } = req.body
+
+      const teamPlayers = await teamPlayerService.bulkInsert(teamId, players)
+
+      const teamPlayersVO = TeamPlayerVO.parseCollection(teamPlayers)
+      return res.status(201).json(teamPlayersVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
  * /api/teams/{teamId}/players/{playerId}:
  *   post:
  *     description: Add a player to a team
@@ -612,74 +680,6 @@ router.put(
 
       const teamPlayerVO = new TeamPlayerVO(teamPlayer)
       return res.json(teamPlayerVO)
-    } catch (error) {
-      next(error)
-    }
-  }
-)
-
-/**
- * @openapi
- * /api/teams/{teamId}/players:
- *   post:
- *     description: Add multiple players to a team in bulk
- *     tags:
- *       - Teams
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - name: teamId
- *         in: path
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               players:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     id:
- *                       type: string
- *                     details:
- *                       type: string
- *     responses:
- *       201:
- *         description: Players added to team successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   teamId:
- *                     type: string
- *                   playerId:
- *                     type: string
- *                   details:
- *                     type: string
- *       404:
- *         description: Team or player not found
- */
-router.post(
-  '/teams/:teamId/players',
-  authorizationMiddleware([ADMIN, MANAGER]),
-  async (req, res, next) => {
-    try {
-      const { teamId } = req.params
-      const { players } = req.body
-
-      const teamPlayers = await teamPlayerService.bulkInsert(teamId, players)
-
-      const teamPlayersVO = TeamPlayerVO.parseCollection(teamPlayers)
-      return res.status(201).json(teamPlayersVO)
     } catch (error) {
       next(error)
     }

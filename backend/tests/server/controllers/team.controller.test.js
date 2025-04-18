@@ -1133,7 +1133,7 @@ describe('Team Controller', () => {
     })
   })
 
-  describe('POST /api/teams/:teamId/players', () => {
+  describe('POST /api/teams/:teamId/players/bulk', () => {
     it('should bulk insert players into a team when user is admin', async () => {
       const adminRole = await Role.create({ name: ROLES.ADMIN })
       const adminUser = await User.create({
@@ -1164,7 +1164,7 @@ describe('Team Controller', () => {
       })
 
       const response = await request(app)
-        .post(`/api/teams/${team.id}/players`)
+        .post(`/api/teams/${team.id}/players/bulk`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           players: [
@@ -1226,7 +1226,7 @@ describe('Team Controller', () => {
       })
 
       const response = await request(app)
-        .post(`/api/teams/${team.id}/players`)
+        .post(`/api/teams/${team.id}/players/bulk`)
         .set('Authorization', `Bearer ${managerToken}`)
         .send({
           players: [
@@ -1254,7 +1254,7 @@ describe('Team Controller', () => {
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
       const response = await request(app)
-        .post('/api/teams/999999/players')
+        .post('/api/teams/999999/players/bulk')
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           players: [{ id: 1, details: 'details' }]
@@ -1284,11 +1284,13 @@ describe('Team Controller', () => {
       const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
 
       const response = await request(app)
-        .post(`/api/teams/${team.id}/players`)
+        .post(`/api/teams/${team.id}/players/bulk`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({
           players: [{ id: 999999, details: 'details' }]
         })
+
+      console.log(response.body)
 
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Jogador não encontrado')
@@ -1301,7 +1303,7 @@ describe('Team Controller', () => {
       const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
 
       const response = await request(app)
-        .post(`/api/teams/${team.id}/players`)
+        .post(`/api/teams/${team.id}/players/bulk`)
         .send({
           players: [{ id: 1, details: 'details' }]
         })

@@ -141,6 +141,40 @@ const remove = async (id) => {
   return matchParticipant
 }
 
+const removeByMatch = async (matchId) => {
+  const match = await Match.findByPk(matchId)
+  if (!match) {
+    throw new AppError('Partida não encontrada', 404)
+  }
+
+  await MatchParticipant.destroy({
+    where: { matchId }
+  })
+}
+
+const bulkCreate = async (participantsData) => {
+  const match = await Match.findByPk(participantsData[0].matchId)
+  if (!match) {
+    throw new AppError('Partida não encontrada', 404)
+  }
+
+  for (const participant of participantsData) {
+    if (participant.participantType === 'team') {
+      const team = await Team.findByPk(participant.teamId)
+      if (!team) {
+        throw new AppError('Time não encontrado', 404)
+      }
+    } else if (participant.participantType === 'player') {
+      const player = await Player.findByPk(participant.playerId)
+      if (!player) {
+        throw new AppError('Jogador não encontrado', 404)
+      }
+    }
+  }
+
+  return MatchParticipant.bulkCreate(participantsData)
+}
+
 module.exports = {
   create,
   findAll,
@@ -149,5 +183,7 @@ module.exports = {
   findByTeam,
   findByPlayer,
   update,
-  remove
+  remove,
+  removeByMatch,
+  bulkCreate
 }

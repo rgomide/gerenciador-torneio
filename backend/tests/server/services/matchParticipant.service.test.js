@@ -847,4 +847,247 @@ describe('MatchParticipant Service', () => {
       )
     })
   })
+
+  describe('removeByMatch', () => {
+    it('should remove all participants from a match', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: false,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      })
+
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+
+      const team = await Team.create({
+        name: 'Test Team',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+
+      const player = await Player.create({
+        name: 'Test Player',
+        email: 'test@example.com',
+        unitId: unit.id
+      })
+
+      await MatchParticipant.create({
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team.id
+      })
+
+      await MatchParticipant.create({
+        matchId: match.id,
+        participantType: 'player',
+        playerId: player.id
+      })
+
+      await matchParticipantService.removeByMatch(match.id)
+
+      const participants = await MatchParticipant.findAll({
+        where: { matchId: match.id }
+      })
+
+      expect(participants).toHaveLength(0)
+    })
+
+    it('should throw AppError when match does not exist', async () => {
+      await expect(matchParticipantService.removeByMatch('999999')).rejects.toThrow(
+        'Partida não encontrada'
+      )
+    })
+  })
+
+  describe('bulkCreate', () => {
+    it('should create multiple participants for a match', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: false,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      })
+
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+
+      const team = await Team.create({
+        name: 'Test Team',
+        description: 'Test Description',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+
+      const player = await Player.create({
+        name: 'Test Player',
+        email: 'test@example.com',
+        unitId: unit.id
+      })
+
+      const participantsData = [
+        {
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team.id
+        },
+        {
+          matchId: match.id,
+          participantType: 'player',
+          playerId: player.id
+        }
+      ]
+
+      const participants = await matchParticipantService.bulkCreate(participantsData)
+
+      expect(participants).toHaveLength(2)
+      expect(participants[0].toJSON()).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team.id,
+          playerId: null,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date)
+        })
+      )
+      expect(participants[1].toJSON()).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          matchId: match.id,
+          participantType: 'player',
+          teamId: null,
+          playerId: player.id,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date)
+        })
+      )
+    })
+
+    it('should throw AppError when match does not exist', async () => {
+      const participantsData = [
+        {
+          matchId: '999999',
+          participantType: 'team',
+          teamId: '1'
+        }
+      ]
+
+      await expect(matchParticipantService.bulkCreate(participantsData)).rejects.toThrow(
+        'Partida não encontrada'
+      )
+    })
+
+    it('should throw AppError when team does not exist', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: false,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      })
+
+      const participantsData = [
+        {
+          matchId: match.id,
+          participantType: 'team',
+          teamId: '999999'
+        }
+      ]
+
+      await expect(matchParticipantService.bulkCreate(participantsData)).rejects.toThrow(
+        'Time não encontrado'
+      )
+    })
+
+    it('should throw AppError when player does not exist', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: false,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      })
+
+      const participantsData = [
+        {
+          matchId: match.id,
+          participantType: 'player',
+          playerId: '999999'
+        }
+      ]
+
+      await expect(matchParticipantService.bulkCreate(participantsData)).rejects.toThrow(
+        'Jogador não encontrado'
+      )
+    })
+  })
 })
