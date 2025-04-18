@@ -554,4 +554,68 @@ router.delete(
   }
 )
 
+/**
+ * @openapi
+ * /api/teams/{teamId}/players/{playerId}:
+ *   put:
+ *     description: Update a player's details in a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               details:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Player details updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 teamId:
+ *                   type: string
+ *                 playerId:
+ *                   type: string
+ *                 details:
+ *                   type: string
+ *       404:
+ *         description: Team-player relationship not found
+ */
+router.put(
+  '/teams/:teamId/players/:playerId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId, playerId } = req.params
+      const { details } = req.body
+
+      const teamPlayer = await teamPlayerService.update(teamId, playerId, { details })
+
+      const teamPlayerVO = new TeamPlayerVO(teamPlayer)
+      return res.json(teamPlayerVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 module.exports = router
