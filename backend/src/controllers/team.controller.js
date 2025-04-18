@@ -512,4 +512,46 @@ router.post(
   }
 )
 
+/**
+ * @openapi
+ * /api/teams/{teamId}/players/{playerId}:
+ *   delete:
+ *     description: Remove a player from a team
+ *     tags:
+ *       - Teams
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: teamId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: playerId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       204:
+ *         description: Player removed from team successfully
+ *       404:
+ *         description: Team-player relationship not found
+ */
+router.delete(
+  '/teams/:teamId/players/:playerId',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const { teamId, playerId } = req.params
+
+      await teamPlayerService.remove(teamId, playerId)
+
+      return res.status(204).send()
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
 module.exports = router
