@@ -146,6 +146,45 @@ const remove = async (teamId, playerId) => {
   await teamPlayer.destroy()
 }
 
+const removeByTeam = async (teamId) => {
+  const team = await Team.findByPk(teamId)
+  if (!team) {
+    throw new AppError('Time não encontrado', 404)
+  }
+
+  await TeamPlayer.destroy({
+    where: { teamId }
+  })
+}
+
+const bulkInsert = async (teamId, players) => {
+  const team = await Team.findByPk(teamId)
+  if (!team) {
+    throw new AppError('Time não encontrado', 404)
+  }
+
+  // Remove all existing team-player relationships
+  await removeByTeam(teamId)
+
+  // Create new team-player relationships
+  const teamPlayers = []
+  for (const player of players) {
+    const playerRecord = await Player.findByPk(player.id)
+
+    if (!playerRecord) {
+      throw new AppError('Jogador não encontrado', 404)
+    }
+
+    teamPlayers.push({
+      teamId,
+      playerId: player.id,
+      details: player.details
+    })
+  }
+
+  return TeamPlayer.bulkCreate(teamPlayers)
+}
+
 module.exports = {
   create,
   findAll,
@@ -153,5 +192,7 @@ module.exports = {
   findByTeam,
   findByPlayer,
   update,
-  remove
+  remove,
+  removeByTeam,
+  bulkInsert
 }

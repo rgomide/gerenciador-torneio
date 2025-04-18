@@ -1132,4 +1132,188 @@ describe('Team Controller', () => {
       expect(response.body.message).toBe('Acesso negado')
     })
   })
+
+  describe('POST /api/teams/:teamId/players', () => {
+    it('should bulk insert players into a team when user is admin', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+      const player1 = await Player.create({
+        name: 'Player 1',
+        email: 'player1@test.com',
+        unitId: unit.id
+      })
+      const player2 = await Player.create({
+        name: 'Player 2',
+        email: 'player2@test.com',
+        unitId: unit.id
+      })
+
+      const response = await request(app)
+        .post(`/api/teams/${team.id}/players`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          players: [
+            { id: player1.id, details: 'details 1' },
+            { id: player2.id, details: 'details 2' }
+          ]
+        })
+
+      expect(response.status).toBe(201)
+      expect(response.body).toEqual([
+        expect.objectContaining({
+          teamId: team.id,
+          playerId: player1.id,
+          details: 'details 1'
+        }),
+        expect.objectContaining({
+          teamId: team.id,
+          playerId: player2.id,
+          details: 'details 2'
+        })
+      ])
+
+      const teamPlayers = await TeamPlayer.findAll({
+        where: { teamId: team.id },
+        order: [['playerId', 'ASC']]
+      })
+      expect(teamPlayers).toHaveLength(2)
+    })
+
+    it('should bulk insert players into a team when user is manager', async () => {
+      const managerRole = await Role.create({ name: ROLES.MANAGER })
+      const managerUser = await User.create({
+        firstName: 'Manager',
+        lastName: 'User',
+        userName: 'manager',
+        email: 'manager@example.com',
+        password: 'password123'
+      })
+      await managerRole.addUser(managerUser, {
+        through: { userId: managerUser.id, roleId: managerRole.id }
+      })
+      const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+        expiresIn: JWT.EXPIRES_IN
+      })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+      const player1 = await Player.create({
+        name: 'Player 1',
+        email: 'player1@test.com',
+        unitId: unit.id
+      })
+      const player2 = await Player.create({
+        name: 'Player 2',
+        email: 'player2@test.com',
+        unitId: unit.id
+      })
+
+      const response = await request(app)
+        .post(`/api/teams/${team.id}/players`)
+        .set('Authorization', `Bearer ${managerToken}`)
+        .send({
+          players: [
+            { id: player1.id, details: 'details 1' },
+            { id: player2.id, details: 'details 2' }
+          ]
+        })
+
+      expect(response.status).toBe(201)
+      expect(response.body).toHaveLength(2)
+    })
+
+    it('should return 404 when team is not found', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .post('/api/teams/999999/players')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          players: [
+            { id: 1, details: 'details' }
+          ]
+        })
+
+      expect(response.status).toBe(404)
+      expect(response.body.message).toBe('Time não encontrado')
+    })
+
+    it('should return 404 when player is not found', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+
+      const response = await request(app)
+        .post(`/api/teams/${team.id}/players`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({
+          players: [
+            { id: 999999, details: 'details' }
+          ]
+        })
+
+      expect(response.status).toBe(404)
+      expect(response.body.message).toBe('Jogador não encontrado')
+    })
+
+    it('should return 403 when no token is provided', async () => {
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const sport = await Sport.create({ name: 'Futebol' })
+      const team = await Team.create({ name: 'Team 1', unitId: unit.id, sportId: sport.id })
+
+      const response = await request(app)
+        .post(`/api/teams/${team.id}/players`)
+        .send({
+          players: [
+            { id: 1, details: 'details' }
+          ]
+        })
+
+      expect(response.status).toBe(403)
+      expect(response.body.message).toBe('Acesso negado')
+    })
+  })
 })
