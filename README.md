@@ -1,3 +1,13 @@
+## Project Overview
+
+This project is a web application that allows users to manage their sports teams and players.
+
+## Accessing deployed version
+
+- [Frontend](https://gerenciador-torneio.vercel.app/)
+- [Backend](https://gerenciador-torneio.onrender.com/api)
+- [Backend API Documentation](https://gerenciador-torneio.onrender.com/api/docs)
+
 ## ER Diagram
 
 ```mermaid
