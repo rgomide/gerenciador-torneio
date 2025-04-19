@@ -12,4 +12,4 @@ jobs:
       - name: Display date time
         run: date
       - name: Ping server
-        run: curl https://www.google.com # TODO: Change to the server URL
+        run: curl https://gerenciador-torneio.onrender.com/api/ping
