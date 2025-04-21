@@ -28,6 +28,12 @@ const teamPlayerService = require('@server/services/teamPlayer.service')
  *       - Teams
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of teams
@@ -55,7 +61,8 @@ const teamPlayerService = require('@server/services/teamPlayer.service')
  */
 router.get('/teams', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
-    const teams = await findAll()
+    const searchParams = req.query
+    const teams = await findAll(searchParams)
     const teamsVO = TeamVO.parseCollection(teams)
 
     return res.json(teamsVO)

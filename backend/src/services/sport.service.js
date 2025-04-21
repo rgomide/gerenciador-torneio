@@ -17,7 +17,9 @@ const create = async (sportData) => {
 }
 
 const findAll = async () => {
-  return Sport.findAll()
+  return Sport.findAll({
+    order: [['name', 'ASC']]
+  })
 }
 
 const findById = async (id) => {

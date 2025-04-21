@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const { Institution } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
@@ -22,8 +23,18 @@ const create = async ({ name }) => {
   return await Institution.create({ name })
 }
 
-const findAll = async () => {
-  return await Institution.findAll()
+const findAll = async (searchParams) => {
+  const { name } = searchParams || {}
+
+  const where = {}
+
+  if (name) {
+    where.name = {
+      [Op.iLike]: `%${name}%`
+    }
+  }
+
+  return await Institution.findAll({ where, order: [['name', 'ASC']] })
 }
 
 const findById = async (id) => {

@@ -1,4 +1,5 @@
 const { Player, Unit, Team, TeamPlayer } = require('@server/models')
+const { Op } = require('sequelize')
 const AppError = require('@server/utils/AppError')
 
 const validateName = (name) => {
@@ -50,18 +51,31 @@ const findByTeam = async (teamId) => {
         model: Unit,
         as: 'unit'
       }
-    ]
+    ],
+    order: [['name', 'ASC']]
   })
 }
 
-const findAll = async () => {
+const findAll = async (searchParams) => {
+  const { name } = searchParams || {}
+
+  const where = {}
+
+  if (name) {
+    where.name = {
+      [Op.iLike]: `%${name}%`
+    }
+  }
+
   return Player.findAll({
+    where,
     include: [
       {
         model: Unit,
         as: 'unit'
       }
-    ]
+    ],
+    order: [['name', 'ASC']]
   })
 }
 
@@ -78,7 +92,8 @@ const findByUnit = async (unitId) => {
         model: Unit,
         as: 'unit'
       }
-    ]
+    ],
+    order: [['name', 'ASC']]
   })
 }
 

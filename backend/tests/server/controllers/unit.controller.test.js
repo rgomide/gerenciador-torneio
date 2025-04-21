@@ -47,6 +47,40 @@ describe('Unit Controller', () => {
       ])
     })
 
+    it('should return all units when user is admin searching by name', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      await Unit.create({ name: 'Campus Trindade', institutionId: institution.id })
+      await Unit.create({ name: 'Campus Itabira', institutionId: institution.id })
+
+      const response = await request(app)
+        .get('/api/units?name=trindade')
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual([
+        expect.objectContaining({
+          id: expect.any(String),
+          name: 'Campus Trindade',
+          institutionId: institution.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String)
+        })
+      ])
+    })
+
     it('should return all units when user is manager', async () => {
       const managerRole = await Role.create({ name: ROLES.MANAGER })
       const managerUser = await User.create({

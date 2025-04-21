@@ -1,5 +1,6 @@
 const { Event, Unit } = require('@server/models')
 const AppError = require('@server/utils/AppError')
+const { Op } = require('sequelize')
 
 const validateName = (name) => {
   if (!name) {
@@ -45,20 +46,32 @@ const findAll = async () => {
   })
 }
 
-const findByUnit = async (unitId) => {
+const findByUnit = async (unitId, searchParams) => {
+  const { name } = searchParams || {}
+
   const unit = await Unit.findByPk(unitId)
   if (!unit) {
     throw new AppError('Unidade não encontrada', 404)
   }
 
+  const where = {
+    unit_id: unitId
+  }
+
+  if (name) {
+    where.name = {
+      [Op.iLike]: `%${name}%`
+    }
+  }
   return Event.findAll({
-    where: { unit_id: unitId },
+    where,
     include: [
       {
         model: Unit,
         as: 'unit'
       }
-    ]
+    ],
+    order: [['name', 'ASC']]
   })
 }
 
