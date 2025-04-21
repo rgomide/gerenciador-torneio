@@ -81,6 +81,12 @@ router.get(
  *       - Players
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of players
@@ -110,7 +116,8 @@ router.get(
  */
 router.get('/players', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
-    const players = await findAll()
+    const searchParams = req.query
+    const players = await findAll(searchParams)
     const playersVO = PlayerVO.parseCollection(players)
 
     return res.json(playersVO)

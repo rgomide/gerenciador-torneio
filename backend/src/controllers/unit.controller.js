@@ -22,6 +22,12 @@ const UnitVO = require('@server/vo/UnitVO')
  *       - Units
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of units
@@ -41,7 +47,8 @@ const UnitVO = require('@server/vo/UnitVO')
  */
 router.get('/units', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
-    const units = await findAll()
+    const searchParams = req.query
+    const units = await findAll(searchParams)
     const unitsVO = UnitVO.parseCollection(units)
 
     return res.json(unitsVO)

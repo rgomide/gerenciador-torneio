@@ -65,6 +65,11 @@ router.get('/events', authorizationMiddleware([ADMIN, MANAGER]), async (req, res
  *         required: true
  *         schema:
  *           type: string
+ *       - name: name
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of events
@@ -86,8 +91,9 @@ router.get(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const searchParams = req.query
       const { unitId } = req.params
-      const events = await findByUnit(unitId)
+      const events = await findByUnit(unitId, searchParams)
       const eventsVO = EventVO.parseCollection(events)
 
       return res.json(eventsVO)

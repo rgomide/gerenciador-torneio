@@ -77,6 +77,12 @@ router.post('/', authorizationMiddleware([ADMIN]), async (req, res, next) => {
  *       - Institutions
  *     security:
  *       - bearerAuth: []
+ *     parameters:
+ *       - name: name
+ *         in: query
+ *         required: false
+ *         schema:
+ *           type: string
  *     responses:
  *       200:
  *         description: List of institutions
@@ -96,7 +102,8 @@ router.post('/', authorizationMiddleware([ADMIN]), async (req, res, next) => {
  */
 router.get('/', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
-    const institutions = await findAll()
+    const searchParams = req.query
+    const institutions = await findAll(searchParams)
     const institutionsVO = InstitutionVO.parseCollection(institutions)
 
     return res.json(institutionsVO)
