@@ -70,7 +70,7 @@ const SelectSearcher = ({
   return (
     <div className="w-full">
       <Select value={selectedValue} onValueChange={handleChange}>
-        <SelectTrigger>
+        <SelectTrigger className="w-full">
           <SelectValue placeholder={placeholder}>
             {selectedValue ? selectedValue[labelField] : null}
           </SelectValue>
