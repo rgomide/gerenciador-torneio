@@ -6,7 +6,7 @@ const MultiSelectSearcher = ({
   labelField,
   idField,
   placeholder,
-  minCharacters,
+  minCharacters = 2,
   values = [],
   onLoad,
   onChange
