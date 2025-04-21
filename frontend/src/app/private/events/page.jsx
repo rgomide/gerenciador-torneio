@@ -121,9 +121,11 @@ function page() {
             <TableHead>Previsão de término</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
-            <TableHead>
-              <EventsForm variant="create" unitId={selectedUnit} onClose={fetchEvents} />
-            </TableHead>
+            {selectedUnit && (
+              <TableHead>
+                <EventsForm variant="create" unitId={selectedUnit} onClose={fetchEvents} />
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
