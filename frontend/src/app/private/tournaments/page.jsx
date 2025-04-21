@@ -126,13 +126,15 @@ function page() {
             <TableHead>Previsão de término</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
-            <TableHead>
-              <TournamentsForm
-                variant="create"
-                eventId={selectedEvent}
-                onClose={fetchTournaments}
-              />
-            </TableHead>
+            {selectedEvent && (
+              <TableHead>
+                <TournamentsForm
+                  variant="create"
+                  eventId={selectedEvent}
+                  onClose={fetchTournaments}
+                />
+              </TableHead>
+            )}
           </TableRow>
         </TableHeader>
         <TableBody>
