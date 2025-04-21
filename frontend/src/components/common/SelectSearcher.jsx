@@ -72,7 +72,7 @@ const SelectSearcher = ({
       <Select value={selectedValue} onValueChange={handleChange}>
         <SelectTrigger>
           <SelectValue placeholder={placeholder}>
-            {selectedValue && selectedValue[labelField]}
+            {selectedValue ? selectedValue[labelField] : null}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
