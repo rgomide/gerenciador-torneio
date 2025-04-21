@@ -66,7 +66,7 @@ function page() {
       const resp = await deleteEventById(id)
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar torneio');
+        throw new Error(resp?.error || 'Erro ao deletar torneio')
       } else {
         toast.success('Torneio deletado com sucesso!')
         await fetchEvents()
@@ -161,7 +161,9 @@ function page() {
                       </DialogTrigger>
                       <Button
                         type="submit"
-                        onClick={() => { deleteEvent(event.id) }}
+                        onClick={() => {
+                          deleteEvent(event.id)
+                        }}
                         variant="destructive"
                       >
                         Deletar

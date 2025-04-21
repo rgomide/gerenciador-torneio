@@ -27,7 +27,12 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { deleteTournamentById, formatDate, getEvents, getTournamentsByEventId } from '@/services/apiService'
+import {
+  deleteTournamentById,
+  formatDate,
+  getEvents,
+  getTournamentsByEventId
+} from '@/services/apiService'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -66,7 +71,7 @@ function page() {
       const resp = await deleteTournamentById(id)
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar torneio');
+        throw new Error(resp?.error || 'Erro ao deletar torneio')
       } else {
         toast.success('Torneio deletado com sucesso!')
         await fetchTournaments()
