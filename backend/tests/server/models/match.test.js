@@ -1,7 +1,10 @@
-const { Match, Tournament, Event, Unit, Institution } = require('@server/models')
+const { Match, Tournament, Event, Unit, Institution, Sport } = require('@server/models')
 
 describe('Match Model', () => {
   it('should create a match', async () => {
+    const sport = await Sport.create({
+      name: 'Test Sport'
+    })
     const institution = await Institution.create({
       name: 'Test Institution'
     })
@@ -21,6 +24,7 @@ describe('Match Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })
@@ -50,6 +54,10 @@ describe('Match Model', () => {
   })
 
   it('should update a match', async () => {
+    const sport = await Sport.create({
+      name: 'Test Sport'
+    })
+
     const institution = await Institution.create({
       name: 'Test Institution'
     })
@@ -69,6 +77,7 @@ describe('Match Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })
@@ -105,6 +114,10 @@ describe('Match Model', () => {
   })
 
   it('should delete a match', async () => {
+    const sport = await Sport.create({
+      name: 'Test Sport'
+    })
+
     const institution = await Institution.create({
       name: 'Test Institution'
     })
@@ -124,6 +137,7 @@ describe('Match Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })
@@ -144,6 +158,10 @@ describe('Match Model', () => {
   })
 
   it('should find a match by id', async () => {
+    const sport = await Sport.create({
+      name: 'Test Sport'
+    })
+
     const institution = await Institution.create({
       name: 'Test Institution'
     })
@@ -163,6 +181,7 @@ describe('Match Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })
@@ -196,6 +215,10 @@ describe('Match Model', () => {
   })
 
   it('should get tournament associated with match', async () => {
+    const sport = await Sport.create({
+      name: 'Test Sport'
+    })
+
     const institution = await Institution.create({
       name: 'Test Institution'
     })
@@ -215,6 +238,7 @@ describe('Match Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })

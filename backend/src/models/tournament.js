@@ -8,6 +8,11 @@ module.exports = (sequelize, DataTypes) => {
         as: 'event'
       })
 
+      Tournament.belongsTo(models.Sport, {
+        foreignKey: 'sport_id',
+        as: 'sport'
+      })
+
       Tournament.hasMany(models.Match, {
         foreignKey: 'tournament_id',
         as: 'matches'
@@ -32,6 +37,15 @@ module.exports = (sequelize, DataTypes) => {
         field: 'event_id',
         references: {
           model: 'events',
+          key: 'id'
+        }
+      },
+      sportId: {
+        type: DataTypes.BIGINT,
+        allowNull: false,
+        field: 'sport_id',
+        references: {
+          model: 'sports',
           key: 'id'
         }
       },
