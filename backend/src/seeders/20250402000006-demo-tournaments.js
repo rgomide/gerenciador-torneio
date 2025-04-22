@@ -4,7 +4,13 @@ module.exports = {
       type: Sequelize.QueryTypes.SELECT
     })
 
+    const sports = await queryInterface.sequelize.query('SELECT id, name FROM sports', {
+      type: Sequelize.QueryTypes.SELECT
+    })
+
     const now = new Date()
+
+    const sport = sports[0]
 
     const tournaments = events.flatMap((event) => {
       const startDate = new Date('2024-01-01')
@@ -14,6 +20,7 @@ module.exports = {
         {
           name: `${event.name} - Football Tournament`,
           event_id: event.id,
+          sport_id: sport.id,
           start_date: startDate,
           end_date: endDate,
           created_at: now,
@@ -22,6 +29,7 @@ module.exports = {
         {
           name: `${event.name} - Basketball Tournament`,
           event_id: event.id,
+          sport_id: sport.id,
           start_date: new Date('2024-06-01'),
           end_date: new Date('2024-07-31'),
           created_at: now,
@@ -30,6 +38,7 @@ module.exports = {
         {
           name: `${event.name} - Volleyball Tournament`,
           event_id: event.id,
+          sport_id: sport.id,
           start_date: new Date('2024-09-01'),
           end_date: new Date('2024-10-31'),
           created_at: now,
