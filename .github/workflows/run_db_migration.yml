@@ -10,7 +10,7 @@ on:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - 'backend/src/migrations/**'
 jobs:
   Run-DB-Migration:
     runs-on: ubuntu-latest
