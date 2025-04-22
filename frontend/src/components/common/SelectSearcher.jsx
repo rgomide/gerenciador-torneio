@@ -67,6 +67,8 @@ const SelectSearcher = ({
     }
   }
 
+  console.log('value', value);  
+
   return (
     <div className="w-full">
       <Select value={selectedValue} onValueChange={handleChange}>
