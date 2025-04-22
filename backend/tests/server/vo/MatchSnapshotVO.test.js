@@ -6,6 +6,7 @@ const {
   Tournament,
   MatchParticipant,
   MatchScore,
+  MatchSnapshot,
   Team,
   Player,
   Sport
@@ -90,7 +91,8 @@ describe('MatchSnapshotVO', () => {
       matchId: match.id,
       participantType: 'player',
       playerId: player.id,
-      score: 10
+      score: 10,
+      details: 'Test details'
     }
 
     await MatchScore.create(matchScoreData)
@@ -98,6 +100,52 @@ describe('MatchSnapshotVO', () => {
 
     const matchSnapshot = await MatchSnapshotVO.fromMatch(match)
 
-    console.log(matchSnapshot)
+    const test = await MatchSnapshot.create(matchSnapshot)
+
+    console.log(test.toJSON())
+
+    expect(matchSnapshot).toEqual(
+      expect.objectContaining({
+        matchId: match.id,
+        matchDate: expect.any(Date),
+        matchLocation: 'Test Location',
+        matchRoundNumber: 1,
+        matchOccurrences: 'Test occurrences',
+        tournamentId: tournament.id,
+        tournamentName: 'Test Tournament',
+        tournamentStartDate: expect.any(Date),
+        tournamentEndDate: expect.any(Date),
+        eventId: event.id,
+        eventName: 'Test Event',
+        eventStartDate: expect.any(Date),
+        eventEndDate: expect.any(Date),
+        unitId: unit.id,
+        unitName: 'Test Unit',
+        institutionId: institution.id,
+        institutionName: 'Test Institution',
+        sportId: sport.id,
+        sportName: 'Test Sport',
+        matchScores: [
+          {
+            id: team.id,
+            participantType: 'team',
+            name: 'Test Team',
+            score: 10,
+            details: null
+          },
+          {
+            id: player.id,
+            participantType: 'player',
+            name: 'Test Player',
+            score: 10,
+            details: 'Test details'
+          }
+        ],
+        matchParticipants: [
+          { id: team.id, participantType: 'team', name: 'Test Team' },
+          { id: player.id, participantType: 'player', name: 'Test Player' }
+        ]
+      })
+    )
   })
 })
