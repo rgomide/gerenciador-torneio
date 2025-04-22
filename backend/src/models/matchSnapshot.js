@@ -196,7 +196,7 @@ module.exports = (sequelize, DataTypes) => {
               typeof name !== 'string' ||
               typeof participantType !== 'string' ||
               typeof scoreValue !== 'number' ||
-              typeof details !== 'string'
+              (details && typeof details !== 'string')
             ) {
               throw new Error(
                 'matchScores must be an array of objects with id, name, participantType, score, and details properties'
