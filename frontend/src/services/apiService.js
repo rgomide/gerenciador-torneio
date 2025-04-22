@@ -418,3 +418,86 @@ export const deleteTournamentById = async (tournamentId) => {
     return { error: message }
   }
 }
+
+export const getSports = async () => {
+  try {
+    const resp = await axios.get(`${baseURL}/sports`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+
+    if (resp.status === 200) {
+      return resp.data
+    } else {
+      throw new Error(resp.data.message)
+    }
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }
+  }
+}
+
+export const createSport = async (name) => {
+  try {
+    const resp = await axios.post(`${baseURL}/sports`,
+      {
+        name,
+      },
+      {
+        headers: { Authorization: `Bearer ${getCookie('token')}` }
+      }
+    )
+
+    if (resp.status === 201) {
+      return resp.data
+    }
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }
+  }
+}
+
+export const updateSport = async (id, name) => {
+  try {
+    const resp = await axios.put(`${baseURL}/sports/${id}`, {
+      name: name
+    },
+      {
+        headers: { Authorization: `Bearer ${getCookie('token')}` }
+      }
+    )
+
+    if (resp.status === 200) {
+      return resp.data
+    }
+
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }
+  }
+}
+
+export const deleteSportById = async (sportId) => {
+  try {
+    const resp = await axios.delete(`${baseURL}/sports/${sportId}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
+
+    if (resp.status === 204) {
+      return { success: true}
+    } else {
+      throw new Error(resp.data.message)
+    }
+
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }    
+  }
+}
