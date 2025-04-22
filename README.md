@@ -64,6 +64,7 @@ erDiagram
 
     tournaments {
       bigint id PK
+      bigint sport_id FK
       string name
       bigint event_id FK
       date start_date
@@ -147,6 +148,7 @@ erDiagram
     units ||--o{ teams : has
     events ||--o{ tournaments : has
     sports ||--o{ teams : has
+    sports ||--o{ tournaments : has
     teams ||--o{ teams_players : has
     players ||--o{ teams_players : has
     tournaments ||--o{ matches : has
