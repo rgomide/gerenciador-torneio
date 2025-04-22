@@ -1,77 +1,11 @@
-const {
-  Match,
-  Tournament,
-  Event,
-  Unit,
-  Institution,
-  MatchParticipant,
-  MatchScore,
-  Team,
-  Player
-} = require('@server/models')
+const MatchVO = require('./MatchVO')
 
 class MatchSnapshotVO {
   constructor(matchSnapshot) {
     this.matchSnapshot = matchSnapshot
   }
 
-  static async fromMatch(match) {
-    match = await Match.findByPk(match.id, {
-      include: [
-        {
-          model: Tournament,
-          as: 'tournament',
-          include: [
-            {
-              model: Event,
-              as: 'event',
-              include: [
-                {
-                  model: Unit,
-                  as: 'unit',
-                  include: [
-                    {
-                      model: Institution,
-                      as: 'institution'
-                    }
-                  ]
-                }
-              ]
-            },
-            'sport'
-          ]
-        },
-        {
-          model: MatchParticipant,
-          as: 'participants',
-          include: [
-            {
-              model: Team,
-              as: 'team'
-            },
-            {
-              model: Player,
-              as: 'player'
-            }
-          ]
-        },
-        {
-          model: MatchScore,
-          as: 'scores',
-          include: [
-            {
-              model: Team,
-              as: 'team'
-            },
-            {
-              model: Player,
-              as: 'player'
-            }
-          ]
-        }
-      ]
-    })
-
+  static fromMatch(match) {
     match = match.toJSON()
 
     const {
@@ -127,6 +61,10 @@ class MatchSnapshotVO {
       }
     })
 
+    const matchVO = new MatchVO(match)
+
+    const totalScores = matchVO.toJSON().totalScores
+
     return {
       matchId,
       matchDate,
@@ -156,7 +94,8 @@ class MatchSnapshotVO {
       sportId,
       sportName,
       matchScores,
-      matchParticipants
+      matchParticipants,
+      totalScores
     }
   }
 }

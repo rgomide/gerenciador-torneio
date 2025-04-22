@@ -52,7 +52,7 @@ describe('MatchSnapshotVO', () => {
       roundNumber: 1
     }
 
-    const match = await Match.create(matchData)
+    let match = await Match.create(matchData)
 
     const team = await Team.create({
       name: 'Test Team',
@@ -98,11 +98,63 @@ describe('MatchSnapshotVO', () => {
     await MatchScore.create(matchScoreData)
     await MatchScore.create(matchScoreData2)
 
-    const matchSnapshot = await MatchSnapshotVO.fromMatch(match)
+    match = await Match.findByPk(match.id, {
+      include: [
+        {
+          model: Tournament,
+          as: 'tournament',
+          include: [
+            {
+              model: Event,
+              as: 'event',
+              include: [
+                {
+                  model: Unit,
+                  as: 'unit',
+                  include: [
+                    {
+                      model: Institution,
+                      as: 'institution'
+                    }
+                  ]
+                }
+              ]
+            },
+            'sport'
+          ]
+        },
+        {
+          model: MatchParticipant,
+          as: 'participants',
+          include: [
+            {
+              model: Team,
+              as: 'team'
+            },
+            {
+              model: Player,
+              as: 'player'
+            }
+          ]
+        },
+        {
+          model: MatchScore,
+          as: 'scores',
+          include: [
+            {
+              model: Team,
+              as: 'team'
+            },
+            {
+              model: Player,
+              as: 'player'
+            }
+          ]
+        }
+      ]
+    })
 
-    const test = await MatchSnapshot.create(matchSnapshot)
-
-    console.log(test.toJSON())
+    const matchSnapshot = MatchSnapshotVO.fromMatch(match)
 
     expect(matchSnapshot).toEqual(
       expect.objectContaining({
@@ -140,6 +192,10 @@ describe('MatchSnapshotVO', () => {
             score: 10,
             details: 'Test details'
           }
+        ],
+        totalScores: [
+          { id: team.id, name: 'Test Team', totalScore: 10 },
+          { id: player.id, name: 'Test Player', totalScore: 10 }
         ],
         matchParticipants: [
           { id: team.id, participantType: 'team', name: 'Test Team' },

@@ -37,8 +37,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: true,
         field: 'match_occurrences'
       },
-
-      // Tournament information
       tournamentId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -59,8 +57,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'tournament_end_date'
       },
-
-      // Event information
       eventId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -81,8 +77,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'event_end_date'
       },
-
-      // Unit information
       unitId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -93,8 +87,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'unit_name'
       },
-
-      // Institution information
       institutionId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -105,8 +97,6 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'institution_name'
       },
-
-      // Sport information
       sportId: {
         type: DataTypes.BIGINT,
         allowNull: false,
@@ -117,8 +107,11 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'sport_name'
       },
-
-      // Match scores and participants as JSONB arrays
+      totalScores: {
+        type: DataTypes.ARRAY(DataTypes.JSONB),
+        allowNull: true,
+        field: 'total_scores'
+      },
       matchScores: {
         type: DataTypes.ARRAY(DataTypes.JSONB),
         allowNull: false,
@@ -156,6 +149,33 @@ module.exports = (sequelize, DataTypes) => {
       tableName: 'match_snapshots',
       underscored: true,
       validate: {
+        validateTotalScores() {
+          if (!this.totalScores) {
+            return
+          }
+
+          if (!Array.isArray(this.totalScores)) {
+            throw new Error('totalScores must be an array')
+          }
+
+          this.totalScores.forEach((score) => {
+            if (typeof score !== 'object' || score === null) {
+              throw new Error('totalScores must be an array of objects')
+            }
+
+            const { id, name, totalScore } = score
+
+            if (
+              typeof id !== 'string' ||
+              typeof name !== 'string' ||
+              typeof totalScore !== 'number'
+            ) {
+              throw new Error(
+                'totalScores must be an array of objects with id, name, and totalScore properties'
+              )
+            }
+          })
+        },
         validateMatchParticipants() {
           if (!Array.isArray(this.matchParticipants)) {
             throw new Error('matchParticipants must be an array')
