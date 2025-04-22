@@ -522,65 +522,68 @@ export const getTeamsByUnitId = async (unitId) => {
   }
 }
 
-// export const createSport = async (name) => {
-//   try {
-//     const resp = await axios.post(`${baseURL}/sports`,
-//       {
-//         name,
-//       },
-//       {
-//         headers: { Authorization: `Bearer ${getCookie('token')}` }
-//       }
-//     )
+export const createTeam = async (name, unitId, sportId) => {
+  try {
+    const resp = await axios.post(`${baseURL}/teams`,
+      {
+        name: name,
+        unitId: unitId,
+        sportId: sportId
+      },
+      {
+        headers: { Authorization: `Bearer ${getCookie('token')}` }
+      }
+    )
 
-//     if (resp.status === 201) {
-//       return resp.data
-//     }
-//   } catch (e) {
-//     const message = exctratErrorMessage(e)
-//     console.error(message);
-//     return { error: message }
-//   }
-// }
+    if (resp.status === 201) {
+      return resp.data
+    }
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }
+  }
+}
 
-// export const updateSport = async (id, name) => {
-//   try {
-//     const resp = await axios.put(`${baseURL}/sports/${id}`, {
-//       name: name
-//     },
-//       {
-//         headers: { Authorization: `Bearer ${getCookie('token')}` }
-//       }
-//     )
+export const updateTeam = async (id, name, sportId) => {
+  try {
+    const resp = await axios.put(`${baseURL}/teams/${id}`, {
+      name: name,
+      sportId: sportId
+    },
+      {
+        headers: { Authorization: `Bearer ${getCookie('token')}` }
+      }
+    )
 
-//     if (resp.status === 200) {
-//       return resp.data
-//     }
+    if (resp.status === 200) {
+      return resp.data
+    }
 
-//   } catch (e) {
-//     const message = exctratErrorMessage(e)
-//     console.error(message);
-//     return { error: message }
-//   }
-// }
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }
+  }
+}
 
-// export const deleteSportById = async (sportId) => {
-//   try {
-//     const resp = await axios.delete(`${baseURL}/sports/${sportId}`, {
-//       headers: {
-//         Authorization: `Bearer ${getCookie('token')}`
-//       }
-//     })
+export const deleteTeamById = async (teamId) => {
+  try {
+    const resp = await axios.delete(`${baseURL}/teams/${teamId}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie('token')}`
+      }
+    })
 
-//     if (resp.status === 204) {
-//       return { success: true}
-//     } else {
-//       throw new Error(resp.data.message)
-//     }
+    if (resp.status === 204) {
+      return { success: true}
+    } else {
+      throw new Error(resp.data.message)
+    }
 
-//   } catch (e) {
-//     const message = exctratErrorMessage(e)
-//     console.error(message);
-//     return { error: message }    
-//   }
-// }
+  } catch (e) {
+    const message = exctratErrorMessage(e)
+    console.error(message);
+    return { error: message }    
+  }
+}

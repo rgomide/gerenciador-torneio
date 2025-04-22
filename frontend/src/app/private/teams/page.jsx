@@ -1,6 +1,7 @@
 'use client'
 import SelectSearcher from '@/components/common/SelectSearcher'
 import EventsForm from '@/components/EventsComponents/EventsForm'
+import TeamsForm from '@/components/TeamsComponents/TeamsForm'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -28,14 +29,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { deleteEventById, formatDate, getEventsByUnitId, getTeamsByUnitId, getUnits } from '@/services/apiService'
+import { deleteEventById, deleteTeamById, formatDate, getEventsByUnitId, getTeamsByUnitId, getUnits } from '@/services/apiService'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function page() {
   const [teams, setTeams] = useState([])
-  const [units, setUnits] = useState([])
   const [selectedUnit, setSelectedUnit] = useState(null)
 
   useEffect(() => {
@@ -55,21 +55,21 @@ function page() {
     }
   }
 
-  const deleteEvent = async (id) => {
+  const deleteTeam = async (id) => {
     if (!selectedUnit) return
 
     try {
-      const resp = await deleteEventById(id)
+      const resp = await deleteTeamById(id)
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar torneio')
+        throw new Error(resp?.error || 'Erro ao deletar equipe')
       } else {
-        toast.success('Torneio deletado com sucesso!')
-        await fetchEvents()
+        toast.success('Equipe deletado com sucesso!')
+        await fetchTeams()
       }
     } catch (e) {
-      console.error(`Erro ao deletar evento: ${e}`)
-      toast.error(e.message || 'Erro ao deletar evento')
+      console.error(`Erro ao deletar equipe: ${e}`)
+      toast.error(e.message || 'Erro ao deletar equipe')
     }
   }
 
@@ -88,26 +88,6 @@ function page() {
       <h1>Equipes</h1>
 
       <div className="flex flex-col gap-2">
-        {/* <Select
-          onValueChange={(value) => {
-            setSelectedUnit(value)
-          }}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Selecione a Unidade correspondente" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>Unidades</SelectLabel>
-              {units.map((unit) => (
-                <SelectItem key={unit.id} value={unit.id}>
-                  {unit.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
-
         <SelectSearcher onLoad={fetchUnits} labelField='name' onChange={setSelectedUnit} placeholder="Selecione a Unidade correspondente" />
       </div>
 
@@ -121,7 +101,7 @@ function page() {
             <TableHead>Última atualização</TableHead>
             {selectedUnit && (
               <TableHead>
-                <EventsForm unitId={selectedUnit} onClose={fetchTeams} />
+                <TeamsForm unitId={selectedUnit.id} onClose={fetchTeams} />
               </TableHead>
             )}
           </TableRow>
@@ -133,7 +113,7 @@ function page() {
               <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
               <TableCell className="font-medium space-x-2">
-                <EventsForm
+                <TeamsForm
                   variant="edit"
                   record={team}
                   unitId={selectedUnit}
@@ -160,7 +140,7 @@ function page() {
                       <Button
                         type="submit"
                         onClick={() => {
-                          deleteEvent(team.id)
+                          deleteTeam(team.id)
                         }}
                         variant="destructive"
                       >
