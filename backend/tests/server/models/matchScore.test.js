@@ -14,6 +14,10 @@ describe('MatchScore Model', () => {
   it('should create a team score', async () => {
     const institution = await Institution.create({ name: 'Test Institution' })
     const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+    const sport = await Sport.create({
+      name: 'Test Sport',
+      description: 'Test Description'
+    })
     const event = await Event.create({
       name: 'Test Event',
       unitId: unit.id,
@@ -23,6 +27,7 @@ describe('MatchScore Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })
@@ -33,11 +38,6 @@ describe('MatchScore Model', () => {
       finished: false,
       occurrences: 'Test occurrences',
       roundNumber: 1
-    })
-
-    const sport = await Sport.create({
-      name: 'Test Sport',
-      description: 'Test Description'
     })
 
     const team = await Team.create({
@@ -73,6 +73,9 @@ describe('MatchScore Model', () => {
   it('should create a player score', async () => {
     const institution = await Institution.create({ name: 'Test Institution' })
     const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+    const sport = await Sport.create({
+      name: 'Test Sport'
+    })
     const event = await Event.create({
       name: 'Test Event',
       unitId: unit.id,
@@ -82,6 +85,7 @@ describe('MatchScore Model', () => {
     const tournament = await Tournament.create({
       name: 'Test Tournament',
       eventId: event.id,
+      sportId: sport.id,
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-01-02')
     })

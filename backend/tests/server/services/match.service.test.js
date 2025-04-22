@@ -1,11 +1,11 @@
 const matchService = require('@server/services/match.service')
-const { Match, Tournament, Event, Unit, Institution } = require('@server/models')
-const AppError = require('@server/utils/AppError')
+const { Match, Tournament, Event, Unit, Institution, Sport } = require('@server/models')
 
 describe('Match Service', () => {
   describe('create', () => {
     it('should create a match', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -14,6 +14,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -61,6 +62,7 @@ describe('Match Service', () => {
 
     it('should throw AppError when date is not provided', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -69,6 +71,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -90,6 +93,7 @@ describe('Match Service', () => {
   describe('findAll', () => {
     it('should return all matches', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -98,6 +102,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -146,6 +151,7 @@ describe('Match Service', () => {
   describe('findByTournament', () => {
     it('should return all matches for a tournament', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -154,6 +160,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -208,6 +215,7 @@ describe('Match Service', () => {
   describe('findById', () => {
     it('should return match by id', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -216,6 +224,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -254,6 +263,7 @@ describe('Match Service', () => {
   describe('update', () => {
     it('should update match', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -262,6 +272,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -314,6 +325,7 @@ describe('Match Service', () => {
 
     it('should throw AppError when tournament does not exist', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -322,6 +334,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -354,6 +367,7 @@ describe('Match Service', () => {
   describe('remove', () => {
     it('should delete match', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -362,6 +376,7 @@ describe('Match Service', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Test Tournament',
         eventId: event.id,
         startDate: new Date('2024-01-01'),

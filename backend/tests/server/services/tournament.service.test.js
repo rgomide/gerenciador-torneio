@@ -1,11 +1,12 @@
 const tournamentService = require('@server/services/tournament.service')
-const { Tournament, Event, Unit, Institution } = require('@server/models')
+const { Tournament, Event, Unit, Institution, Sport } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 describe('Tournament Service', () => {
   describe('create', () => {
     it('should create a tournament', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -16,6 +17,7 @@ describe('Tournament Service', () => {
 
       const tournamentData = {
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -26,6 +28,7 @@ describe('Tournament Service', () => {
       expect(tournament.toJSON()).toEqual(
         expect.objectContaining({
           id: expect.any(String),
+          sportId: sport.id,
           name: tournamentData.name,
           eventId: event.id,
           startDate: tournamentData.startDate,
@@ -40,6 +43,7 @@ describe('Tournament Service', () => {
       const tournamentData = {
         name: 'Test Tournament',
         eventId: '999999',
+        sportId: '9999',
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       }
@@ -51,6 +55,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when name is not provided', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -60,6 +65,7 @@ describe('Tournament Service', () => {
       })
 
       const tournamentData = {
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -70,6 +76,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when name is empty', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -81,6 +88,7 @@ describe('Tournament Service', () => {
       const tournamentData = {
         name: '',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       }
@@ -90,6 +98,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when name is only whitespace', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -101,6 +110,7 @@ describe('Tournament Service', () => {
       const tournamentData = {
         name: '   ',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       }
@@ -112,6 +122,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when start date is not provided', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -123,6 +134,7 @@ describe('Tournament Service', () => {
       const tournamentData = {
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         endDate: new Date('2024-01-02')
       }
 
@@ -133,6 +145,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when end date is not provided', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -144,6 +157,7 @@ describe('Tournament Service', () => {
       const tournamentData = {
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01')
       }
 
@@ -154,6 +168,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when start date is after end date', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -165,6 +180,7 @@ describe('Tournament Service', () => {
       const tournamentData = {
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-02'),
         endDate: new Date('2024-01-01')
       }
@@ -178,6 +194,7 @@ describe('Tournament Service', () => {
   describe('findAll', () => {
     it('should return all tournaments with their events', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -189,12 +206,14 @@ describe('Tournament Service', () => {
       await Tournament.create({
         name: 'Test Tournament 1',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
       await Tournament.create({
         name: 'Test Tournament 2',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-03'),
         endDate: new Date('2024-01-04')
       })
@@ -208,6 +227,7 @@ describe('Tournament Service', () => {
             id: expect.any(String),
             name: expect.stringMatching(/Test Tournament [12]/),
             eventId: event.id,
+            sportId: sport.id,
             startDate: expect.any(Date),
             endDate: expect.any(Date),
             createdAt: expect.any(Date),
@@ -225,6 +245,7 @@ describe('Tournament Service', () => {
   describe('findByEvent', () => {
     it('should return all tournaments for an event', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -236,12 +257,14 @@ describe('Tournament Service', () => {
       await Tournament.create({
         name: 'Test Tournament 1',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
       await Tournament.create({
         name: 'Test Tournament 2',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-03'),
         endDate: new Date('2024-01-04')
       })
@@ -253,6 +276,7 @@ describe('Tournament Service', () => {
         expect(tournament.toJSON()).toEqual(
           expect.objectContaining({
             eventId: event.id,
+            sportId: sport.id,
             event: expect.objectContaining({
               id: event.id,
               name: event.name
@@ -270,6 +294,7 @@ describe('Tournament Service', () => {
   describe('findById', () => {
     it('should return tournament by id with event', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -280,6 +305,7 @@ describe('Tournament Service', () => {
       const tournament = await Tournament.create({
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
@@ -291,6 +317,7 @@ describe('Tournament Service', () => {
           id: tournament.id,
           name: tournament.name,
           eventId: event.id,
+          sportId: sport.id,
           startDate: tournament.startDate,
           endDate: tournament.endDate,
           event: expect.objectContaining({
@@ -309,6 +336,7 @@ describe('Tournament Service', () => {
   describe('update', () => {
     it('should update tournament', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -319,12 +347,14 @@ describe('Tournament Service', () => {
       const tournament = await Tournament.create({
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
 
       const updatedData = {
         name: 'Updated Tournament',
+        sportId: sport.id,
         startDate: new Date('2024-02-01'),
         endDate: new Date('2024-02-02')
       }
@@ -336,6 +366,7 @@ describe('Tournament Service', () => {
           id: tournament.id,
           name: updatedData.name,
           eventId: event.id,
+          sportId: sport.id,
           startDate: updatedData.startDate,
           endDate: updatedData.endDate,
           event: expect.objectContaining({
@@ -358,6 +389,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when updating to non-existent event', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -368,6 +400,7 @@ describe('Tournament Service', () => {
       const tournament = await Tournament.create({
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
@@ -375,6 +408,7 @@ describe('Tournament Service', () => {
       await expect(
         tournamentService.update(tournament.id, {
           eventId: '999999',
+          sportId: sport.id,
           name: 'Updated Tournament',
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
@@ -384,6 +418,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when name is empty', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -394,6 +429,7 @@ describe('Tournament Service', () => {
       const tournament = await Tournament.create({
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
@@ -405,6 +441,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when name is only whitespace', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -414,6 +451,7 @@ describe('Tournament Service', () => {
       })
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -426,6 +464,7 @@ describe('Tournament Service', () => {
 
     it('should throw AppError when start date is after end date', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -435,6 +474,7 @@ describe('Tournament Service', () => {
       })
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -453,6 +493,7 @@ describe('Tournament Service', () => {
   describe('remove', () => {
     it('should remove tournament', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -463,6 +504,7 @@ describe('Tournament Service', () => {
       const tournament = await Tournament.create({
         name: 'Test Tournament',
         eventId: event.id,
+        sportId: sport.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
