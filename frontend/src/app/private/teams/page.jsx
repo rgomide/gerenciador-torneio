@@ -39,12 +39,7 @@ function page() {
   const [selectedUnit, setSelectedUnit] = useState(null)
 
   useEffect(() => {
-    fetchUnits()
-  }, [])
-
-  useEffect(() => {
     fetchTeams()
-    fetchUnits()
   }, [selectedUnit])
 
   const fetchTeams = async () => {
@@ -53,7 +48,7 @@ function page() {
     }
 
     try {
-      const data = await getTeamsByUnitId(selectedUnit)
+      const data = await getTeamsByUnitId(selectedUnit.id)
       setTeams(data)
     } catch (e) {
       console.error(`Erro ao obter times: ${e}`)
@@ -78,12 +73,13 @@ function page() {
     }
   }
 
-  const fetchUnits = async () => {
+  const fetchUnits = async (searchTerm) => {
     try {
-      const data = await getUnits()
-      setUnits(data)
+      const data = await getUnits({ name: searchTerm })
+      return data
     } catch (e) {
       console.error(`Erro ao obter instituições: ${e}`)
+      return []
     }
   }
 
@@ -112,7 +108,7 @@ function page() {
           </SelectContent>
         </Select> */}
 
-        <SelectSearcher value={selectedUnit} onLoad={fetchUnits} labelField='name' onChange={setSelectedUnit} placeholder="Selecione a Unidade correspondente" />
+        <SelectSearcher onLoad={fetchUnits} labelField='name' onChange={setSelectedUnit} placeholder="Selecione a Unidade correspondente" />
       </div>
 
       <Table className="w-full">

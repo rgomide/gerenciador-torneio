@@ -116,12 +116,13 @@ export const updateInstitution = async (id, name) => {
   }
 }
 
-export const getUnits = async () => {
+export const getUnits = async (queryParams) => {
   try {
     const resp = await axios.get(`${baseURL}/units`, {
       headers: {
         Authorization: `Bearer ${getCookie('token')}`
-      }
+      },
+      params: queryParams
     })
 
     if (resp.status === 200) {
