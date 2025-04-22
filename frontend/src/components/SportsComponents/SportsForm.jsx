@@ -1,0 +1,120 @@
+import React from 'react'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Button } from '../ui/button'
+import { Pencil, Plus } from 'lucide-react'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { createSport, updateSport } from '@/services/apiService'
+import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+
+function SportsForm({ record, onClose }) {
+  const isCreate = record === undefined
+
+  const formSchema = z.object({
+    name: z.string().min(3, 'O nome do esporte deve ter pelo menos 3 caracteres')
+  })
+
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: ''
+    }
+  })
+
+  async function onSubmitCreate(values) {
+    try {
+      const resp = await createSport(values.name)
+
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || 'Erro ao criar esporte')
+      }
+
+      form.reset()
+      toast.success('Esporte criado com sucesso!')
+      if (onClose) {
+        onClose()
+      }
+    } catch (error) {
+      console.error('Erro na criação:', error)
+      toast.error(error.message || 'Erro ao criar esporte')
+    }
+  }
+
+  async function onSubmitUpdate(values) {
+    try {
+      const resp = await updateSport(record.id, values.name)
+
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || 'Erro ao editar esporte')
+      }
+
+      form.reset()
+      toast.success('Esporte editado com sucesso!')
+      if (onClose) {
+        onClose()
+      }
+    } catch (error) {
+      console.error('Erro ao editar:', error)
+      toast.error(error.message || 'Erro ao editar esporte')
+    }
+  }
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        {isCreate ? (
+          <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
+            <Plus className="h-4 w-4" />
+          </Button>
+        ) : (
+          <Button variant="outline" size="icon">
+            <Pencil />
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Instituição</DialogTitle>
+          <DialogDescription>
+            Preencha os dados corretamente.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form
+            onSubmit={
+              isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
+            }
+            className="space-y-4"
+          >
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Nome do esporte</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={isCreate ? 'Nome do esporte' : record.name}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogTrigger asChild>
+              <Button type={'submit'} className="bg-emerald-600 hover:bg-emerald-700">
+                Salvar
+              </Button>
+            </DialogTrigger>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+export default SportsForm

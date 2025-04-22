@@ -44,7 +44,7 @@ function page() {
             <TableHead>Última atualização</TableHead>
             <TableHead>Unidades</TableHead>
             <TableHead>
-              <InstitutionForm variant="create" fetchFunction={fetchInstitutions} />
+              <InstitutionForm onClose={fetchInstitutions} />
             </TableHead>
           </TableRow>
         </TableHeader>

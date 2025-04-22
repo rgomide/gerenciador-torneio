@@ -23,7 +23,7 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { deleteCookie } from 'cookies-next'
-import { Calendar, FileUser, Home, Landmark, ShieldHalf, Trophy, UserRoundX } from 'lucide-react'
+import { Calendar, FileUser, Home, Landmark, ShieldHalf, Trophy, UserRoundX, Volleyball } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
@@ -57,6 +57,11 @@ const items = [
     title: 'Jogadores',
     url: '/private/players',
     icon: FileUser
+  },
+  {
+    title: 'Esportes',
+    url: '/private/sports',
+    icon: Volleyball
   }
 ]
 
