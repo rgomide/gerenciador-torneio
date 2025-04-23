@@ -42,10 +42,6 @@ const findAll = async (searchParams) => {
     where,
     include: [
       {
-        model: Unit,
-        as: 'unit'
-      },
-      {
         model: Sport,
         as: 'sport'
       }
@@ -57,10 +53,6 @@ const findAll = async (searchParams) => {
 const findById = async (id) => {
   const team = await Team.findByPk(id, {
     include: [
-      {
-        model: Unit,
-        as: 'unit'
-      },
       {
         model: Sport,
         as: 'sport'
@@ -102,8 +94,8 @@ const findBySport = async (sportId) => {
     where: { sportId },
     include: [
       {
-        model: Unit,
-        as: 'unit'
+        model: Sport,
+        as: 'sport'
       }
     ]
   })

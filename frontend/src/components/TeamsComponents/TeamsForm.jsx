@@ -19,81 +19,66 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 
-function TournamentsForm({ record, onClose, eventId }) {
-  const { getSports, createTournament, updateTournament } = useApi()
+function TeamsForm({ record, unitId, onClose }) {
+  const { getSports, createTeam, updateTeam } = useApi()
+  const [selectedSport, setSelectedSport] = useState(record?.sport)
 
   const isCreate = record === undefined
 
-  const [selectedSport, setSelectedSport] = useState(record?.sport)
-
   const formSchema = z.object({
-    name: z.string().min(3, 'O nome do Torneio deve ter pelo menos 3 caracteres'),
-    startDate: z.string().min(1, 'A data de início é obrigatória'),
-    endDate: z.string().min(1, 'A data de término \é obrigatória')
+    name: z.string().min(3, 'O nome da equipe deve ter pelo menos 3 caracteres')
   })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      startDate: record?.startDate || '',
-      endDate: record?.endDate || ''
+      name: ''
     }
   })
 
-  const fetchSports = async (searchTerm) => {
+  async function fetchSports(searchTerm) {
     const response = await getSports({ name: searchTerm })
     if (response.requestSuccessful) {
       return response.data
-    } else {
-      toast.error(response.error)
-      return []
     }
+    return []
   }
 
   async function onSubmitCreate(values) {
-    const sportId = selectedSport?.id
+    try {
+      const resp = await createTeam(values.name, unitId, selectedSport?.id)
 
-    const response = await createTournament(
-      values.name,
-      eventId,
-      values.startDate,
-      values.endDate,
-      sportId
-    )
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || 'Erro ao criar equipe')
+      }
 
-    if (response.requestSuccessful) {
       form.reset()
-      toast.success('Torneio criado com sucesso!')
-
+      toast.success('Equipe criada com sucesso!')
       if (onClose) {
         onClose()
       }
-    } else {
-      toast.error(response.error)
+    } catch (error) {
+      console.error('Erro na criação:', error)
+      toast.error(error.message || 'Erro ao criar equipe')
     }
   }
 
   async function onSubmitUpdate(values) {
-    const sportId = selectedSport?.id
+    try {
+      const resp = await updateTeam(record.id, values.name)
 
-    const response = await updateTournament(
-      record.id,
-      values.name,
-      record.eventId,
-      values.startDate,
-      values.endDate,
-      sportId
-    )
+      if (!resp || resp.error) {
+        throw new Error(resp?.error || 'Erro ao editar equipe')
+      }
 
-    if (response.requestSuccessful) {
       form.reset()
-      toast.success('Torneio editado com sucesso!')
+      toast.success('Equipe editada com sucesso!')
       if (onClose) {
         onClose()
       }
-    } else {
-      toast.error(response.error)
+    } catch (error) {
+      console.error('Erro ao editar:', error.error)
+      toast.error(error.error || 'Erro ao editar equipe')
     }
   }
 
@@ -112,7 +97,7 @@ function TournamentsForm({ record, onClose, eventId }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Torneio</DialogTitle>
+          <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Equipe</DialogTitle>
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -120,16 +105,16 @@ function TournamentsForm({ record, onClose, eventId }) {
             onSubmit={
               isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
             }
-            className="flex flex-col gap-4 space-y-4"
+            className="space-y-4"
           >
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nome do Torneio</FormLabel>
+                  <FormLabel>Nome da equipe</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome do torneio' : record.name} {...field} />
+                    <Input placeholder={isCreate ? 'Nome da equipe' : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -146,47 +131,13 @@ function TournamentsForm({ record, onClose, eventId }) {
                     <SelectSearcher
                       labelField="name"
                       idField="id"
-                      placeholder="Selecione o esporte"
+                      placeholder="Selecione o esporte correspondente"
                       minCharacters={2}
                       onLoad={fetchSports}
                       value={record?.sport}
                       onChange={setSelectedSport}
                     />
                   </FormControl>
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="startDate"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Data de início</FormLabel>
-                  <input
-                    type="date"
-                    className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.startDate}
-                    {...field}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="endDate"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Data de término</FormLabel>
-                  <input
-                    type="date"
-                    className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.endDate}
-                    {...field}
-                  />
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -203,4 +154,4 @@ function TournamentsForm({ record, onClose, eventId }) {
   )
 }
 
-export default TournamentsForm
+export default TeamsForm

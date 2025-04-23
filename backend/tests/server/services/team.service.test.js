@@ -106,10 +106,6 @@ describe('Team Service', () => {
             sportId: sport.id,
             createdAt: expect.any(Date),
             updatedAt: expect.any(Date),
-            unit: expect.objectContaining({
-              id: unit.id,
-              name: unit.name
-            }),
             sport: expect.objectContaining({
               id: sport.id,
               name: sport.name
@@ -179,11 +175,7 @@ describe('Team Service', () => {
       teams.forEach((team) => {
         expect(team.toJSON()).toEqual(
           expect.objectContaining({
-            sportId: sport.id,
-            unit: expect.objectContaining({
-              id: unit.id,
-              name: unit.name
-            })
+            sportId: sport.id
           })
         )
       })
@@ -213,10 +205,6 @@ describe('Team Service', () => {
           name: team.name,
           unitId: unit.id,
           sportId: sport.id,
-          unit: expect.objectContaining({
-            id: unit.id,
-            name: unit.name
-          }),
           sport: expect.objectContaining({
             id: sport.id,
             name: sport.name
