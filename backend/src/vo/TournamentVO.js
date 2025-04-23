@@ -1,10 +1,14 @@
+const SportVO = require('./SportVO')
+
 class TournamentVO {
   constructor(tournament) {
     this.tournament = tournament
   }
 
   toJSON() {
-    const { id, name, eventId, startDate, endDate, createdAt, updatedAt } = this.tournament
+    const { id, name, eventId, startDate, endDate, createdAt, updatedAt, sport } = this.tournament
+
+    const sportVO = sport ? new SportVO(sport).toJSON() : null
 
     return {
       id,
@@ -13,7 +17,8 @@ class TournamentVO {
       startDate,
       endDate,
       createdAt,
-      updatedAt
+      updatedAt,
+      sport: sportVO
     }
   }
 

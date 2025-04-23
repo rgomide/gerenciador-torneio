@@ -1,4 +1,4 @@
-const { Tournament, Event } = require('@server/models')
+const { Tournament, Event, Sport } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 const validateName = (name) => {
@@ -40,6 +40,10 @@ const findAll = async () => {
       {
         model: Event,
         as: 'event'
+      },
+      {
+        model: Sport,
+        as: 'sport'
       }
     ]
   })
@@ -57,6 +61,10 @@ const findByEvent = async (eventId) => {
       {
         model: Event,
         as: 'event'
+      },
+      {
+        model: Sport,
+        as: 'sport'
       }
     ]
   })
@@ -68,6 +76,10 @@ const findById = async (id) => {
       {
         model: Event,
         as: 'event'
+      },
+      {
+        model: Sport,
+        as: 'sport'
       }
     ]
   })
