@@ -96,7 +96,6 @@ function page() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Nome</TableHead>
-            <TableHead>Data de início</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
             {selectedUnit && (
