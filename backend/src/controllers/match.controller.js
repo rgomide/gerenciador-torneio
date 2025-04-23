@@ -1,4 +1,11 @@
-const { create, findAll, findById, update, remove } = require('@server/services/match.service')
+const {
+  create,
+  findAll,
+  findById,
+  update,
+  remove,
+  finish
+} = require('@server/services/match.service')
 const matchParticipantService = require('@server/services/matchParticipant.service')
 const router = require('express').Router({ mergeParams: true })
 const authorizationMiddleware = require('@server/middleware/authorization')
@@ -194,7 +201,9 @@ router.get(
  */
 router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next) => {
   try {
-    const match = await create(req.body)
+    const matchData = req.body
+    matchData.finished = false
+    const match = await create(matchData)
     const matchVO = new MatchVO(match)
 
     return res.status(201).json(matchVO)
@@ -202,6 +211,67 @@ router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next)
     next(error)
   }
 })
+
+/**
+ * @openapi
+ * /api/matches/{matchId}/finish:
+ *   post:
+ *     description: Finish a match
+ *     tags:
+ *       - Matches
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: matchId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Match finished successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 tournamentId:
+ *                   type: string
+ *                 date:
+ *                   type: string
+ *                   format: date-time
+ *                 location:
+ *                   type: string
+ *                 finished:
+ *                   type: boolean
+ *                 occurrences:
+ *                   type: string
+ *                 roundNumber:
+ *                   type: integer
+ *                 createdAt:
+ *                   type: string
+ *                   format: date-time
+ *                 updatedAt:
+ *                   type: string
+ *                   format: date-time
+ */
+router.post(
+  '/matches/:matchId/finish',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { matchId } = req.params
+      const match = await finish(matchId)
+      const matchVO = new MatchVO(match)
+
+      return res.json(matchVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 /**
  * @openapi
@@ -274,7 +344,9 @@ router.put(
   async (req, res, next) => {
     try {
       const { matchId } = req.params
-      const match = await update(matchId, req.body)
+      const matchData = req.body
+      matchData.finished = false
+      const match = await update(matchId, matchData)
       const matchVO = new MatchVO(match)
 
       return res.json(matchVO)

@@ -27,7 +27,8 @@ const {
  */
 router.get('/', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
-    const sports = await findAll()
+    const { name } = req.query
+    const sports = await findAll(name)
     const sportsVO = SportVO.parseCollection(sports)
 
     return res.json(sportsVO)

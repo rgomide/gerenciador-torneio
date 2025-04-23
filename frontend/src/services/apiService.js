@@ -223,7 +223,7 @@ export const getEvents = async () => {
     }
   } catch (e) {
     const message = exctratErrorMessage(e)
-    console.error(`Erro ao criar instituição: ${message}`)
+    console.error(message)
     return { error: message }
   }
 }
@@ -342,7 +342,7 @@ export const getTournamentsByEventId = async (eventId) => {
   }
 }
 
-export const createTournament = async (name, eventId, startDate, endDate) => {
+export const createTournament = async (name, eventId, startDate, endDate, sportId) => {
   try {
     const resp = await axios.post(
       `${baseURL}/tournaments`,
@@ -350,7 +350,8 @@ export const createTournament = async (name, eventId, startDate, endDate) => {
         name,
         eventId,
         startDate,
-        endDate
+        endDate,
+        sportId
       },
       {
         headers: { Authorization: `Bearer ${getCookie('token')}` }
@@ -369,7 +370,7 @@ export const createTournament = async (name, eventId, startDate, endDate) => {
   }
 }
 
-export const updateTournament = async (id, name, eventId, startDate, endDate) => {
+export const updateTournament = async (id, name, eventId, startDate, endDate, sportId) => {
   try {
     const resp = await axios.put(
       `${baseURL}/tournaments/${id}`,
@@ -377,7 +378,8 @@ export const updateTournament = async (id, name, eventId, startDate, endDate) =>
         name: name,
         eventId: eventId,
         startDate: startDate,
-        endDate: endDate
+        endDate: endDate,
+        sportId: sportId
       },
       {
         headers: {
@@ -418,11 +420,14 @@ export const deleteTournamentById = async (tournamentId) => {
   }
 }
 
-export const getSports = async () => {
+export const getSports = async (searchTerm) => {
   try {
     const resp = await axios.get(`${baseURL}/sports`, {
       headers: {
         Authorization: `Bearer ${getCookie('token')}`
+      },
+      params: {
+        name: searchTerm
       }
     })
 
@@ -433,16 +438,17 @@ export const getSports = async () => {
     }
   } catch (e) {
     const message = exctratErrorMessage(e)
-    console.error(message);
+    console.error(message)
     return { error: message }
   }
 }
 
 export const createSport = async (name) => {
   try {
-    const resp = await axios.post(`${baseURL}/sports`,
+    const resp = await axios.post(
+      `${baseURL}/sports`,
       {
-        name,
+        name
       },
       {
         headers: { Authorization: `Bearer ${getCookie('token')}` }
@@ -454,16 +460,18 @@ export const createSport = async (name) => {
     }
   } catch (e) {
     const message = exctratErrorMessage(e)
-    console.error(message);
+    console.error(message)
     return { error: message }
   }
 }
 
 export const updateSport = async (id, name) => {
   try {
-    const resp = await axios.put(`${baseURL}/sports/${id}`, {
-      name: name
-    },
+    const resp = await axios.put(
+      `${baseURL}/sports/${id}`,
+      {
+        name: name
+      },
       {
         headers: { Authorization: `Bearer ${getCookie('token')}` }
       }
@@ -472,10 +480,9 @@ export const updateSport = async (id, name) => {
     if (resp.status === 200) {
       return resp.data
     }
-
   } catch (e) {
     const message = exctratErrorMessage(e)
-    console.error(message);
+    console.error(message)
     return { error: message }
   }
 }
@@ -489,15 +496,14 @@ export const deleteSportById = async (sportId) => {
     })
 
     if (resp.status === 204) {
-      return { success: true}
+      return { success: true }
     } else {
       throw new Error(resp.data.message)
     }
-
   } catch (e) {
     const message = exctratErrorMessage(e)
-    console.error(message);
-    return { error: message }    
+    console.error(message)
+    return { error: message }
   }
 }
 

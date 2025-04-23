@@ -11,7 +11,8 @@ const {
   Team,
   Player,
   Sport,
-  MatchScore
+  MatchScore,
+  MatchSnapshot
 } = require('@server/models')
 const app = require('@server/app')
 const jwt = require('jsonwebtoken')
@@ -47,6 +48,7 @@ describe('Match Controller', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -142,6 +144,7 @@ describe('Match Controller', () => {
       })
 
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -150,6 +153,7 @@ describe('Match Controller', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -208,6 +212,7 @@ describe('Match Controller', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -329,6 +334,7 @@ describe('Match Controller', () => {
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -337,6 +343,7 @@ describe('Match Controller', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -347,7 +354,7 @@ describe('Match Controller', () => {
         tournamentId: tournament.id,
         date: new Date('2024-01-01'),
         location: 'Test Location',
-        finished: false,
+        finished: true,
         occurrences: 'Test Occurrences',
         roundNumber: 1
       }
@@ -413,6 +420,181 @@ describe('Match Controller', () => {
     })
   })
 
+  describe('POST /api/matches/:matchId/finish', () => {
+    it('should finish a match when user is admin', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const sport = await Sport.create({
+        name: 'Test Sport'
+      })
+
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      const unit = await Unit.create({
+        name: 'Test Unit',
+        institutionId: institution.id
+      })
+
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        sportId: sport.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const matchData = {
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: false,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      }
+
+      const match = await Match.create(matchData)
+
+      const team = await Team.create({
+        name: 'Test Team',
+        unitId: unit.id,
+        sportId: sport.id
+      })
+
+      const player = await Player.create({
+        name: 'Test Player',
+        unitId: unit.id,
+        email: 'test@test.com'
+      })
+
+      const matchParticipantData = {
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team.id
+      }
+      const matchParticipantData2 = {
+        matchId: match.id,
+        participantType: 'player',
+        playerId: player.id
+      }
+
+      await MatchParticipant.create(matchParticipantData)
+      await MatchParticipant.create(matchParticipantData2)
+
+      const matchScoreData = {
+        matchId: match.id,
+        participantType: 'team',
+        teamId: team.id,
+        score: 10
+      }
+
+      const matchScoreData2 = {
+        matchId: match.id,
+        participantType: 'player',
+        playerId: player.id,
+        score: 10,
+        details: 'Test details'
+      }
+
+      await MatchScore.create(matchScoreData)
+      await MatchScore.create(matchScoreData2)
+
+      const response = await request(app)
+        .post(`/api/matches/${match.id}/finish`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          id: match.id,
+          tournamentId: tournament.id,
+          date: match.date.toISOString(),
+          location: 'Test Location',
+          finished: true,
+          occurrences: 'Test occurrences',
+          roundNumber: 1,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String)
+        })
+      )
+
+      const matchSnapshot = await MatchSnapshot.findOne({
+        where: { matchId: match.id }
+      })
+
+      expect(matchSnapshot.toJSON()).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          matchId: match.id,
+          matchDate: new Date('2024-01-01T13:00:00.000Z'),
+          matchLocation: 'Test Location',
+          matchRoundNumber: 1,
+          matchOccurrences: 'Test occurrences',
+          tournamentId: tournament.id,
+          tournamentName: 'Test Tournament',
+          tournamentStartDate: new Date('2024-01-01T00:00:00.000Z'),
+          tournamentEndDate: new Date('2024-01-02T00:00:00.000Z'),
+          eventId: event.id,
+          eventName: 'Test Event',
+          eventStartDate: new Date('2024-01-01T00:00:00.000Z'),
+          eventEndDate: new Date('2024-01-02T00:00:00.000Z'),
+          unitId: unit.id,
+          unitName: 'Test Unit',
+          institutionId: institution.id,
+          institutionName: 'Test Institution',
+          sportId: sport.id,
+          sportName: 'Test Sport',
+          totalScores: [
+            { id: team.id, name: 'Test Team', totalScore: 10 },
+            { id: player.id, name: 'Test Player', totalScore: 10 }
+          ],
+          matchScores: [
+            {
+              id: team.id,
+              name: 'Test Team',
+              score: 10,
+              details: null,
+              participantType: 'team'
+            },
+            {
+              id: player.id,
+              name: 'Test Player',
+              score: 10,
+              details: 'Test details',
+              participantType: 'player'
+            }
+          ],
+          matchParticipants: [
+            { id: team.id, name: 'Test Team', participantType: 'team' },
+            { id: player.id, name: 'Test Player', participantType: 'player' }
+          ],
+          snapshotTakenAt: expect.any(Date),
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date)
+        })
+      )
+    })
+  })
+
   describe('PUT /api/matches/:matchId', () => {
     it('should update a match when user is admin', async () => {
       const adminRole = await Role.create({ name: ROLES.ADMIN })
@@ -429,6 +611,7 @@ describe('Match Controller', () => {
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -437,6 +620,7 @@ describe('Match Controller', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -470,7 +654,7 @@ describe('Match Controller', () => {
           tournamentId: tournament.id,
           date: match.date.toISOString(),
           location: 'Updated Location',
-          finished: true,
+          finished: false,
           occurrences: 'Updated Occurrences',
           roundNumber: 2,
           createdAt: expect.any(String),
@@ -533,6 +717,7 @@ describe('Match Controller', () => {
       const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
       const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const event = await Event.create({
         name: 'Test Event',
@@ -541,6 +726,7 @@ describe('Match Controller', () => {
         endDate: new Date('2024-01-02')
       })
       const tournament = await Tournament.create({
+        sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
         startDate: new Date('2024-01-01'),
@@ -612,6 +798,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -620,6 +807,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -632,11 +820,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -720,6 +903,7 @@ describe('Match Controller', () => {
         })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -728,6 +912,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -740,11 +925,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -824,6 +1004,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -832,6 +1013,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -844,11 +1026,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -889,6 +1066,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -897,6 +1075,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -936,6 +1115,7 @@ describe('Match Controller', () => {
         })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -944,6 +1124,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -956,11 +1137,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -1008,6 +1184,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1016,6 +1193,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1028,11 +1206,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -1135,6 +1308,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1143,6 +1317,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1188,6 +1363,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1196,6 +1372,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1243,6 +1420,7 @@ describe('Match Controller', () => {
         })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1251,6 +1429,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1305,6 +1484,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1313,6 +1493,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1325,11 +1506,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -1378,6 +1554,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1386,6 +1563,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1473,6 +1651,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1481,6 +1660,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1524,6 +1704,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1532,6 +1713,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1577,6 +1759,7 @@ describe('Match Controller', () => {
         })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1585,6 +1768,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Test Tournament',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1641,6 +1825,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1649,6 +1834,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1661,11 +1847,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -1757,6 +1938,7 @@ describe('Match Controller', () => {
         })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1765,6 +1947,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1777,11 +1960,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -1865,6 +2043,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1873,6 +2052,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -1885,11 +2065,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -1942,6 +2117,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -1950,6 +2126,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2043,6 +2220,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2051,6 +2229,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2096,6 +2275,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2104,6 +2284,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2160,6 +2341,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2168,6 +2350,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2180,11 +2363,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -2227,6 +2405,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2235,6 +2414,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2281,6 +2461,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2289,6 +2470,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2301,11 +2483,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({
@@ -2364,6 +2541,7 @@ describe('Match Controller', () => {
         const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2372,6 +2550,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2417,6 +2596,7 @@ describe('Match Controller', () => {
         })
 
         const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
         const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
         const event = await Event.create({
           name: 'Test Event',
@@ -2425,6 +2605,7 @@ describe('Match Controller', () => {
           endDate: new Date('2024-01-02')
         })
         const tournament = await Tournament.create({
+          sportId: sport.id,
           name: 'Tournament 1',
           eventId: event.id,
           startDate: new Date('2024-01-01'),
@@ -2437,11 +2618,6 @@ describe('Match Controller', () => {
           finished: false,
           occurrences: 'Test Occurrences',
           roundNumber: 1
-        })
-
-        const sport = await Sport.create({
-          name: 'Test Sport',
-          description: 'Test Description'
         })
 
         const team = await Team.create({

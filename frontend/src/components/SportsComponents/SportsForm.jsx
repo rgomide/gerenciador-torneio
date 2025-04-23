@@ -1,14 +1,20 @@
-import React from 'react'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { Button } from '../ui/button'
-import { Pencil, Plus } from 'lucide-react'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
-import { Input } from '../ui/input'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { createSport, updateSport } from '@/services/apiService'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
+import { z } from 'zod'
+import { Button } from '../ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '../ui/dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
+import { Input } from '../ui/input'
 
 function SportsForm({ record, onClose }) {
   const isCreate = record === undefined
@@ -78,9 +84,7 @@ function SportsForm({ record, onClose }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Instituição</DialogTitle>
-          <DialogDescription>
-            Preencha os dados corretamente.
-          </DialogDescription>
+          <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -96,10 +100,7 @@ function SportsForm({ record, onClose }) {
                 <FormItem>
                   <FormLabel>Nome do esporte</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={isCreate ? 'Nome do esporte' : record.name}
-                      {...field}
-                    />
+                    <Input placeholder={isCreate ? 'Nome do esporte' : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

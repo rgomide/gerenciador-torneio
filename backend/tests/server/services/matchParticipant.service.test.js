@@ -41,6 +41,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -105,6 +106,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -196,8 +198,14 @@ describe('MatchParticipant Service', () => {
         unitId: unit.id
       })
 
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -240,8 +248,14 @@ describe('MatchParticipant Service', () => {
         unitId: unit.id
       })
 
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
+
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -293,6 +307,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -361,6 +376,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -435,6 +451,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -518,6 +535,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -584,9 +602,14 @@ describe('MatchParticipant Service', () => {
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         unitId: unit.id
       })
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -660,6 +683,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -741,6 +765,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -799,6 +824,7 @@ describe('MatchParticipant Service', () => {
 
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         startDate: new Date(),
         endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         eventId: event.id
@@ -858,8 +884,13 @@ describe('MatchParticipant Service', () => {
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -871,11 +902,6 @@ describe('MatchParticipant Service', () => {
         finished: false,
         occurrences: 'Test occurrences',
         roundNumber: 1
-      })
-
-      const sport = await Sport.create({
-        name: 'Test Sport',
-        description: 'Test Description'
       })
 
       const team = await Team.create({
@@ -929,8 +955,13 @@ describe('MatchParticipant Service', () => {
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -942,11 +973,6 @@ describe('MatchParticipant Service', () => {
         finished: false,
         occurrences: 'Test occurrences',
         roundNumber: 1
-      })
-
-      const sport = await Sport.create({
-        name: 'Test Sport',
-        description: 'Test Description'
       })
 
       const team = await Team.create({
@@ -1025,8 +1051,13 @@ describe('MatchParticipant Service', () => {
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
@@ -1062,8 +1093,13 @@ describe('MatchParticipant Service', () => {
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       })
+      const sport = await Sport.create({
+        name: 'Test Sport',
+        description: 'Test Description'
+      })
       const tournament = await Tournament.create({
         name: 'Test Tournament',
+        sportId: sport.id,
         eventId: event.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')

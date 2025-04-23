@@ -1,4 +1,16 @@
-const { Match, Tournament, MatchScore, Team, Player } = require('@server/models')
+const {
+  Match,
+  MatchSnapshot,
+  Tournament,
+  MatchScore,
+  Team,
+  Player,
+  MatchParticipant,
+  Unit,
+  Institution,
+  Event
+} = require('@server/models')
+const MatchSnapshotVO = require('@server/vo/MatchSnapshotVO')
 const AppError = require('@server/utils/AppError')
 
 const validateTournament = async (tournamentId) => {
@@ -109,8 +121,78 @@ const remove = async (id) => {
   await match.destroy()
 }
 
+const finish = async (matchId) => {
+  const match = await Match.findByPk(matchId, {
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament',
+        include: [
+          {
+            model: Event,
+            as: 'event',
+            include: [
+              {
+                model: Unit,
+                as: 'unit',
+                include: [
+                  {
+                    model: Institution,
+                    as: 'institution'
+                  }
+                ]
+              }
+            ]
+          },
+          'sport'
+        ]
+      },
+      {
+        model: MatchParticipant,
+        as: 'participants',
+        include: [
+          {
+            model: Team,
+            as: 'team'
+          },
+          {
+            model: Player,
+            as: 'player'
+          }
+        ]
+      },
+      {
+        model: MatchScore,
+        as: 'scores',
+        include: [
+          {
+            model: Team,
+            as: 'team'
+          },
+          {
+            model: Player,
+            as: 'player'
+          }
+        ]
+      }
+    ]
+  })
+
+  if (!match) {
+    throw new AppError('Partida não encontrada', 404)
+  }
+
+  const matchSnapshot = MatchSnapshotVO.fromMatch(match)
+  await MatchSnapshot.create(matchSnapshot)
+
+  await match.update({ finished: true })
+
+  return findById(matchId)
+}
+
 module.exports = {
   create,
+  finish,
   findAll,
   findById,
   findByTournament,

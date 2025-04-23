@@ -40,6 +40,9 @@ const MatchVO = require('@server/vo/MatchVO')
  *                   endDate: "2024-01-02T00:00:00.000Z"
  *                   createdAt: "2024-01-01T00:00:00.000Z"
  *                   updatedAt: "2024-01-01T00:00:00.000Z"
+ *                   sport:
+ *                     id: "1"
+ *                     name: "Tournament 1"
  */
 router.get('/tournaments', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
@@ -82,6 +85,9 @@ router.get('/tournaments', authorizationMiddleware([ADMIN, MANAGER]), async (req
  *                   endDate: "2024-01-02T00:00:00.000Z"
  *                   createdAt: "2024-01-01T00:00:00.000Z"
  *                   updatedAt: "2024-01-01T00:00:00.000Z"
+ *                   sport:
+ *                     id: "1"
+ *                     name: "Tournament 1"
  */
 router.get(
   '/events/:eventId/tournaments',
@@ -138,6 +144,13 @@ router.get(
  *                   type: string
  *                 updatedAt:
  *                   type: string
+ *                 sport:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                     name:
+ *                       type: string
  */
 router.get(
   '/tournaments/:tournamentId',
