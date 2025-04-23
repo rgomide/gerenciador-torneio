@@ -1,4 +1,4 @@
-import { createUnit, updateUnit } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -17,6 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function UnitForm({ record, institutionId, onClose }) {
+  const { createUnit, updateUnit } = useApi()
   const isCreate = record === undefined
 
   const formSchema = z.object({
@@ -31,40 +32,30 @@ function UnitForm({ record, institutionId, onClose }) {
   })
 
   async function onSubmitCreate(values) {
-    try {
-      const resp = await createUnit(values.name, institutionId)
+    const response = await createUnit(values.name, institutionId)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar unidade')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Unidade criada com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar unidade')
+    } else {
+      toast.error(response.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    try {
-      const resp = await updateUnit(record.id, values.name)
+    const response = await updateUnit(record.id, values.name)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar instituição')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
-      toast.success('Instituição editada com sucesso!')
+      toast.success('Unidade editada com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro ao editar:', error.error)
-      toast.error(error.error || 'Erro ao editar unidade')
+    } else {
+      toast.error(response.error)
     }
   }
 

@@ -1,4 +1,5 @@
 'use client'
+import Spinner from '@/components/common/Spinner'
 import SportsForm from '@/components/SportsComponents/SportsForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -18,12 +19,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { deleteSportById, getSports } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function page() {
+  const { getSports, deleteSportById, isLoading } = useApi()
   const [sports, setSports] = useState([])
 
   useEffect(() => {
@@ -31,32 +33,28 @@ function page() {
   }, [])
 
   const fetchSports = async () => {
-    try {
-      const data = await getSports()
-      setSports(data)
-    } catch (error) {
-      console.error(`Erro ao obter esportes: ${error}`)
+    const response = await getSports()
+    if (response.requestSuccessful) {
+      setSports(response.data)
+    } else {
+      toast.error(response.error)
     }
   }
 
   const deleteSport = async (id) => {
-    try {
-      const resp = await deleteSportById(id)
+    const response = await deleteSportById(id)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar esporte')
-      } else {
-        toast.success('Esporte deletado com sucesso!')
-        await fetchSports()
-      }
-    } catch (e) {
-      console.error(`Erro ao deletar esporte: ${e}`)
-      toast.error(e.message || 'Erro ao deletar esporte')
+    if (response.requestSuccessful) {
+      toast.success('Esporte deletado com sucesso!')
+      await fetchSports()
+    } else {
+      toast.error(response.error)
     }
   }
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <Spinner />}
       <h1>Esportes</h1>
 
       <Table className="w-full">

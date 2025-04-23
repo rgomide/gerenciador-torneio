@@ -10,12 +10,14 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { formatDate, getInstitutions } from '@/services/apiService'
+import { formatDate } from '@/services/dateUtil'
+import useApi from '@/services/useApi'
 import { SquareArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
 function page() {
+  const { getInstitutions, isLoading } = useApi()
   const [institutions, setInstitutions] = useState([])
 
   useEffect(() => {
@@ -24,10 +26,10 @@ function page() {
 
   const fetchInstitutions = async () => {
     try {
-      const data = await getInstitutions()
-      setInstitutions(data)
+      const response = await getInstitutions()
+      setInstitutions(response.data)
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`)
+      console.error(e)
     }
   }
 

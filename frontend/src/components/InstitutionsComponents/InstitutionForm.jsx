@@ -1,4 +1,4 @@
-import { createInstitution, updateInstitution } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -17,6 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function InstitutionForm({ record, onClose }) {
+  const { createInstitution, updateInstitution } = useApi()
   const isCreate = record === undefined
 
   const formSchema = z.object({
@@ -31,40 +32,30 @@ function InstitutionForm({ record, onClose }) {
   })
 
   async function onSubmitCreate(values) {
-    try {
-      const resp = await createInstitution(values.name)
+    const response = await createInstitution(values.name)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar instituição')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Instituição criada com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar instituição')
+    } else {
+      toast.error(response.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    try {
-      const resp = await updateInstitution(record.id, values.name)
+    const response = await updateInstitution(record.id, values.name)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar instituição')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Instituição editada com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro ao editar:', error)
-      toast.error(error.message || 'Erro ao editar instituição')
+    } else {
+      toast.error(response.error)
     }
   }
 

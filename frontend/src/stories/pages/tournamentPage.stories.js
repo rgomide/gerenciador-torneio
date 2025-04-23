@@ -50,6 +50,10 @@ const handlers = [
       { id: 2, name: 'Event 2' }
     ])
   }),
+  http.delete('http://localhost:3000/api/tournaments/:id', async () => {
+    await delay(500)
+    return HttpResponse.json({ message: 'Torneio deletado com sucesso' }, { status: 200 })
+  }),
   http.get('http://localhost:3000/api/events/:eventId/tournaments', async () => {
     await delay(500)
     return HttpResponse.json([
@@ -81,12 +85,29 @@ const handlers = [
   })
 ]
 
+const handlersWithError = [
+  http.get('http://localhost:3000/api/events', async () => {
+    await delay(500)
+    return HttpResponse.json({ error: 'Erro ao obter eventos' }, { status: 500 })
+  })
+]
+
 export const Default = {
   name: 'Tournament Page',
   args: {},
   parameters: {
     msw: {
       handlers
+    }
+  }
+}
+
+export const ErrorLoadingEvents = {
+  name: 'Error Loading Events',
+  args: {},
+  parameters: {
+    msw: {
+      handlers: handlersWithError
     }
   }
 }

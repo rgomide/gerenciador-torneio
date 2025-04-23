@@ -1,4 +1,5 @@
 'use client'
+import Spinner from '@/components/common/Spinner'
 import TournamentsForm from '@/components/TournamentsComponents/TournamentForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,12 +28,8 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import {
-  deleteTournamentById,
-  formatDate,
-  getEvents,
-  getTournamentsByEventId
-} from '@/services/apiService'
+import { formatDate } from '@/services/dateUtil'
+import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
@@ -41,6 +38,8 @@ function page() {
   const [tournaments, setTournaments] = useState([])
   const [events, setEvents] = useState([])
   const [selectedEvent, setSelectedEvent] = useState(null)
+
+  const { getEvents, getTournamentsByEventId, deleteTournamentById, isLoading } = useApi()
 
   useEffect(() => {
     fetchEvents()
@@ -56,43 +55,41 @@ function page() {
       return
     }
 
-    try {
-      const data = await getTournamentsByEventId(selectedEvent)
-      setTournaments(data)
-    } catch (e) {
-      console.error(`Erro ao obter torneios: ${e}`)
+    const response = await getTournamentsByEventId(selectedEvent)
+
+    if (response.requestSuccessful) {
+      setTournaments(response.data)
+    } else {
+      toast.error(response.error || 'Erro ao obter torneios')
     }
   }
 
   const deleteTournament = async (id) => {
     if (!selectedEvent) return
 
-    try {
-      const resp = await deleteTournamentById(id)
+    const resp = await deleteTournamentById(id)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar torneio')
-      } else {
-        toast.success('Torneio deletado com sucesso!')
-        await fetchTournaments()
-      }
-    } catch (e) {
-      console.error(`Erro ao deletar evento: ${e}`)
-      toast.error(e.message || 'Erro ao deletar torneio')
+    if (resp.requestSuccessful) {
+      toast.success('Torneio deletado com sucesso!')
+      await fetchTournaments()
+    } else {
+      console.error(resp.error)
+      toast.error(resp.error)
     }
   }
 
   const fetchEvents = async () => {
-    try {
-      const data = await getEvents()
-      setEvents(data)
-    } catch (e) {
-      console.error(`Erro ao obter eventos: ${e}`)
+    const response = await getEvents()
+    if (response.requestSuccessful) {
+      setEvents(response.data)
+    } else {
+      toast.error(response.error)
     }
   }
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <Spinner />}
       <h1>Torneios</h1>
 
       <div className="flex flex-col gap-2">

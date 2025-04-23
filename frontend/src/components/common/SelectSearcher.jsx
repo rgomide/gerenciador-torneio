@@ -47,7 +47,7 @@ const SelectSearcher = ({
 
     const debounceTimer = setTimeout(fetchOptions, 300)
     return () => clearTimeout(debounceTimer)
-  }, [searchTerm, onLoad])
+  }, [searchTerm])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
