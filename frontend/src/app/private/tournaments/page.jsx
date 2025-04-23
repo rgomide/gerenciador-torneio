@@ -1,5 +1,5 @@
 'use client'
-import Spinner from '@/components/common/Spinner'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import TournamentsForm from '@/components/TournamentsComponents/TournamentForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -89,7 +89,7 @@ function page() {
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
-      {isLoading && <Spinner />}
+      {isLoading && <OverlaySpinner />}
       <h1>Torneios</h1>
 
       <div className="flex flex-col gap-2">

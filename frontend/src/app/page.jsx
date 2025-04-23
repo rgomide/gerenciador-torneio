@@ -1,6 +1,6 @@
 'use client'
 
-import Spinner from '@/components/common/Spinner'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -69,7 +69,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      {isLoading && <Spinner />}
+      {isLoading && <OverlaySpinner />}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login</CardTitle>

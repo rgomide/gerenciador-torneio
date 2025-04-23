@@ -1,5 +1,5 @@
 'use client'
-import Spinner from '@/components/common/Spinner'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -38,7 +38,7 @@ function page({ params }) {
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
-      {isLoading && <Spinner />}
+      {isLoading && <OverlaySpinner />}
       <h1>Unidades</h1>
 
       <Table className="w-full">
