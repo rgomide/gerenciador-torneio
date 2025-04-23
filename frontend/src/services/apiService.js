@@ -343,6 +343,8 @@ export const getTournamentsByEventId = async (eventId) => {
 
 export const createTournament = async (name, eventId, startDate, endDate, sportId) => {
   try {
+    console.log('createTournament')
+    console.log(sportId)
     const resp = await axios.post(
       `${baseURL}/tournaments`,
       {
@@ -371,6 +373,8 @@ export const createTournament = async (name, eventId, startDate, endDate, sportI
 
 export const updateTournament = async (id, name, eventId, startDate, endDate, sportId) => {
   try {
+    console.log('updateTournament')
+    console.log(sportId)
     const resp = await axios.put(
       `${baseURL}/tournaments/${id}`,
       {
