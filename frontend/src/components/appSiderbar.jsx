@@ -23,7 +23,16 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import { deleteCookie } from 'cookies-next'
-import { Calendar, FileUser, Home, Landmark, ShieldHalf, Trophy, UserRoundX, Volleyball } from 'lucide-react'
+import {
+  Calendar,
+  FileUser,
+  Home,
+  Landmark,
+  ShieldHalf,
+  Trophy,
+  UserRoundX,
+  Volleyball
+} from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 

@@ -1,12 +1,26 @@
 'use client'
-import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm'
 import SportsForm from '@/components/SportsComponents/SportsForm'
 import { Button } from '@/components/ui/button'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { deleteSportById, getSports } from '@/services/apiService'
 import { Trash } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function page() {
@@ -21,7 +35,7 @@ function page() {
       const data = await getSports()
       setSports(data)
     } catch (error) {
-      console.error(`Erro ao obter esportes: ${error}`);
+      console.error(`Erro ao obter esportes: ${error}`)
     }
   }
 
@@ -30,7 +44,7 @@ function page() {
       const resp = await deleteSportById(id)
 
       if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar esporte');
+        throw new Error(resp?.error || 'Erro ao deletar esporte')
       } else {
         toast.success('Esporte deletado com sucesso!')
         await fetchSports()

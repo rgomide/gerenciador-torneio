@@ -1,10 +1,12 @@
 'use client'
-import { createTournament, updateTournament } from '@/services/apiService'
+import { createTournament, getSports, updateTournament } from '@/services/apiService'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import SelectSearcher from '../common/SelectSearcher'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -19,6 +21,8 @@ import { Input } from '../ui/input'
 
 function TournamentsForm({ record, onClose, eventId }) {
   const isCreate = record === undefined
+
+  const [selectedSport, setSelectedSport] = useState(record?.sport)
 
   const formSchema = z.object({
     name: z.string().min(3, 'O nome do Torneio deve ter pelo menos 3 caracteres'),
@@ -37,7 +41,13 @@ function TournamentsForm({ record, onClose, eventId }) {
 
   async function onSubmitCreate(values) {
     try {
-      const resp = await createTournament(values.name, eventId, values.startDate, values.endDate)
+      const resp = await createTournament(
+        values.name,
+        eventId,
+        values.startDate,
+        values.endDate,
+        selectedSport?.id
+      )
 
       if (!resp || resp.error) {
         throw new Error(resp?.error || 'Erro ao criar torneio')
@@ -61,7 +71,8 @@ function TournamentsForm({ record, onClose, eventId }) {
         values.name,
         record.eventId,
         values.startDate,
-        values.endDate
+        values.endDate,
+        selectedSport?.id
       )
 
       if (!resp || resp.error) {
@@ -114,6 +125,27 @@ function TournamentsForm({ record, onClose, eventId }) {
                     <Input placeholder={isCreate ? 'Nome do torneio' : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="sport"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Esporte</FormLabel>
+                  <FormControl>
+                    <SelectSearcher
+                      labelField="name"
+                      idField="id"
+                      placeholder="Selecione o esporte"
+                      minCharacters={2}
+                      onLoad={getSports}
+                      value={record?.sport}
+                      onChange={setSelectedSport}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />
