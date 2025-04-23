@@ -78,7 +78,7 @@ function page() {
       const data = await getUnits({ name: searchTerm })
       return data
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`)
+      console.error(`Erro ao obter unidades: ${e}`)
       return []
     }
   }

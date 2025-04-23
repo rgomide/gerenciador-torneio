@@ -118,7 +118,7 @@ function page() {
       </div>
 
       <Table className="w-full">
-        <TableCaption>Lista de Eventos cadastradas no sistema</TableCaption>
+        <TableCaption>Lista de Torneios cadastradas no sistema</TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Nome</TableHead>
@@ -162,9 +162,9 @@ function page() {
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Deletar evento?</DialogTitle>
+                      <DialogTitle>Deletar torneio?</DialogTitle>
                       <DialogDescription>
-                        Você tem certeza que deseja deletar esse evento?
+                        Você tem certeza que deseja deletar esse torneio?
                       </DialogDescription>
                     </DialogHeader>
 

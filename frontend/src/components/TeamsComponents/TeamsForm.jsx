@@ -16,43 +16,28 @@ import {
 } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import { useEffect, useState } from 'react'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
+import { useState } from 'react'
+import SelectSearcher from '../common/SelectSearcher'
 
 function TeamsForm({ record, unitId, onClose }) {
-  const [sports, setSports] = useState([])
-
-  useEffect(() => {
-    fetchSports()
-  }, [])
-
-  const fetchSports = async () => {
-    try {
-      const data = await getSports()
-      setSports(data)
-    } catch (e) {
-      console.error(`Erro ao obter esportes: ${e}`)
-    }
-  }
+  const [selectedSport, setSelectedSport] = useState(record?.sport)
 
   const isCreate = record === undefined
 
   const formSchema = z.object({
     name: z.string().min(3, 'O nome da equipe deve ter pelo menos 3 caracteres'),
-    sportId: z.string().min(1, 'Selecione um esporte')
   })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      sportId: ''
     }
   })
 
   async function onSubmitCreate(values) {
     try {
-      const resp = await createTeam(values.name, unitId, values.sportId)
+      const resp = await createTeam(values.name, unitId, selectedSport?.id)
 
       if (!resp || resp.error) {
         throw new Error(resp?.error || 'Erro ao criar equipe')
@@ -134,23 +119,22 @@ function TeamsForm({ record, unitId, onClose }) {
 
             <FormField
               control={form.control}
-              name="sportId"
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione a modalidade correspondente"/>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Esportes</SelectLabel>
-                      {sports.map((sport) => (
-                        <SelectItem key={sport.id} value={sport.id}>
-                          {sport.name}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+              name="sport"
+              render={() => (
+                <FormItem>
+                  <FormLabel>Esporte</FormLabel>
+                  <FormControl>
+                    <SelectSearcher
+                      labelField='name'
+                      idField='id'
+                      placeholder='Selecione o esporte correspondente'
+                      minCharacters={2}
+                      onLoad={getSports}
+                      value={record?.sport}
+                      onChange={setSelectedSport}
+                    />
+                  </FormControl>
+                </FormItem>
               )}
             />
 
