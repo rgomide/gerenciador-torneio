@@ -1,5 +1,6 @@
 import { ChevronDown } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
+import Spinner from './Spinner'
 
 const SelectSearcher = ({
   value,
@@ -111,7 +112,7 @@ const SelectSearcher = ({
           <div className="max-h-[200px] overflow-auto">
             {isLoading ? (
               <div className="flex items-center justify-center p-2">
-                <div className="w-4 h-4 border-2 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
+                <Spinner />
               </div>
             ) : options.length === 0 ? (
               <div className="p-2 text-sm text-gray-500 text-center">
@@ -124,7 +125,7 @@ const SelectSearcher = ({
                 <div
                   key={index}
                   onClick={() => handleChange(option)}
-                  className="px-2 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                  className="px-4 py-3 text-sm hover:bg-accent hover:text-accent-foreground cursor-pointer"
                 >
                   {option[labelField]}
                 </div>

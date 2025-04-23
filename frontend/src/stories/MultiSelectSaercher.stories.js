@@ -1,40 +1,11 @@
 import axios from 'axios'
-import { delay, http, HttpResponse } from 'msw'
 import MultiSelectSearcher from '../components/common/MultiSelectSearcher'
+import { globalHandlers } from './handlers/global'
 
 export default {
   title: 'Components/MultiSelectSearcher',
   component: MultiSelectSearcher
 }
-
-const handlers = [
-  http.get('http://localhost:3000/api/units', async () => {
-    await delay(1000)
-
-    return HttpResponse.json([
-      {
-        id: 1,
-        name: 'Campus Trindade'
-      },
-      {
-        id: 2,
-        name: 'Campus Rio Verde'
-      },
-      {
-        id: 3,
-        name: 'Campus Ceres'
-      },
-      {
-        id: 4,
-        name: 'Campus Cristalina'
-      },
-      {
-        id: 5,
-        name: 'Campus Hidrolândia'
-      }
-    ])
-  })
-]
 
 const loadUnits = async (name) => {
   const response = await axios.get(`http://localhost:3000/api/units?name=${name}`)
@@ -57,7 +28,7 @@ export const Default = {
   },
   parameters: {
     msw: {
-      handlers
+      handlers: globalHandlers
     }
   }
 }
@@ -84,7 +55,7 @@ export const DefaultValues = {
   },
   parameters: {
     msw: {
-      handlers
+      handlers: globalHandlers
     }
   }
 }
