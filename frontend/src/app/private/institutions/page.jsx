@@ -1,4 +1,5 @@
 'use client'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,7 +16,6 @@ import useApi from '@/services/useApi'
 import { SquareArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
 function page() {
   const { getInstitutions, isLoading } = useApi()
   const [institutions, setInstitutions] = useState([])
@@ -35,6 +35,7 @@ function page() {
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <OverlaySpinner />}
       <h1>Instituições</h1>
 
       <Table className="w-full">
