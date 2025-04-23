@@ -46,7 +46,6 @@ function page() {
   }, [])
 
   useEffect(() => {
-    fetchEvents()
     fetchTournaments()
   }, [selectedEvent])
 

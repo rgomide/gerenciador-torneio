@@ -22,9 +22,9 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
-  const getUnits = async (name) => {
+  const getUnits = async (query) => {
     const url = 'units'
-    return makeRequest(url, GET, { name })
+    return makeRequest(url, GET, query)
   }
 
   const createUnit = async (name, institutionId) => {
@@ -44,14 +44,31 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
-  const getSports = async (name) => {
-    const url = 'sports'
-    return makeRequest(url, GET, { name })
+  const getTeamsByUnitId = async (unitId) => {
+    const url = `units/${unitId}/teams`
+    return makeRequest(url, GET)
   }
 
-  const getEvents = async (name) => {
+  const createTeam = async (name, unitId, sportId) => {
+    const url = 'teams'
+    const payload = { name, unitId, sportId }
+    return makeRequest(url, POST, payload)
+  }
+
+  const updateTeam = async (id, name, unitId, sportId) => {
+    const url = `teams/${id}`
+    const payload = { name, unitId, sportId }
+    return makeRequest(url, PUT, payload)
+  }
+
+  const getSports = async (query) => {
+    const url = 'sports'
+    return makeRequest(url, GET, query)
+  }
+
+  const getEvents = async (query) => {
     const url = 'events'
-    return makeRequest(url, GET, { name })
+    return makeRequest(url, GET, query)
   }
 
   const getTournamentsByEventId = async (eventId) => {
@@ -113,6 +130,11 @@ const useApi = () => {
   const getEventsByUnitId = async (unitId) => {
     const url = `units/${unitId}/events`
     return makeRequest(url, GET)
+  }
+
+  const deleteTeamById = async (teamId) => {
+    const url = `teams/${teamId}`
+    return makeRequest(url, DELETE)
   }
 
   const createEvent = async (name, unitId, startDate, endDate) => {
@@ -234,6 +256,10 @@ const useApi = () => {
     createEvent,
     updateEvent,
     auth,
+    deleteTeamById,
+    getTeamsByUnitId,
+    createTeam,
+    updateTeam,
     isLoading
   }
 }

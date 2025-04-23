@@ -1,6 +1,6 @@
 'use client'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import SelectSearcher from '@/components/common/SelectSearcher'
-import EventsForm from '@/components/EventsComponents/EventsForm'
 import TeamsForm from '@/components/TeamsComponents/TeamsForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,15 +12,6 @@ import {
   DialogTrigger
 } from '@/components/ui/dialog'
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import {
   Table,
   TableBody,
   TableCaption,
@@ -29,12 +20,14 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { deleteEventById, deleteTeamById, formatDate, getEventsByUnitId, getTeamsByUnitId, getUnits } from '@/services/apiService'
+import { formatDate } from '@/services/dateUtil'
+import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function page() {
+  const { getUnits, deleteTeamById, getTeamsByUnitId, isLoading } = useApi()
   const [teams, setTeams] = useState([])
   const [selectedUnit, setSelectedUnit] = useState(null)
 
@@ -47,48 +40,51 @@ function page() {
       return
     }
 
-    try {
-      const data = await getTeamsByUnitId(selectedUnit.id)
-      setTeams(data)
-    } catch (e) {
-      console.error(`Erro ao obter times: ${e}`)
+    const response = await getTeamsByUnitId(selectedUnit.id)
+    if (response.requestSuccessful) {
+      setTeams(response.data)
+    } else {
+      setTeams([])
+      toast.error(response.error)
     }
   }
 
   const deleteTeam = async (id) => {
     if (!selectedUnit) return
 
-    try {
-      const resp = await deleteTeamById(id)
+    const response = await deleteTeamById(id)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar equipe')
-      } else {
-        toast.success('Equipe deletado com sucesso!')
-        await fetchTeams()
-      }
-    } catch (e) {
-      console.error(`Erro ao deletar equipe: ${e}`)
-      toast.error(e.message || 'Erro ao deletar equipe')
+    if (response.requestSuccessful) {
+      toast.success('Equipe deletado com sucesso!')
+      await fetchTeams()
+    } else {
+      toast.error(response.error)
     }
   }
 
   const fetchUnits = async (searchTerm) => {
-    try {
-      const data = await getUnits({ name: searchTerm })
-      return data
-    } catch (e) {
-      console.error(`Erro ao obter unidades: ${e}`)
+    const response = await getUnits({ name: searchTerm })
+
+    if (response.requestSuccessful) {
+      return response.data
+    } else {
+      toast.error(response.error)
       return []
     }
   }
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <OverlaySpinner />}
       <h1>Equipes</h1>
 
       <div className="flex flex-col gap-2">
-        <SelectSearcher onLoad={fetchUnits} labelField='name' onChange={setSelectedUnit} placeholder="Selecione a Unidade correspondente" />
+        <SelectSearcher
+          onLoad={fetchUnits}
+          labelField="name"
+          onChange={setSelectedUnit}
+          placeholder="Selecione a Unidade correspondente"
+        />
       </div>
 
       <Table className="w-full">

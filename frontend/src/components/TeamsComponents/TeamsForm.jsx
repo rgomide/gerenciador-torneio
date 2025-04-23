@@ -1,10 +1,12 @@
 'use client'
-import { createTeam, createUnit, getSports, updateTeam, updateUnit } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
+import SelectSearcher from '../common/SelectSearcher'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -16,24 +18,31 @@ import {
 } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import { useState } from 'react'
-import SelectSearcher from '../common/SelectSearcher'
 
 function TeamsForm({ record, unitId, onClose }) {
+  const { getSports, createTeam, updateTeam } = useApi()
   const [selectedSport, setSelectedSport] = useState(record?.sport)
 
   const isCreate = record === undefined
 
   const formSchema = z.object({
-    name: z.string().min(3, 'O nome da equipe deve ter pelo menos 3 caracteres'),
+    name: z.string().min(3, 'O nome da equipe deve ter pelo menos 3 caracteres')
   })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
+      name: ''
     }
   })
+
+  async function fetchSports(searchTerm) {
+    const response = await getSports({ name: searchTerm })
+    if (response.requestSuccessful) {
+      return response.data
+    }
+    return []
+  }
 
   async function onSubmitCreate(values) {
     try {
@@ -89,9 +98,7 @@ function TeamsForm({ record, unitId, onClose }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isCreate ? 'Criar ' : 'Editar '} Equipe</DialogTitle>
-          <DialogDescription>
-            Preencha os dados corretamente.
-          </DialogDescription>
+          <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form
@@ -107,10 +114,7 @@ function TeamsForm({ record, unitId, onClose }) {
                 <FormItem>
                   <FormLabel>Nome da equipe</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={isCreate ? 'Nome da equipe' : record.name}
-                      {...field}
-                    />
+                    <Input placeholder={isCreate ? 'Nome da equipe' : record.name} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -125,11 +129,11 @@ function TeamsForm({ record, unitId, onClose }) {
                   <FormLabel>Esporte</FormLabel>
                   <FormControl>
                     <SelectSearcher
-                      labelField='name'
-                      idField='id'
-                      placeholder='Selecione o esporte correspondente'
+                      labelField="name"
+                      idField="id"
+                      placeholder="Selecione o esporte correspondente"
                       minCharacters={2}
-                      onLoad={getSports}
+                      onLoad={fetchSports}
                       value={record?.sport}
                       onChange={setSelectedSport}
                     />

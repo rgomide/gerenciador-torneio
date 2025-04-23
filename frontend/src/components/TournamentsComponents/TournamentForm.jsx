@@ -42,7 +42,7 @@ function TournamentsForm({ record, onClose, eventId }) {
   })
 
   const fetchSports = async (searchTerm) => {
-    const response = await getSports(searchTerm)
+    const response = await getSports({ name: searchTerm })
     if (response.requestSuccessful) {
       return response.data
     } else {
