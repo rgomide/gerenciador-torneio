@@ -1,4 +1,5 @@
 const router = require('express').Router({ mergeParams: true })
+const { sequelize } = require('@server/models')
 
 const usersController = require('@server/controllers/user.controller')
 const authController = require('@server/controllers/auth.controller')
@@ -27,8 +28,23 @@ router.use('/', playerController)
 router.use('/', teamController)
 router.use('/', matchController)
 
-router.get('/ping', (req, res) => {
-  res.send('pong')
+router.get('/ping', async (req, res) => {
+  try {
+    await sequelize.query('SELECT true')
+
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      database: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    })
+  }
 })
 
 module.exports = router
