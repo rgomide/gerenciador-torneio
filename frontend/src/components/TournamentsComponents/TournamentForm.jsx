@@ -41,6 +41,8 @@ function TournamentsForm({ record, onClose, eventId }) {
 
   async function onSubmitCreate(values) {
     try {
+      console.log('selectedSport create')
+      console.log(selectedSport)
       const resp = await createTournament(
         values.name,
         eventId,
@@ -66,6 +68,8 @@ function TournamentsForm({ record, onClose, eventId }) {
 
   async function onSubmitUpdate(values) {
     try {
+      console.log('selectedSport update')
+      console.log(selectedSport)
       const resp = await updateTournament(
         record.id,
         values.name,
