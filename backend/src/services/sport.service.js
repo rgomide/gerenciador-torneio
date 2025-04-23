@@ -1,3 +1,4 @@
+const { Op } = require('sequelize')
 const { Sport } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
@@ -16,8 +17,16 @@ const create = async (sportData) => {
   return Sport.create(sportData)
 }
 
-const findAll = async () => {
+const findAll = async (name) => {
+  const where = {}
+  if (name) {
+    where.name = {
+      [Op.iLike]: `%${name}%`
+    }
+  }
+
   return Sport.findAll({
+    where,
     order: [['name', 'ASC']]
   })
 }

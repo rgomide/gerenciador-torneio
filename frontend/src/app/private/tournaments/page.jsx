@@ -122,6 +122,7 @@ function page() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Nome</TableHead>
+            <TableHead>Esporte</TableHead>
             <TableHead>Data de início</TableHead>
             <TableHead>Previsão de término</TableHead>
             <TableHead>Data de registro</TableHead>
@@ -141,9 +142,10 @@ function page() {
           {tournaments.map((tournament) => (
             <TableRow key={tournament.id}>
               <TableCell className="font-medium">{tournament.name}</TableCell>
+              <TableCell className="font-medium">{tournament.sport?.name}</TableCell>
               <TableCell className="font-medium">{formatDate(tournament.startDate)}</TableCell>
               <TableCell className="font-medium">{formatDate(tournament.endDate)}</TableCell>
-              <TableCell className="font-medium">{formatDate(tournament.updatedAt)}</TableCell>
+              <TableCell className="font-medium">{formatDate(tournament.createdAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(tournament.updatedAt)}</TableCell>
               <TableCell className="font-medium space-x-2">
                 <TournamentsForm
