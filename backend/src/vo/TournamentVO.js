@@ -6,7 +6,7 @@ class TournamentVO {
   }
 
   toJSON() {
-    const { id, name, eventId, startDate, endDate, createdAt, updatedAt, sport } = this.tournament
+    const { id, name, eventId, sportId, startDate, endDate, createdAt, updatedAt, sport } = this.tournament
 
     const sportVO = sport ? new SportVO(sport).toJSON() : null
 
@@ -18,6 +18,7 @@ class TournamentVO {
       endDate,
       createdAt,
       updatedAt,
+      sportId,
       sport: sportVO
     }
   }
