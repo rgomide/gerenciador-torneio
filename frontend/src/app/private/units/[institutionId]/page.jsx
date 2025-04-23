@@ -1,4 +1,5 @@
 'use client'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -10,7 +11,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import UnitForm from '@/components/unitsComponents/UnitForm'
-import { formatDate, getUnitsByInstitutionId } from '@/services/apiService'
+import { formatDate } from '@/services/dateUtil'
+import useApi from '@/services/useApi'
 import { ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { use, useEffect, useState } from 'react'
@@ -19,22 +21,24 @@ function page({ params }) {
   const router = useRouter()
   const { institutionId } = use(params)
   const [units, setUnits] = useState([])
+  const { getUnitsByInstitutionId, isLoading } = useApi()
 
   useEffect(() => {
     fetchUnits()
   }, [])
 
   const fetchUnits = async () => {
-    try {
-      const data = await getUnitsByInstitutionId(institutionId)
-      setUnits(data)
-    } catch (error) {
-      console.error(`Erro ao obter unidades: ${error}`)
+    const response = await getUnitsByInstitutionId(institutionId)
+    if (response.requestSuccessful) {
+      setUnits(response.data)
+    } else {
+      toast.error(response.error)
     }
   }
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <OverlaySpinner />}
       <h1>Unidades</h1>
 
       <Table className="w-full">

@@ -1,5 +1,5 @@
 'use client'
-import { createEvent, updateEvent } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -18,6 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function EventsForm({ record, onClose, unitId }) {
+  const { createEvent, updateEvent } = useApi()
   const isCreate = record === undefined
 
   const formSchema = z.object({
@@ -36,46 +37,36 @@ function EventsForm({ record, onClose, unitId }) {
   })
 
   async function onSubmitCreate(values) {
-    try {
-      const resp = await createEvent(values.name, unitId, values.startDate, values.endDate)
+    const response = await createEvent(values.name, unitId, values.startDate, values.endDate)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar evento')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Evento criado com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar evento')
+    } else {
+      toast.error(response.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    try {
-      const resp = await updateEvent(
-        record.id,
-        values.name,
-        record.unitId,
-        values.startDate,
-        values.endDate
-      )
+    const response = await updateEvent(
+      record.id,
+      values.name,
+      record.unitId,
+      values.startDate,
+      values.endDate
+    )
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar evento')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Evento editado com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      toast.error('Erro ao editar evento')
-      console.error(error)
+    } else {
+      toast.error(response.error)
     }
   }
 

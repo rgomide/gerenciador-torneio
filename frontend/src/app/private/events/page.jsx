@@ -1,4 +1,5 @@
 'use client'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import EventsForm from '@/components/EventsComponents/EventsForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -27,16 +28,16 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { deleteEventById, formatDate, getEventsByUnitId, getUnits } from '@/services/apiService'
+import { formatDate } from '@/services/dateUtil'
+import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-
 function page() {
   const [events, setEvents] = useState([])
   const [units, setUnits] = useState([])
   const [selectedUnit, setSelectedUnit] = useState(null)
-
+  const { getUnits, getEventsByUnitId, deleteEventById, isLoading } = useApi()
   useEffect(() => {
     fetchUnits()
   }, [])
@@ -51,43 +52,39 @@ function page() {
       return
     }
 
-    try {
-      const data = await getEventsByUnitId(selectedUnit)
-      setEvents(data)
-    } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`)
+    const response = await getEventsByUnitId(selectedUnit)
+    if (response.requestSuccessful) {
+      setEvents(response.data)
+    } else {
+      toast.error(response.error)
     }
   }
 
   const deleteEvent = async (id) => {
     if (!selectedUnit) return
 
-    try {
-      const resp = await deleteEventById(id)
+    const response = await deleteEventById(id)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao deletar torneio')
-      } else {
-        toast.success('Torneio deletado com sucesso!')
-        await fetchEvents()
-      }
-    } catch (e) {
-      console.error(`Erro ao deletar evento: ${e}`)
-      toast.error(e.message || 'Erro ao deletar evento')
+    if (response.requestSuccessful) {
+      toast.success('Torneio deletado com sucesso!')
+      await fetchEvents()
+    } else {
+      toast.error(response.error)
     }
   }
 
   const fetchUnits = async () => {
-    try {
-      const data = await getUnits()
-      setUnits(data)
-    } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`)
+    const response = await getUnits()
+    if (response.requestSuccessful) {
+      setUnits(response.data)
+    } else {
+      toast.error(response.error)
     }
   }
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <OverlaySpinner />}
       <h1>Eventos</h1>
 
       <div className="flex flex-col gap-2">

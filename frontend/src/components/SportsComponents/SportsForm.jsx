@@ -1,4 +1,4 @@
-import { createSport, updateSport } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -17,6 +17,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function SportsForm({ record, onClose }) {
+  const { createSport, updateSport } = useApi()
+
   const isCreate = record === undefined
 
   const formSchema = z.object({
@@ -31,40 +33,30 @@ function SportsForm({ record, onClose }) {
   })
 
   async function onSubmitCreate(values) {
-    try {
-      const resp = await createSport(values.name)
+    const response = await createSport(values.name)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar esporte')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Esporte criado com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar esporte')
+    } else {
+      toast.error(response.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    try {
-      const resp = await updateSport(record.id, values.name)
+    const response = await updateSport(record.id, values.name)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar esporte')
-      }
-
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Esporte editado com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro ao editar:', error)
-      toast.error(error.message || 'Erro ao editar esporte')
+    } else {
+      toast.error(response.error)
     }
   }
 

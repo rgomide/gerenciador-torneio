@@ -1,5 +1,5 @@
 'use client'
-import { createTournament, getSports, updateTournament } from '@/services/apiService'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
 import { useState } from 'react'
@@ -20,6 +20,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function TournamentsForm({ record, onClose, eventId }) {
+  const { getSports, createTournament, updateTournament } = useApi()
+
   const isCreate = record === undefined
 
   const [selectedSport, setSelectedSport] = useState(record?.sport)
@@ -39,54 +41,59 @@ function TournamentsForm({ record, onClose, eventId }) {
     }
   })
 
+  const fetchSports = async (searchTerm) => {
+    const response = await getSports(searchTerm)
+    if (response.requestSuccessful) {
+      return response.data
+    } else {
+      toast.error(response.error)
+      return []
+    }
+  }
+
   async function onSubmitCreate(values) {
-    try {
-      const resp = await createTournament(
-        values.name,
-        eventId,
-        values.startDate,
-        values.endDate,
-        selectedSport?.id
-      )
+    const sportId = selectedSport?.id
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar torneio')
-      }
+    const response = await createTournament(
+      values.name,
+      eventId,
+      values.startDate,
+      values.endDate,
+      sportId
+    )
 
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Torneio criado com sucesso!')
+
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar torneio')
+    } else {
+      toast.error(response.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    try {
-      const resp = await updateTournament(
-        record.id,
-        values.name,
-        record.eventId,
-        values.startDate,
-        values.endDate,
-        selectedSport?.id
-      )
+    const sportId = selectedSport?.id
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar torneio')
-      }
+    const response = await updateTournament(
+      record.id,
+      values.name,
+      record.eventId,
+      values.startDate,
+      values.endDate,
+      sportId
+    )
 
+    if (response.requestSuccessful) {
       form.reset()
       toast.success('Torneio editado com sucesso!')
       if (onClose) {
         onClose()
       }
-    } catch (error) {
-      console.error('Erro ao editar:', error)
-      toast.error(error.message || 'Erro ao editar torneio')
+    } else {
+      toast.error(response.error)
     }
   }
 
@@ -141,7 +148,7 @@ function TournamentsForm({ record, onClose, eventId }) {
                       idField="id"
                       placeholder="Selecione o esporte"
                       minCharacters={2}
-                      onLoad={getSports}
+                      onLoad={fetchSports}
                       value={record?.sport}
                       onChange={setSelectedSport}
                     />

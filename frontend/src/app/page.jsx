@@ -1,5 +1,6 @@
 'use client'
 
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import { Button } from '@/components/ui/button'
 import {
   Card,
@@ -18,9 +19,10 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { auth } from '@/services/apiService'
+import { sha256 } from '@/services/cryptoUtil'
+import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getCookie } from 'cookies-next'
+import { getCookie, setCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -29,7 +31,7 @@ import { z } from 'zod'
 
 export default function Home() {
   const router = useRouter()
-
+  const { auth, isLoading } = useApi()
   useEffect(() => {
     const token = getCookie('token')
     if (token) {
@@ -51,24 +53,23 @@ export default function Home() {
   })
 
   async function onSubmit(values) {
-    try {
-      const resp = await auth(values.username, values.password)
+    const passwordHash = await sha256(values.password)
+    const resp = await auth(values.username, passwordHash)
 
-      if (!resp || resp.status !== 200) {
-        toast.error('Erro ao realizar login, verifique suas credenciais')
-        return
-      }
+    if (resp.requestSuccessful) {
+      const token = resp.data.token
+      setCookie('token', token, { maxAge: 60 * 60 * 24, path: '/', secure: true, httpOnly: false })
 
       toast.success('Login realizado com sucesso!')
       router.replace('/private/dashboard')
-    } catch (error) {
-      toast.error(error)
-      console.error('Erro ao realizar login:', error)
+    } else {
+      toast.error(resp.error)
     }
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      {isLoading && <OverlaySpinner />}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Login</CardTitle>

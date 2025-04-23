@@ -157,6 +157,11 @@ describe('Tournament Controller', () => {
           eventId: event.id,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
+          sportId: sport.id,
+          sport: expect.objectContaining({
+            id: sport.id,
+            name: 'Test Sport'
+          }),
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
         })

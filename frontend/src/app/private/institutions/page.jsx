@@ -1,4 +1,5 @@
 'use client'
+import OverlaySpinner from '@/components/common/OverlaySpinner'
 import InstitutionForm from '@/components/InstitutionsComponents/InstitutionForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,12 +11,13 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { formatDate, getInstitutions } from '@/services/apiService'
+import { formatDate } from '@/services/dateUtil'
+import useApi from '@/services/useApi'
 import { SquareArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-
 function page() {
+  const { getInstitutions, isLoading } = useApi()
   const [institutions, setInstitutions] = useState([])
 
   useEffect(() => {
@@ -24,15 +26,16 @@ function page() {
 
   const fetchInstitutions = async () => {
     try {
-      const data = await getInstitutions()
-      setInstitutions(data)
+      const response = await getInstitutions()
+      setInstitutions(response.data)
     } catch (e) {
-      console.error(`Erro ao obter instituições: ${e}`)
+      console.error(e)
     }
   }
 
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
+      {isLoading && <OverlaySpinner />}
       <h1>Instituições</h1>
 
       <Table className="w-full">
