@@ -108,6 +108,10 @@ describe('Team Controller', () => {
         name: 'Team 1',
         unitId: unit.id,
         sportId: sport.id,
+        sport: expect.objectContaining({
+          id: sport.id,
+          name: sport.name
+        }),
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })
@@ -532,6 +536,7 @@ describe('Team Controller', () => {
         name: 'New Team',
         unitId: unit.id,
         sportId: sport.id,
+        sport: null,
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })
@@ -569,6 +574,10 @@ describe('Team Controller', () => {
         name: 'Updated Team',
         unitId: unit.id,
         sportId: sport.id,
+        sport: expect.objectContaining({
+          id: sport.id,
+          name: sport.name
+        }),
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })

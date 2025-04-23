@@ -92,6 +92,7 @@ function page() {
         <TableHeader>
           <TableRow>
             <TableHead className="w-[100px]">Nome</TableHead>
+            <TableHead>Esporte</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
             {selectedUnit && (
@@ -105,6 +106,7 @@ function page() {
           {teams.map((team) => (
             <TableRow key={team.id}>
               <TableCell className="font-medium">{team.name}</TableCell>
+              <TableCell className="font-medium">{team.sport?.name}</TableCell>
               <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
               <TableCell className="font-medium space-x-2">
