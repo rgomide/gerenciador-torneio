@@ -1,5 +1,5 @@
 const eventService = require('@server/services/event.service')
-const { Event, Unit, Institution } = require('@server/models')
+const { Event, Unit, Institution, Tournament, Sport, Match } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 describe('Event Service', () => {
@@ -162,6 +162,108 @@ describe('Event Service', () => {
           })
         )
       })
+    })
+  })
+
+  describe('findUnfinished', () => {
+    it('should return all unfinished events', async () => {
+      const sport = await Sport.create({ name: 'Futebol' })
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        sportId: sport.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02'),
+        finished: false
+      })
+
+      await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        sportId: sport.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02'),
+        finished: true
+      })
+
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: false
+      })
+
+      await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: true
+      })
+
+      const unfinishedEvents = await eventService.findUnfinished()
+
+      expect(unfinishedEvents).toHaveLength(1)
+
+      expect(unfinishedEvents[0].toJSON()).toEqual(
+        expect.objectContaining({
+          id: event.id,
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02'),
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+          unit_id: unit.id,
+          unit: {
+            id: unit.id,
+            name: 'Test Unit',
+            institutionId: institution.id,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            institution: {
+              id: institution.id,
+              name: 'Test Institution',
+              createdAt: expect.any(Date),
+              updatedAt: expect.any(Date)
+            }
+          },
+          tournaments: [
+            {
+              id: tournament.id,
+              name: 'Test Tournament',
+              eventId: event.id,
+              sportId: sport.id,
+              finished: false,
+              startDate: new Date('2024-01-01'),
+              endDate: new Date('2024-01-02'),
+              createdAt: expect.any(Date),
+              updatedAt: expect.any(Date),
+              event_id: event.id,
+              sport_id: sport.id,
+              sport: {
+                id: sport.id,
+                name: 'Futebol',
+                createdAt: expect.any(Date),
+                updatedAt: expect.any(Date)
+              },
+              matches: [
+                expect.objectContaining({
+                  id: match.id,
+                  tournamentId: tournament.id,
+                  date: new Date('2024-01-01'),
+                  finished: false
+                })
+              ]
+            }
+          ]
+        })
+      )
     })
   })
 
