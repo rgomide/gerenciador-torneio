@@ -19,6 +19,7 @@ class MatchSnapshotVO {
         name: tournamentName,
         startDate: tournamentStartDate,
         endDate: tournamentEndDate,
+        finished: tournamentFinished = false,
         sport: { id: sportId, name: sportName } = {},
         event: {
           id: eventId,
@@ -75,6 +76,7 @@ class MatchSnapshotVO {
       tournamentName,
       tournamentStartDate,
       tournamentEndDate,
+      tournamentFinished,
       eventId,
       eventName,
       eventStartDate,

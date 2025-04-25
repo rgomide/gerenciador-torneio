@@ -553,6 +553,7 @@ describe('Match Controller', () => {
           tournamentName: 'Test Tournament',
           tournamentStartDate: new Date('2024-01-01T00:00:00.000Z'),
           tournamentEndDate: new Date('2024-01-02T00:00:00.000Z'),
+          tournamentFinished: false,
           eventId: event.id,
           eventName: 'Test Event',
           eventStartDate: new Date('2024-01-01T00:00:00.000Z'),
@@ -592,6 +593,72 @@ describe('Match Controller', () => {
           updatedAt: expect.any(Date)
         })
       )
+    })
+
+    it('should return 400 when match is already finished', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const sport = await Sport.create({
+        name: 'Test Sport'
+      })
+
+      const institution = await Institution.create({
+        name: 'Test Institution'
+      })
+
+      const unit = await Unit.create({
+        name: 'Test Unit',
+        institutionId: institution.id
+      })
+
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        sportId: sport.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const matchData = {
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01T10:00:00'),
+        location: 'Test Location',
+        finished: true,
+        occurrences: 'Test occurrences',
+        roundNumber: 1
+      }
+
+      const match = await Match.create(matchData)
+
+      const response = await request(app)
+        .post(`/api/matches/${match.id}/finish`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('Partida já finalizada')
+      const matchSnapshot = await MatchSnapshot.findOne({
+        where: { matchId: match.id }
+      })
+
+      expect(matchSnapshot).toBeNull()
     })
   })
 

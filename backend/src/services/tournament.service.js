@@ -1,4 +1,4 @@
-const { Tournament, Event, Sport } = require('@server/models')
+const { Tournament, Event, Sport, Match, sequelize } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 const validateName = (name) => {
@@ -91,6 +91,33 @@ const findById = async (id) => {
   return tournament
 }
 
+const finish = async (id) => {
+  const tournament = await Tournament.findByPk(id)
+  if (!tournament) {
+    throw new AppError('Torneio não encontrado', 404)
+  }
+
+  if (tournament.finished) {
+    throw new AppError('Torneio já finalizado', 400)
+  }
+
+  const matchesAmount = await Match.count({ where: { tournamentId: id, finished: false } })
+
+  if (matchesAmount > 0) {
+    throw new AppError('Torneio não pode ser finalizado pois existem partidas não finalizadas', 400)
+  }
+
+  await tournament.update({ finished: true })
+  await sequelize.query(
+    'UPDATE match_snapshots SET tournament_finished = true WHERE tournament_id = :tournamentId',
+    {
+      replacements: { tournamentId: id }
+    }
+  )
+
+  return findById(id)
+}
+
 const update = async (id, tournamentData) => {
   validateName(tournamentData.name)
   validateDates(tournamentData.startDate, tournamentData.endDate)
@@ -129,5 +156,6 @@ module.exports = {
   findByEvent,
   findById,
   update,
-  remove
+  remove,
+  finish
 }
