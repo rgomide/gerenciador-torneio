@@ -345,7 +345,9 @@ router.put(
     try {
       const { matchId } = req.params
       const matchData = req.body
-      matchData.finished = false
+
+      delete matchData.finished
+
       const match = await update(matchId, matchData)
       const matchVO = new MatchVO(match)
 

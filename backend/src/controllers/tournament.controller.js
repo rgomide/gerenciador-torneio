@@ -3,6 +3,7 @@ const {
   findAll,
   findById,
   findByEvent,
+  finish,
   update,
   remove
 } = require('@server/services/tournament.service')
@@ -230,7 +231,9 @@ router.get(
  */
 router.post('/tournaments', authorizationMiddleware([ADMIN]), async (req, res, next) => {
   try {
-    const tournament = await create(req.body)
+    const tournamentData = req.body
+    tournamentData.finished = false
+    const tournament = await create(tournamentData)
     const tournamentVO = new TournamentVO(tournament)
 
     return res.status(201).json(tournamentVO)
@@ -302,7 +305,69 @@ router.put(
   async (req, res, next) => {
     try {
       const { tournamentId } = req.params
-      const tournament = await update(tournamentId, req.body)
+      const tournamentData = req.body
+
+      delete tournamentData.finished
+
+      const tournament = await update(tournamentId, tournamentData)
+      const tournamentVO = new TournamentVO(tournament)
+
+      return res.json(tournamentVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
+
+/**
+ * @openapi
+ * /api/tournaments/{tournamentId}/finish:
+ *   post:
+ *     description: Finish a tournament
+ *     tags:
+ *       - Tournaments
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - name: tournamentId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: number
+ *     responses:
+ *       200:
+ *         description: Tournament finished successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: number
+ *                 name:
+ *                   type: string
+ *                 eventId:
+ *                   type: string
+ *                 startDate:
+ *                   type: string
+ *                   format: date-time
+ *                 endDate:
+ *                   type: string
+ *                   format: date-time
+ *                 finished:
+ *                   type: boolean
+ *                 createdAt:
+ *                   type: string
+ *                 updatedAt:
+ *                   type: string
+ */
+router.post(
+  '/tournaments/:tournamentId/finish',
+  authorizationMiddleware([ADMIN]),
+  async (req, res, next) => {
+    try {
+      const { tournamentId } = req.params
+      const tournament = await finish(tournamentId)
       const tournamentVO = new TournamentVO(tournament)
 
       return res.json(tournamentVO)

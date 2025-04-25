@@ -1,5 +1,16 @@
 const request = require('supertest')
-const { User, Role, Institution, Unit, Event, Tournament, Match, Sport } = require('@server/models')
+const {
+  User,
+  Role,
+  Institution,
+  Unit,
+  Event,
+  Tournament,
+  Match,
+  MatchSnapshot,
+  Sport
+} = require('@server/models')
+const matchService = require('@server/services/match.service')
 const app = require('@server/app')
 const jwt = require('jsonwebtoken')
 const { JWT, ROLES } = require('@server/config/constants')
@@ -37,6 +48,7 @@ describe('Tournament Controller', () => {
         sportId: sport.id,
         name: 'Tournament 1',
         eventId: event.id,
+        finished: true,
         startDate,
         endDate
       })
@@ -53,6 +65,7 @@ describe('Tournament Controller', () => {
           eventId: event.id,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
+          finished: true,
           sport: expect.objectContaining({
             id: sport.id,
             name: 'Test Sport'
@@ -358,6 +371,7 @@ describe('Tournament Controller', () => {
         name: 'New Tournament',
         eventId: event.id,
         sportId: sport.id,
+        finished: true,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
       }
@@ -375,6 +389,7 @@ describe('Tournament Controller', () => {
           eventId: event.id,
           startDate: tournamentData.startDate.toISOString(),
           endDate: tournamentData.endDate.toISOString(),
+          finished: false,
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
         })
@@ -447,8 +462,8 @@ describe('Tournament Controller', () => {
     })
   })
 
-  describe('PUT /api/tournaments/:tournamentId', () => {
-    it('should update a tournament when user is admin', async () => {
+  describe('POST /api/tournaments/:tournamentId/finish', () => {
+    it('should finish a tournament when user is admin', async () => {
       const adminRole = await Role.create({ name: ROLES.ADMIN })
       const adminUser = await User.create({
         firstName: 'Admin',
@@ -479,10 +494,217 @@ describe('Tournament Controller', () => {
         endDate: new Date('2024-01-02')
       })
 
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: false
+      })
+
+      await matchService.finish(match.id)
+
+      const response = await request(app)
+        .post(`/api/tournaments/${tournament.id}/finish`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(200)
+
+      expect(response.body).toEqual(
+        expect.objectContaining({
+          id: tournament.id,
+          finished: true
+        })
+      )
+
+      const foundTournament = await Tournament.findByPk(tournament.id)
+      expect(foundTournament.finished).toBe(true)
+
+      const matchSnapshot = await MatchSnapshot.findOne({
+        where: { tournamentId: tournament.id }
+      })
+
+      expect(matchSnapshot.toJSON()).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          matchId: match.id,
+          matchDate: new Date('2024-01-01T00:00:00.000Z'),
+          matchLocation: null,
+          matchRoundNumber: null,
+          matchOccurrences: null,
+          tournamentId: tournament.id,
+          tournamentName: 'Tournament 1',
+          tournamentStartDate: new Date('2024-01-01T00:00:00.000Z'),
+          tournamentEndDate: new Date('2024-01-02T00:00:00.000Z'),
+          tournamentFinished: true,
+          eventId: event.id,
+          eventName: 'Test Event',
+          eventStartDate: new Date('2024-01-01T00:00:00.000Z'),
+          eventEndDate: new Date('2024-01-02T00:00:00.000Z'),
+          unitId: unit.id,
+          unitName: 'Test Unit',
+          institutionId: institution.id,
+          institutionName: 'Test Institution',
+          sportId: sport.id,
+          sportName: 'Test Sport',
+          totalScores: [],
+          matchScores: [],
+          matchParticipants: [],
+          snapshotTakenAt: expect.any(Date),
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date)
+        })
+      )
+    })
+
+    it('should not finish a tournament when there are unfinished matches', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        sportId: sport.id,
+        name: 'Tournament 1',
+        eventId: event.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: false
+      })
+
+      const response = await request(app)
+        .post(`/api/tournaments/${tournament.id}/finish`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe(
+        'Torneio não pode ser finalizado pois existem partidas não finalizadas'
+      )
+
+      const foundTournament = await Tournament.findByPk(tournament.id)
+      expect(foundTournament.finished).toBe(false)
+
+      const matchSnapshot = await MatchSnapshot.findOne({
+        where: { tournamentId: tournament.id }
+      })
+
+      expect(matchSnapshot).toBeNull()
+    })
+
+    it('should not finish a tournament when it is already finished', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        sportId: sport.id,
+        name: 'Tournament 1',
+        eventId: event.id,
+        finished: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
+      await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: true
+      })
+
+      const response = await request(app)
+        .post(`/api/tournaments/${tournament.id}/finish`)
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('Torneio já finalizado')
+
+      const foundTournament = await Tournament.findByPk(tournament.id)
+      expect(foundTournament.finished).toBe(true)
+
+      const matchSnapshot = await MatchSnapshot.findOne({
+        where: { tournamentId: tournament.id }
+      })
+
+      expect(matchSnapshot).toBeNull()
+    })
+  })
+
+  describe('PUT /api/tournaments/:tournamentId', () => {
+    it('should update a tournament when user is admin', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const sport = await Sport.create({ name: 'Test Sport' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        sportId: sport.id,
+        name: 'Tournament 1',
+        eventId: event.id,
+        finished: true,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+
       const updatedData = {
         name: 'Updated Tournament',
         startDate: new Date('2024-02-01'),
-        endDate: new Date('2024-02-02')
+        endDate: new Date('2024-02-02'),
+        finished: false
       }
 
       const response = await request(app)
@@ -498,6 +720,7 @@ describe('Tournament Controller', () => {
           eventId: event.id,
           startDate: updatedData.startDate.toISOString(),
           endDate: updatedData.endDate.toISOString(),
+          finished: true,
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
         })

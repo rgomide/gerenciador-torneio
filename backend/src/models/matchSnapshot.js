@@ -57,6 +57,12 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         field: 'tournament_end_date'
       },
+      tournamentFinished: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        field: 'tournament_finished',
+        defaultValue: false
+      },
       eventId: {
         type: DataTypes.BIGINT,
         allowNull: false,

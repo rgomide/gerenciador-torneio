@@ -67,6 +67,7 @@ erDiagram
       bigint sport_id FK
       string name
       bigint event_id FK
+      boolean finished
       date start_date
       date end_date
       date created_at

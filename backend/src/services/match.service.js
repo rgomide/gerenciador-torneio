@@ -18,6 +18,8 @@ const validateTournament = async (tournamentId) => {
   if (!tournament) {
     throw new AppError('Torneio não encontrado', 404)
   }
+
+  return tournament
 }
 
 const validateDate = (date) => {
@@ -27,7 +29,12 @@ const validateDate = (date) => {
 }
 
 const create = async (matchData) => {
-  await validateTournament(matchData.tournamentId)
+  const tournament = await validateTournament(matchData.tournamentId)
+
+  if (tournament.finished) {
+    throw new AppError('Torneio já finalizado', 400)
+  }
+
   validateDate(matchData.date)
 
   return Match.create(matchData)
@@ -180,6 +187,10 @@ const finish = async (matchId) => {
 
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
+  }
+
+  if (match.finished) {
+    throw new AppError('Partida já finalizada', 400)
   }
 
   const matchSnapshot = MatchSnapshotVO.fromMatch(match)

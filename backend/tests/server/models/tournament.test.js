@@ -39,6 +39,7 @@ describe('Tournament Model', () => {
       startDate: tournamentData.startDate,
       endDate: tournamentData.endDate,
       sportId: sport.id,
+      finished: false,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })
@@ -90,6 +91,7 @@ describe('Tournament Model', () => {
       startDate: updatedStartDate,
       endDate: updatedEndDate,
       sportId: sport.id,
+      finished: false,
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })
