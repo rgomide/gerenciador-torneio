@@ -5,7 +5,7 @@ on:
   schedule:
     # Access https://crontab.guru/ to setup the cron string
     # America/Sao_Paulo (GMT-3). 10-20 (UTC) = 7-17 (GMT-3)
-    - cron: '*/12 10-20 * * 1-5' 
+    - cron: '*/6 10-20 * * 1-5'
 
 jobs:
   ping-server:
