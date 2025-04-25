@@ -1,4 +1,4 @@
-const { Event, Unit } = require('@server/models')
+const { Event, Unit, Tournament, Sport, Match, Institution } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 const { Op } = require('sequelize')
 
@@ -44,6 +44,41 @@ const findAll = async () => {
       }
     ]
   })
+}
+
+const findUnfinished = async () => {
+  const events = await Event.findAll({
+    include: [
+      {
+        model: Unit,
+        as: 'unit',
+        include: [
+          {
+            model: Institution,
+            as: 'institution'
+          }
+        ]
+      },
+      {
+        model: Tournament,
+        as: 'tournaments',
+        where: { finished: false },
+        include: [
+          {
+            model: Sport,
+            as: 'sport'
+          },
+          {
+            model: Match,
+            as: 'matches',
+            where: { finished: false }
+          }
+        ]
+      }
+    ]
+  })
+
+  return events
 }
 
 const findByUnit = async (unitId, searchParams) => {
@@ -130,6 +165,7 @@ module.exports = {
   findAll,
   findByUnit,
   findById,
+  findUnfinished,
   update,
   remove
 }
