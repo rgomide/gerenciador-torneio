@@ -22,6 +22,11 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getUnfinishedEvents = async () => {
+    const url = 'events/unfinished'
+    return makeRequest(url, GET)
+  }
+
   const getUnits = async (query) => {
     const url = 'units'
     return makeRequest(url, GET, query)
@@ -236,6 +241,7 @@ const useApi = () => {
 
   return {
     getEvents,
+    getUnfinishedEvents,
     getTournamentsByEventId,
     getUnitsByInstitutionId,
     deleteTournamentById,
