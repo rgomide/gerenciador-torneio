@@ -17,7 +17,7 @@ const EventCard = ({ event }) => {
   const eventPeriod = `${formatDate(startDate)} a ${formatDate(endDate)}`
 
   return (
-    <div className="flex flex-col border border-gray-300 rounded-md p-4">
+    <div className="flex flex-col border border-gray-300 rounded-md p-4 w-full">
       <div className="flex flex-col">
         <h1 className="text-2xl font-bold">{name}</h1>
         <h2 className="text-sm text-gray-500">

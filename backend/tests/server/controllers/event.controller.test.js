@@ -1,5 +1,5 @@
 const request = require('supertest')
-const { User, Role, Institution, Unit, Event } = require('@server/models')
+const { User, Role, Institution, Unit, Event, Tournament, Match, Sport } = require('@server/models')
 const app = require('@server/app')
 const jwt = require('jsonwebtoken')
 const { JWT, ROLES } = require('@server/config/constants')
@@ -86,6 +86,120 @@ describe('Event Controller', () => {
 
       expect(response.status).toBe(403)
       expect(response.body.message).toBe('Acesso negado')
+    })
+  })
+
+  describe('GET /api/events/unfinished', () => {
+    it('should return all unfinished events when user is admin', async () => {
+      const adminRole = await Role.create({ name: ROLES.ADMIN })
+      const adminUser = await User.create({
+        firstName: 'Admin',
+        lastName: 'User',
+        userName: 'admin',
+        email: 'admin@example.com',
+        password: 'password123'
+      })
+      await adminRole.addUser(adminUser, {
+        through: { userId: adminUser.id, roleId: adminRole.id }
+      })
+      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const sport = await Sport.create({ name: 'Futebol' })
+      const institution = await Institution.create({ name: 'Test Institution' })
+      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Test Event',
+        unitId: unit.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02')
+      })
+      const tournament = await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        sportId: sport.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02'),
+        finished: false
+      })
+
+      await Tournament.create({
+        name: 'Test Tournament',
+        eventId: event.id,
+        sportId: sport.id,
+        startDate: new Date('2024-01-01'),
+        endDate: new Date('2024-01-02'),
+        finished: true
+      })
+
+      const match = await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: false
+      })
+
+      await Match.create({
+        tournamentId: tournament.id,
+        date: new Date('2024-01-01'),
+        finished: true
+      })
+
+      const response = await request(app)
+        .get('/api/events/unfinished')
+        .set('Authorization', `Bearer ${adminToken}`)
+
+      expect(response.status).toBe(200)
+
+      expect(response.body[0]).toEqual(
+        expect.objectContaining({
+          id: event.id,
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: '2024-01-01T00:00:00.000Z',
+          endDate: '2024-01-02T00:00:00.000Z',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          unit: {
+            id: unit.id,
+            name: 'Test Unit',
+            institutionId: institution.id,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String),
+            institution: {
+              id: institution.id,
+              name: 'Test Institution',
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String)
+            }
+          },
+          tournaments: [
+            {
+              id: tournament.id,
+              name: 'Test Tournament',
+              eventId: event.id,
+              sportId: sport.id,
+              finished: false,
+              startDate: '2024-01-01T00:00:00.000Z',
+              endDate: '2024-01-02T00:00:00.000Z',
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+              sport: {
+                id: sport.id,
+                name: 'Futebol',
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String)
+              },
+              matches: [
+                expect.objectContaining({
+                  id: match.id,
+                  tournamentId: tournament.id,
+                  date: '2024-01-01T00:00:00.000Z',
+                  finished: false
+                })
+              ]
+            }
+          ]
+        })
+      )
     })
   })
 
@@ -236,7 +350,16 @@ describe('Event Controller', () => {
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         createdAt: expect.any(String),
-        updatedAt: expect.any(String)
+        updatedAt: expect.any(String),
+        tournaments: null,
+        unit: {
+          id: unit.id,
+          name: 'Test Unit',
+          institutionId: institution.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          institution: null
+        }
       })
     })
 
@@ -349,7 +472,9 @@ describe('Event Controller', () => {
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         createdAt: expect.any(String),
-        updatedAt: expect.any(String)
+        updatedAt: expect.any(String),
+        tournaments: null,
+        unit: null
       })
     })
 
@@ -474,6 +599,15 @@ describe('Event Controller', () => {
         id: event.id,
         name: 'Updated Event',
         unitId: unit.id,
+        tournaments: null,
+        unit: {
+          id: unit.id,
+          name: 'Test Unit',
+          institutionId: institution.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          institution: null
+        },
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         createdAt: expect.any(String),

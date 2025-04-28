@@ -242,6 +242,12 @@ describe('Unit Controller', () => {
         id: unit.id,
         name: 'Test Unit',
         institutionId: institution.id,
+        institution: {
+          id: institution.id,
+          name: 'Test Institution',
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String)
+        },
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
       })
@@ -334,7 +340,8 @@ describe('Unit Controller', () => {
         name: 'New Unit',
         institutionId: institution.id,
         createdAt: expect.any(String),
-        updatedAt: expect.any(String)
+        updatedAt: expect.any(String),
+        institution: null
       })
     })
 
@@ -427,6 +434,7 @@ describe('Unit Controller', () => {
       expect(response.body).toEqual({
         id: unit.id,
         name: 'Updated Unit',
+        institution: null,
         institutionId: institution.id,
         createdAt: expect.any(String),
         updatedAt: expect.any(String)
