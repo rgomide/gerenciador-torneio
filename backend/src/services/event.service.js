@@ -75,6 +75,10 @@ const findUnfinished = async () => {
           }
         ]
       }
+    ],
+    order: [
+      [{ model: Tournament, as: 'tournaments' }, 'startDate', 'DESC'],
+      [{ model: Tournament, as: 'tournaments' }, { model: Match, as: 'matches' }, 'date', 'DESC']
     ]
   })
 

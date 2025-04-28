@@ -1,17 +1,21 @@
+const InstitutionVO = require('@server/vo/InstitutionVO')
 class UnitVO {
   constructor(unit) {
     this.unit = unit
   }
 
   toJSON() {
-    const { id, name, institutionId, createdAt, updatedAt } = this.unit
+    const { id, name, institutionId, createdAt, updatedAt, institution } = this.unit
+
+    const institutionVO = institution ? new InstitutionVO(institution).toJSON() : null
 
     return {
       id,
       name,
       institutionId,
       createdAt,
-      updatedAt
+      updatedAt,
+      institution: institutionVO
     }
   }
 

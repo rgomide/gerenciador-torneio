@@ -3,6 +3,7 @@ const {
   findAll,
   findById,
   findByUnit,
+  findUnfinished,
   update,
   remove
 } = require('@server/services/event.service')
@@ -49,6 +50,45 @@ router.get('/events', authorizationMiddleware([ADMIN, MANAGER]), async (req, res
     next(error)
   }
 })
+
+/**
+ * @openapi
+ * /api/events/unfinished:
+ *   get:
+ *     description: Get all unfinished events
+ *     tags:
+ *       - Events
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of unfinished events
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               example:
+ *                 - id: "1"
+ *                   name: "Event 1"
+ *                   unitId: "1"
+ *                   startDate: "2024-01-01T00:00:00.000Z"
+ *                   endDate: "2024-01-02T00:00:00.000Z"
+ *                   createdAt: "2024-01-01T00:00:00.000Z"
+ *                   updatedAt: "2024-01-01T00:00:00.000Z"
+ */
+router.get(
+  '/events/unfinished',
+  authorizationMiddleware([ADMIN, MANAGER]),
+  async (req, res, next) => {
+    try {
+      const events = await findUnfinished()
+      const eventsVO = EventVO.parseCollection(events)
+      return res.json(eventsVO)
+    } catch (error) {
+      next(error)
+    }
+  }
+)
 
 /**
  * @openapi

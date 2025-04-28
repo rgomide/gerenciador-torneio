@@ -1,4 +1,5 @@
 const SportVO = require('./SportVO')
+const MatchVO = require('./MatchVO')
 
 class TournamentVO {
   constructor(tournament) {
@@ -16,10 +17,12 @@ class TournamentVO {
       createdAt,
       updatedAt,
       sport,
-      finished
+      finished,
+      matches
     } = this.tournament
 
     const sportVO = sport ? new SportVO(sport).toJSON() : null
+    const matchesVO = matches ? matches.map((match) => new MatchVO(match).toJSON()) : null
 
     return {
       id,
@@ -31,7 +34,8 @@ class TournamentVO {
       updatedAt,
       sportId,
       sport: sportVO,
-      finished
+      finished,
+      matches: matchesVO
     }
   }
 
