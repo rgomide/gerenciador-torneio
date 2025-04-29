@@ -1,7 +1,7 @@
 'use client'
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Pencil, Plus, Search } from 'lucide-react'
+import { Pencil, Plus } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -16,8 +16,6 @@ import {
 } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import SelectSearcher from '../common/SelectSearcher'
-import { useState } from 'react'
 
 function PlayersForm({ record, onClose, unitId }) {
   const { createPlayer, updatePlayer } = useApi()
@@ -26,7 +24,9 @@ function PlayersForm({ record, onClose, unitId }) {
   const formSchema = z.object({
     name: z.string().min(3, 'O nome do jogador deve ter pelo menos 3 caracteres'),
     email: z.string().min(3, 'O email deve ter pelo menos 3 caracteres, seguido por @ e .'),
-    phone: z.string().min(11, 'O número do jogador deve ter pelo menos 11 caracteres, incluindo o DDD')
+    phone: z
+      .string()
+      .min(11, 'O número do jogador deve ter pelo menos 11 caracteres, incluindo o DDD')
   })
 
   const form = useForm({
@@ -112,7 +112,11 @@ function PlayersForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Email do atleta</FormLabel>
                   <FormControl>
-                    <Input type='email' placeholder={isCreate ? 'email' : record.email} {...field} />
+                    <Input
+                      type="email"
+                      placeholder={isCreate ? 'email' : record.email}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -126,7 +130,11 @@ function PlayersForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Telefone do atleta</FormLabel>
                   <FormControl>
-                    <Input type='phone' placeholder={isCreate ? '(xx) xxxxx-xxxx' : record.phone} {...field} />
+                    <Input
+                      type="phone"
+                      placeholder={isCreate ? '(xx) xxxxx-xxxx' : record.phone}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

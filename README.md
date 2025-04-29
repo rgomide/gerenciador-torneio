@@ -37,6 +37,13 @@ erDiagram
         date updated_at
     }
 
+    users_events {
+      bigint user_id FK
+      bigint event_id FK
+      date created_at
+      date updated_at
+    }
+
     institutions {
       bigint id PK
       string name
@@ -143,6 +150,8 @@ erDiagram
 
     users ||--o{ users_roles : has
     roles ||--o{ users_roles : has
+    users ||--o{ users_events : has
+    events ||--o{ users_events : has
     institutions ||--o{ units : has
     units ||--o{ events : has
     units ||--o{ players : has

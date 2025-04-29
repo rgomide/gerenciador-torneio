@@ -22,6 +22,7 @@ const EventVO = require('@server/vo/EventVO')
  *     description: Get all events
  *     tags:
  *       - Events
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -58,6 +59,7 @@ router.get('/events', authorizationMiddleware([ADMIN, MANAGER]), async (req, res
  *     description: Get all unfinished events
  *     tags:
  *       - Events
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -97,6 +99,7 @@ router.get(
  *     description: Get all events of a unit
  *     tags:
  *       - Events
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -150,6 +153,7 @@ router.get(
  *     description: Get an event by ID
  *     tags:
  *       - Events
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -278,6 +282,7 @@ router.post('/events', authorizationMiddleware([ADMIN]), async (req, res, next) 
  *     description: Update an event by ID
  *     tags:
  *       - Events
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -339,9 +344,10 @@ router.put(
   async (req, res, next) => {
     try {
       const { eventId } = req.params
+      const user = req.user
       const { name, unitId, startDate, endDate } = req.body
 
-      const event = await update(eventId, { name, unitId, startDate, endDate })
+      const event = await update(eventId, { name, unitId, startDate, endDate }, user)
       const eventVO = new EventVO(event)
 
       return res.json(eventVO)

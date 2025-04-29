@@ -13,6 +13,7 @@ const {
  *     description: Get all sports
  *     tags:
  *       - Sports
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -44,6 +45,7 @@ router.get('/', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next
  *     description: Get a sport by ID
  *     tags:
  *       - Sports
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:

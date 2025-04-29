@@ -12,6 +12,13 @@ module.exports = (sequelize, DataTypes) => {
         otherKey: 'role_id',
         as: 'roles'
       })
+
+      User.belongsToMany(models.Event, {
+        through: models.UserEvent,
+        foreignKey: 'user_id',
+        otherKey: 'event_id',
+        as: 'events'
+      })
     }
   }
 

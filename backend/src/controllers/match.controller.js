@@ -25,6 +25,7 @@ const matchScoreService = require('@server/services/matchScore.service')
  *     description: Get all matches
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -77,6 +78,7 @@ router.get('/matches', authorizationMiddleware([ADMIN, MANAGER]), async (req, re
  *     description: Get a match by ID
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -142,6 +144,7 @@ router.get(
  *     description: Create a new match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -199,11 +202,12 @@ router.get(
  *                   type: string
  *                   format: date-time
  */
-router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next) => {
+router.post('/matches', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
     const matchData = req.body
     matchData.finished = false
-    const match = await create(matchData)
+    const user = req.user
+    const match = await create(matchData, user)
     const matchVO = new MatchVO(match)
 
     return res.status(201).json(matchVO)
@@ -219,6 +223,7 @@ router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next)
  *     description: Finish a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -259,11 +264,12 @@ router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next)
  */
 router.post(
   '/matches/:matchId/finish',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
-      const match = await finish(matchId)
+      const match = await finish(matchId, user)
       const matchVO = new MatchVO(match)
 
       return res.json(matchVO)
@@ -280,6 +286,7 @@ router.post(
  *     description: Update a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -343,12 +350,13 @@ router.put(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const matchData = req.body
 
       delete matchData.finished
 
-      const match = await update(matchId, matchData)
+      const match = await update(matchId, matchData, user)
       const matchVO = new MatchVO(match)
 
       return res.json(matchVO)
@@ -395,6 +403,7 @@ router.delete('/matches/:matchId', authorizationMiddleware([ADMIN]), async (req,
  *     description: Get all participants for a specific match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -465,6 +474,7 @@ router.get(
  *     description: Delete a specific participant from a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -493,11 +503,12 @@ router.get(
  */
 router.delete(
   '/matches/:matchId/participants/:participantId',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
-      const { matchId, participantId } = req.params
-      await matchParticipantService.remove(participantId)
+      const user = req.user
+      const { participantId } = req.params
+      await matchParticipantService.remove(participantId, user)
 
       return res.status(204).send()
     } catch (error) {
@@ -513,6 +524,7 @@ router.delete(
  *     summary: Create multiple participants for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -582,16 +594,17 @@ router.delete(
  */
 router.post(
   '/matches/:matchId/participants/bulk',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const participantsData = req.body.map((participant) => ({
         ...participant,
         matchId
       }))
 
-      const participants = await matchParticipantService.bulkCreate(participantsData)
+      const participants = await matchParticipantService.bulkCreate(participantsData, user)
       const participantsVO = participants.map((participant) => new MatchParticipantVO(participant))
 
       res.status(201).json(participantsVO)
@@ -608,6 +621,7 @@ router.post(
  *     summary: Create a single participant for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -666,16 +680,17 @@ router.post(
  */
 router.post(
   '/matches/:matchId/participants',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const participantData = {
         ...req.body,
         matchId
       }
 
-      const participant = await matchParticipantService.create(participantData)
+      const participant = await matchParticipantService.create(participantData, user)
       const participantVO = new MatchParticipantVO(participant)
 
       return res.status(201).json(participantVO)
@@ -692,6 +707,7 @@ router.post(
  *     summary: Get all scores for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -776,6 +792,7 @@ router.get(
  *     summary: Create a score for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -849,13 +866,14 @@ router.post(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const scoreData = {
         ...req.body,
         matchId
       }
 
-      const score = await matchScoreService.create(scoreData)
+      const score = await matchScoreService.create(scoreData, user)
       const scoreVO = new MatchScoreVO(score)
 
       return res.status(201).json(scoreVO)
@@ -872,6 +890,7 @@ router.post(
  *     summary: Delete a specific score from a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -912,8 +931,9 @@ router.delete(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { scoreId } = req.params
-      await matchScoreService.remove(scoreId)
+      await matchScoreService.remove(scoreId, user)
 
       return res.status(204).send()
     } catch (error) {
@@ -929,6 +949,7 @@ router.delete(
  *     summary: Update a specific score for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -1005,11 +1026,12 @@ router.delete(
  */
 router.put(
   '/matches/:matchId/scores/:scoreId',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { scoreId } = req.params
-      const score = await matchScoreService.update(scoreId, req.body)
+      const score = await matchScoreService.update(scoreId, req.body, user)
       const scoreVO = new MatchScoreVO(score)
 
       return res.json(scoreVO)

@@ -1,5 +1,15 @@
 const request = require('supertest')
-const { User, Role, Institution, Unit, Event, Tournament, Match, Sport } = require('@server/models')
+const {
+  User,
+  UserEvent,
+  Role,
+  Institution,
+  Unit,
+  Event,
+  Tournament,
+  Match,
+  Sport
+} = require('@server/models')
 const app = require('@server/app')
 const jwt = require('jsonwebtoken')
 const { JWT, ROLES } = require('@server/config/constants')
@@ -638,6 +648,11 @@ describe('Event Controller', () => {
         unitId: unit.id,
         startDate: new Date('2024-01-01'),
         endDate: new Date('2024-01-02')
+      })
+
+      await UserEvent.create({
+        userId: managerUser.id,
+        eventId: event.id
       })
 
       const response = await request(app)

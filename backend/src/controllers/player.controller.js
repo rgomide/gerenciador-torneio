@@ -21,6 +21,7 @@ const PlayerVO = require('@server/vo/PlayerVO')
  *     description: Get all players of a unit
  *     tags:
  *       - Players
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -79,6 +80,7 @@ router.get(
  *     description: Get all players
  *     tags:
  *       - Players
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -133,6 +135,7 @@ router.get('/players', authorizationMiddleware([ADMIN, MANAGER]), async (req, re
  *     description: Get a player by ID
  *     tags:
  *       - Players
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -189,6 +192,7 @@ router.get(
  *     description: Create a new player
  *     tags:
  *       - Players
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -254,6 +258,7 @@ router.post('/players', authorizationMiddleware([ADMIN, MANAGER]), async (req, r
  *     description: Update a player by ID
  *     tags:
  *       - Players
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:

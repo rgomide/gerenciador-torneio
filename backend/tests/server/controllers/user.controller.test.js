@@ -32,6 +32,26 @@ describe('User Controller', () => {
       const response = await request(app).get('/api/users').set('Authorization', `Bearer ${token}`)
 
       expect(response.status).toBe(200)
+      expect(response.body).toEqual([
+        expect.objectContaining({
+          id: expect.any(String),
+          firstName: 'Denecley',
+          lastName: 'Alvim',
+          userName: 'admin',
+          email: 'denecley@gmail.com',
+          isAdmin: true,
+          isManager: false
+        }),
+        expect.objectContaining({
+          id: expect.any(String),
+          firstName: 'John',
+          lastName: 'Doe',
+          userName: 'john',
+          email: 'john@gmail.com',
+          isAdmin: false,
+          isManager: false
+        })
+      ])
     })
 
     it('return 403 if user is not authorized', async () => {
@@ -67,6 +87,8 @@ describe('User Controller', () => {
         firstName: 'Denecley',
         lastName: 'Alvim',
         userName: 'admin',
+        isAdmin: true,
+        isManager: false,
         email: 'denecley@gmail.com',
         roles: ['admin'],
         createdAt: expect.any(String),

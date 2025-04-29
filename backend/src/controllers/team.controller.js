@@ -26,6 +26,7 @@ const teamPlayerService = require('@server/services/teamPlayer.service')
  *     description: Get all teams
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -78,6 +79,7 @@ router.get('/teams', authorizationMiddleware([ADMIN, MANAGER]), async (req, res,
  *     description: Get a team by ID
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -128,6 +130,7 @@ router.get('/teams/:teamId', authorizationMiddleware([ADMIN, MANAGER]), async (r
  *     description: Get all teams for a unit
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -184,6 +187,7 @@ router.get(
  *     description: Get all teams for a sport
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -240,6 +244,7 @@ router.get(
  *     description: Create a new team
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -301,6 +306,7 @@ router.post('/teams', authorizationMiddleware([ADMIN, MANAGER]), async (req, res
  *     description: Update a team
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -395,6 +401,7 @@ router.delete('/teams/:teamId', authorizationMiddleware([ADMIN]), async (req, re
  *     description: Get all players in a team
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -446,11 +453,12 @@ router.get(
 
 /**
  * @openapi
- * /api/teams/{teamId}/players:
+ * /api/teams/{teamId}/players/bulk:
  *   post:
  *     description: Add multiple players to a team in bulk
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -519,6 +527,7 @@ router.post(
  *     description: Add a player to a team
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -594,6 +603,7 @@ router.post(
  *     description: Remove a player from a team
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -636,6 +646,7 @@ router.delete(
  *     description: Update a player's details in a team
  *     tags:
  *       - Teams
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:

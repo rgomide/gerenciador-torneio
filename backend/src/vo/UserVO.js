@@ -12,6 +12,8 @@ class UserVO {
       lastName,
       createdAt,
       updatedAt,
+      isAdmin,
+      isManager,
       roles = []
     } = this.userModel
 
@@ -23,6 +25,8 @@ class UserVO {
       userName,
       firstName,
       lastName,
+      isAdmin,
+      isManager,
       roles: rolesVO,
       createdAt,
       updatedAt

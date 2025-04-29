@@ -2,7 +2,6 @@
 import OverlaySpinner from '@/components/common/OverlaySpinner'
 import SelectSearcher from '@/components/common/SelectSearcher'
 import PlayersForm from '@/components/PlayerComponents/PlayerForm'
-import SportsForm from '@/components/SportsComponents/SportsForm'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

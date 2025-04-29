@@ -1299,8 +1299,6 @@ describe('Team Controller', () => {
           players: [{ id: 999999, details: 'details' }]
         })
 
-      console.log(response.body)
-
       expect(response.status).toBe(404)
       expect(response.body.message).toBe('Jogador não encontrado')
     })

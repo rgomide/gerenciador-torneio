@@ -20,6 +20,7 @@ const UnitVO = require('@server/vo/UnitVO')
  *     description: Get all units
  *     tags:
  *       - Units
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -64,6 +65,7 @@ router.get('/units', authorizationMiddleware([ADMIN, MANAGER]), async (req, res,
  *     description: Get all units of an institution
  *     tags:
  *       - Units
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -112,6 +114,7 @@ router.get(
  *     description: Get a unit by ID
  *     tags:
  *       - Units
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:

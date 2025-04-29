@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { getCookie } from 'cookies-next'
 import { useState } from 'react'
+import useCookies from './useCookies'
 
 const GET = 'get'
 const POST = 'post'
@@ -10,11 +10,22 @@ const DELETE = 'delete'
 const useApi = () => {
   const BASE_URL = process.env.NEXT_PUBLIC_API_SERVER
   const [isLoading, setIsLoading] = useState(false)
+  const { getAuthCookie } = useCookies()
 
   const auth = async (userName, password) => {
     const url = 'auth/login'
     const payload = { userName, password }
     return makeRequest(url, POST, payload)
+  }
+
+  const getUsers = async () => {
+    const url = 'users'
+    return makeRequest(url, GET)
+  }
+
+  const getUser = async (userId) => {
+    const url = `users/${userId}`
+    return makeRequest(url, GET)
   }
 
   const getInstitutions = async () => {
@@ -215,7 +226,8 @@ const useApi = () => {
   }
 
   function addTokenToRequest(requestConfiguration) {
-    const token = getCookie('token')
+    const { token } = getAuthCookie() ?? {}
+
     if (token) {
       const headers = requestConfiguration['headers'] || {}
 
@@ -292,6 +304,7 @@ const useApi = () => {
     createPlayer,
     updatePlayer,
     deletePlayerById,
+    getUsers,
     isLoading
   }
 }

@@ -24,6 +24,7 @@ const MatchVO = require('@server/vo/MatchVO')
  *     description: Get all tournaments
  *     tags:
  *       - Tournaments
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -63,6 +64,7 @@ router.get('/tournaments', authorizationMiddleware([ADMIN, MANAGER]), async (req
  *     description: Get all tournaments of an event
  *     tags:
  *       - Tournaments
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -113,6 +115,7 @@ router.get(
  *     description: Get a tournament by ID
  *     tags:
  *       - Tournaments
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -301,7 +304,7 @@ router.post('/tournaments', authorizationMiddleware([ADMIN]), async (req, res, n
  */
 router.put(
   '/tournaments/:tournamentId',
-  authorizationMiddleware([ADMIN, MANAGER]),
+  authorizationMiddleware([ADMIN]),
   async (req, res, next) => {
     try {
       const { tournamentId } = req.params
