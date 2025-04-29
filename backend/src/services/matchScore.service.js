@@ -1,4 +1,5 @@
-const { MatchScore, Match, Team, Player } = require('@server/models')
+const { MatchScore, Match, Team, Player, Tournament } = require('@server/models')
+const { validateUser } = require('@server/services/event.service')
 const AppError = require('@server/utils/AppError')
 
 const findByMatch = async (matchId) => {
@@ -14,11 +15,21 @@ const findByMatch = async (matchId) => {
   return scores
 }
 
-const create = async (scoreData) => {
-  const match = await Match.findByPk(scoreData.matchId)
+const create = async (scoreData, user) => {
+  const match = await Match.findByPk(scoreData.matchId, {
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament'
+      }
+    ]
+  })
+
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
   }
+
+  validateUser(user, { id: match.tournament.eventId })
 
   if (scoreData.participantType === 'team') {
     const team = await Team.findByPk(scoreData.teamId)
@@ -36,11 +47,27 @@ const create = async (scoreData) => {
   return score
 }
 
-const update = async (id, scoreData) => {
-  const score = await MatchScore.findByPk(id)
+const update = async (id, scoreData, user) => {
+  const score = await MatchScore.findByPk(id, {
+    include: [
+      {
+        model: Match,
+        as: 'match',
+        include: [
+          {
+            model: Tournament,
+            as: 'tournament'
+          }
+        ]
+      }
+    ]
+  })
+
   if (!score) {
     throw new AppError('Pontuação não encontrada', 404)
   }
+
+  validateUser(user, { id: score.match.tournament.eventId })
 
   if (scoreData.matchId) {
     const match = await Match.findByPk(scoreData.matchId)
@@ -65,11 +92,27 @@ const update = async (id, scoreData) => {
   return score
 }
 
-const remove = async (id) => {
-  const score = await MatchScore.findByPk(id)
+const remove = async (id, user) => {
+  const score = await MatchScore.findByPk(id, {
+    include: [
+      {
+        model: Match,
+        as: 'match',
+        include: [
+          {
+            model: Tournament,
+            as: 'tournament'
+          }
+        ]
+      }
+    ]
+  })
+
   if (!score) {
     throw new AppError('Pontuação não encontrada', 404)
   }
+
+  validateUser(user, { id: score.match.tournament.eventId })
 
   await score.destroy()
 }

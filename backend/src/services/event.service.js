@@ -131,7 +131,7 @@ const findById = async (id) => {
   return event
 }
 
-const update = async (id, eventData) => {
+const update = async (id, eventData, user) => {
   validateName(eventData.name)
   validateDates(eventData.startDate, eventData.endDate)
 
@@ -150,6 +150,8 @@ const update = async (id, eventData) => {
     throw new AppError('Unidade não encontrada', 404)
   }
 
+  validateUser(user, event)
+
   await event.update(eventData)
 
   return findById(id)
@@ -164,12 +166,25 @@ const remove = async (id) => {
   await event.destroy()
 }
 
+const validateUser = (user, event) => {
+  if (!user || user.isAdmin) {
+    return
+  }
+
+  const isValid = user.events.some((userEvent) => userEvent.id == event.id)
+
+  if (!isValid) {
+    throw new AppError('Usuário não tem permissão para manipular este evento', 403)
+  }
+}
+
 module.exports = {
   create,
   findAll,
   findByUnit,
   findById,
   findUnfinished,
+  validateUser,
   update,
   remove
 }

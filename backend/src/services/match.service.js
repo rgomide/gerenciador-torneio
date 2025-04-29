@@ -10,6 +10,7 @@ const {
   Institution,
   Event
 } = require('@server/models')
+const { validateUser } = require('@server/services/event.service')
 const MatchSnapshotVO = require('@server/vo/MatchSnapshotVO')
 const AppError = require('@server/utils/AppError')
 
@@ -28,7 +29,7 @@ const validateDate = (date) => {
   }
 }
 
-const create = async (matchData) => {
+const create = async (matchData, user) => {
   const tournament = await validateTournament(matchData.tournamentId)
 
   if (tournament.finished) {
@@ -36,6 +37,7 @@ const create = async (matchData) => {
   }
 
   validateDate(matchData.date)
+  validateUser(user, { id: tournament.eventId })
 
   return Match.create(matchData)
 }
@@ -100,8 +102,16 @@ const findByTournament = async (tournamentId) => {
   return Match.findAll({ where: { tournament_id: tournamentId } })
 }
 
-const update = async (id, matchData) => {
-  const match = await Match.findByPk(id)
+const update = async (id, matchData, user) => {
+  const match = await Match.findByPk(id, {
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament'
+      }
+    ]
+  })
+
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
   }
@@ -114,21 +124,33 @@ const update = async (id, matchData) => {
     validateDate(matchData.date)
   }
 
+  validateUser(user, { id: match.tournament.eventId })
+
   await match.update(matchData)
 
   return findById(id)
 }
 
-const remove = async (id) => {
-  const match = await Match.findByPk(id)
+const remove = async (id, user) => {
+  const match = await Match.findByPk(id, {
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament'
+      }
+    ]
+  })
+
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
   }
 
+  validateUser(user, { id: match.tournament.eventId })
+
   await match.destroy()
 }
 
-const finish = async (matchId) => {
+const finish = async (matchId, user) => {
   const match = await Match.findByPk(matchId, {
     include: [
       {
@@ -188,6 +210,8 @@ const finish = async (matchId) => {
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
   }
+
+  validateUser(user, { id: match.tournament.eventId })
 
   if (match.finished) {
     throw new AppError('Partida já finalizada', 400)

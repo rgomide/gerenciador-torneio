@@ -1,4 +1,4 @@
-const { User, Role } = require('@server/models')
+const { User, Role, Event } = require('@server/models')
 const AppError = require('@server/utils/AppError')
 
 const findAll = async () => {
@@ -21,6 +21,10 @@ const findById = async (id) => {
       {
         model: Role,
         as: 'roles'
+      },
+      {
+        model: Event,
+        as: 'events'
       }
     ]
   })

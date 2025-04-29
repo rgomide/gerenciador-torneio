@@ -301,7 +301,7 @@ router.post('/tournaments', authorizationMiddleware([ADMIN]), async (req, res, n
  */
 router.put(
   '/tournaments/:tournamentId',
-  authorizationMiddleware([ADMIN, MANAGER]),
+  authorizationMiddleware([ADMIN]),
   async (req, res, next) => {
     try {
       const { tournamentId } = req.params

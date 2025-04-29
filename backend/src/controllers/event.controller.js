@@ -339,9 +339,10 @@ router.put(
   async (req, res, next) => {
     try {
       const { eventId } = req.params
+      const user = req.user
       const { name, unitId, startDate, endDate } = req.body
 
-      const event = await update(eventId, { name, unitId, startDate, endDate })
+      const event = await update(eventId, { name, unitId, startDate, endDate }, user)
       const eventVO = new EventVO(event)
 
       return res.json(eventVO)

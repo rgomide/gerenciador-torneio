@@ -12,842 +12,867 @@ const {
   Player,
   Sport,
   MatchScore,
-  MatchSnapshot
+  MatchSnapshot,
+  UserEvent
 } = require('@server/models')
 const app = require('@server/app')
 const jwt = require('jsonwebtoken')
 const { JWT, ROLES } = require('@server/config/constants')
 
 describe('Match Controller', () => {
-  describe('GET /api/matches', () => {
-    it('should return all matches when user is admin', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+  describe('Matches', () => {
+    describe('GET /api/matches', () => {
+      it('should return all matches when user is admin', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
-      const sport = await Sport.create({
-        name: 'Test Sport',
-        description: 'Test Description'
-      })
+        const sport = await Sport.create({
+          name: 'Test Sport',
+          description: 'Test Description'
+        })
 
-      const institution = await Institution.create({ name: 'Test Institution' })
-      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const tournament = await Tournament.create({
-        sportId: sport.id,
-        name: 'Tournament 1',
-        eventId: event.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const match = await Match.create({
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      })
-      const team1 = await Team.create({
-        name: 'Test Team',
-        description: 'Test Description',
-        unitId: unit.id,
-        sportId: sport.id
-      })
-      const team2 = await Team.create({
-        name: 'Test Team 2',
-        description: 'Test Description',
-        unitId: unit.id,
-        sportId: sport.id
-      })
-      await MatchScore.create({
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team1.id,
-        score: 10,
-        details: 'Test details'
-      })
-      await MatchScore.create({
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team2.id,
-        score: 20,
-        details: 'Test details'
-      })
-      await MatchScore.create({
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team2.id,
-        score: 5,
-        details: 'Test details'
-      })
-      const response = await request(app)
-        .get('/api/matches')
-        .set('Authorization', `Bearer ${adminToken}`)
-
-      expect(response.status).toBe(200)
-      expect(response.body).toEqual([
-        expect.objectContaining({
-          id: match.id,
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const tournament = await Tournament.create({
+          sportId: sport.id,
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const match = await Match.create({
           tournamentId: tournament.id,
-          date: match.date.toISOString(),
+          date: new Date('2024-01-01'),
           location: 'Test Location',
           finished: false,
           occurrences: 'Test Occurrences',
-          roundNumber: 1,
-          totalScores: [
-            {
-              id: team1.id,
-              name: 'Test Team',
-              totalScore: 10
-            },
-            {
-              id: team2.id,
-              name: 'Test Team 2',
-              totalScore: 25
-            }
-          ],
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
+          roundNumber: 1
         })
-      ])
-    })
+        const team1 = await Team.create({
+          name: 'Test Team',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+        const team2 = await Team.create({
+          name: 'Test Team 2',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+        await MatchScore.create({
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team1.id,
+          score: 10,
+          details: 'Test details'
+        })
+        await MatchScore.create({
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team2.id,
+          score: 20,
+          details: 'Test details'
+        })
+        await MatchScore.create({
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team2.id,
+          score: 5,
+          details: 'Test details'
+        })
+        const response = await request(app)
+          .get('/api/matches')
+          .set('Authorization', `Bearer ${adminToken}`)
 
-    it('should return all matches when user is manager', async () => {
-      const managerRole = await Role.create({ name: ROLES.MANAGER })
-      const managerUser = await User.create({
-        firstName: 'Manager',
-        lastName: 'User',
-        userName: 'manager',
-        email: 'manager@example.com',
-        password: 'password123'
-      })
-      await managerRole.addUser(managerUser, {
-        through: { userId: managerUser.id, roleId: managerRole.id }
-      })
-      const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
-        expiresIn: JWT.EXPIRES_IN
-      })
-
-      const institution = await Institution.create({ name: 'Test Institution' })
-      const sport = await Sport.create({ name: 'Test Sport' })
-      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const tournament = await Tournament.create({
-        sportId: sport.id,
-        name: 'Tournament 1',
-        eventId: event.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      await Match.create({
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      })
-
-      const response = await request(app)
-        .get('/api/matches')
-        .set('Authorization', `Bearer ${managerToken}`)
-
-      expect(response.status).toBe(200)
-    })
-
-    it('should return 403 when no token is provided', async () => {
-      const response = await request(app).get('/api/matches')
-
-      expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Acesso negado')
-    })
-  })
-
-  describe('GET /api/matches/:matchId', () => {
-    it('should return match by id when user is admin', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const sport = await Sport.create({
-        name: 'Test Sport',
-        description: 'Test Description'
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual([
+          expect.objectContaining({
+            id: match.id,
+            tournamentId: tournament.id,
+            date: match.date.toISOString(),
+            location: 'Test Location',
+            finished: false,
+            occurrences: 'Test Occurrences',
+            roundNumber: 1,
+            totalScores: [
+              {
+                id: team1.id,
+                name: 'Test Team',
+                totalScore: 10
+              },
+              {
+                id: team2.id,
+                name: 'Test Team 2',
+                totalScore: 25
+              }
+            ],
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        ])
       })
 
-      const institution = await Institution.create({ name: 'Test Institution' })
-      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const tournament = await Tournament.create({
-        sportId: sport.id,
-        name: 'Tournament 1',
-        eventId: event.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const match = await Match.create({
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      })
+      it('should return all matches when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
+          lastName: 'User',
+          userName: 'manager',
+          email: 'manager@example.com',
+          password: 'password123'
+        })
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
+        })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
 
-      const team1 = await Team.create({
-        name: 'Test Team',
-        description: 'Test Description',
-        unitId: unit.id,
-        sportId: sport.id
-      })
-      const team2 = await Team.create({
-        name: 'Test Team 2',
-        description: 'Test Description',
-        unitId: unit.id,
-        sportId: sport.id
-      })
-
-      await MatchScore.create({
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team1.id,
-        score: 10,
-        details: 'Test details'
-      })
-
-      await MatchScore.create({
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team2.id,
-        score: 5,
-        details: 'Test details'
-      })
-
-      const response = await request(app)
-        .get(`/api/matches/${match.id}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-
-      expect(response.status).toBe(200)
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          id: match.id,
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const tournament = await Tournament.create({
+          sportId: sport.id,
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        await Match.create({
           tournamentId: tournament.id,
-          date: match.date.toISOString(),
+          date: new Date('2024-01-01'),
           location: 'Test Location',
           finished: false,
           occurrences: 'Test Occurrences',
-          roundNumber: 1,
-          totalScores: [
-            {
-              id: team1.id,
-              name: 'Test Team',
-              totalScore: 10
-            },
-            {
-              id: team2.id,
-              name: 'Test Team 2',
-              totalScore: 5
-            }
-          ],
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
+          roundNumber: 1
         })
-      )
+
+        const response = await request(app)
+          .get('/api/matches')
+          .set('Authorization', `Bearer ${managerToken}`)
+
+        expect(response.status).toBe(200)
+      })
+
+      it('should return 403 when no token is provided', async () => {
+        const response = await request(app).get('/api/matches')
+
+        expect(response.status).toBe(403)
+        expect(response.body.message).toBe('Acesso negado')
+      })
     })
 
-    it('should return 404 when match is not found', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+    describe('GET /api/matches/:matchId', () => {
+      it('should return match by id when user is admin', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
-      const response = await request(app)
-        .get('/api/matches/999999')
-        .set('Authorization', `Bearer ${adminToken}`)
+        const sport = await Sport.create({
+          name: 'Test Sport',
+          description: 'Test Description'
+        })
 
-      expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Partida não encontrada')
-    })
-
-    it('should return 403 when no token is provided', async () => {
-      const response = await request(app).get('/api/matches/1')
-
-      expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Acesso negado')
-    })
-  })
-
-  describe('POST /api/matches', () => {
-    it('should create a match when user is admin', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const institution = await Institution.create({ name: 'Test Institution' })
-      const sport = await Sport.create({ name: 'Test Sport' })
-      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const tournament = await Tournament.create({
-        sportId: sport.id,
-        name: 'Tournament 1',
-        eventId: event.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-
-      const matchData = {
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: true,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      }
-
-      const response = await request(app)
-        .post('/api/matches')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send(matchData)
-
-      expect(response.status).toBe(201)
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const tournament = await Tournament.create({
+          sportId: sport.id,
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const match = await Match.create({
           tournamentId: tournament.id,
-          date: matchData.date.toISOString(),
+          date: new Date('2024-01-01'),
           location: 'Test Location',
           finished: false,
           occurrences: 'Test Occurrences',
-          roundNumber: 1,
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
+          roundNumber: 1
         })
-      )
+
+        const team1 = await Team.create({
+          name: 'Test Team',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+        const team2 = await Team.create({
+          name: 'Test Team 2',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+
+        await MatchScore.create({
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team1.id,
+          score: 10,
+          details: 'Test details'
+        })
+
+        await MatchScore.create({
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team2.id,
+          score: 5,
+          details: 'Test details'
+        })
+
+        const response = await request(app)
+          .get(`/api/matches/${match.id}`)
+          .set('Authorization', `Bearer ${adminToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            id: match.id,
+            tournamentId: tournament.id,
+            date: match.date.toISOString(),
+            location: 'Test Location',
+            finished: false,
+            occurrences: 'Test Occurrences',
+            roundNumber: 1,
+            totalScores: [
+              {
+                id: team1.id,
+                name: 'Test Team',
+                totalScore: 10
+              },
+              {
+                id: team2.id,
+                name: 'Test Team 2',
+                totalScore: 5
+              }
+            ],
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
+      })
+
+      it('should return 404 when match is not found', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const response = await request(app)
+          .get('/api/matches/999999')
+          .set('Authorization', `Bearer ${adminToken}`)
+
+        expect(response.status).toBe(404)
+        expect(response.body.message).toBe('Partida não encontrada')
+      })
+
+      it('should return 403 when no token is provided', async () => {
+        const response = await request(app).get('/api/matches/1')
+
+        expect(response.status).toBe(403)
+        expect(response.body.message).toBe('Acesso negado')
+      })
     })
 
-    it('should return 404 when tournament does not exist', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+    describe('POST /api/matches', () => {
+      it('should create a match when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
+          lastName: 'User',
+          userName: 'manager',
+          email: 'manager@example.com',
+          password: 'password123'
+        })
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
+        })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
 
-      const matchData = {
-        tournamentId: '999999',
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      }
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
 
-      const response = await request(app)
-        .post('/api/matches')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send(matchData)
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
 
-      expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Torneio não encontrado')
-    })
+        const tournament = await Tournament.create({
+          sportId: sport.id,
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
 
-    it('should return 403 when no token is provided', async () => {
-      const response = await request(app).post('/api/matches').send({})
-
-      expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Acesso negado')
-    })
-  })
-
-  describe('POST /api/matches/:matchId/finish', () => {
-    it('should finish a match when user is admin', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const sport = await Sport.create({
-        name: 'Test Sport'
-      })
-
-      const institution = await Institution.create({
-        name: 'Test Institution'
-      })
-
-      const unit = await Unit.create({
-        name: 'Test Unit',
-        institutionId: institution.id
-      })
-
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-
-      const tournament = await Tournament.create({
-        name: 'Test Tournament',
-        eventId: event.id,
-        sportId: sport.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-
-      const matchData = {
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01T10:00:00'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test occurrences',
-        roundNumber: 1
-      }
-
-      const match = await Match.create(matchData)
-
-      const team = await Team.create({
-        name: 'Test Team',
-        unitId: unit.id,
-        sportId: sport.id
-      })
-
-      const player = await Player.create({
-        name: 'Test Player',
-        unitId: unit.id,
-        email: 'test@test.com'
-      })
-
-      const matchParticipantData = {
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team.id
-      }
-      const matchParticipantData2 = {
-        matchId: match.id,
-        participantType: 'player',
-        playerId: player.id
-      }
-
-      await MatchParticipant.create(matchParticipantData)
-      await MatchParticipant.create(matchParticipantData2)
-
-      const matchScoreData = {
-        matchId: match.id,
-        participantType: 'team',
-        teamId: team.id,
-        score: 10
-      }
-
-      const matchScoreData2 = {
-        matchId: match.id,
-        participantType: 'player',
-        playerId: player.id,
-        score: 10,
-        details: 'Test details'
-      }
-
-      await MatchScore.create(matchScoreData)
-      await MatchScore.create(matchScoreData2)
-
-      const response = await request(app)
-        .post(`/api/matches/${match.id}/finish`)
-        .set('Authorization', `Bearer ${adminToken}`)
-
-      expect(response.status).toBe(200)
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          id: match.id,
+        const matchData = {
           tournamentId: tournament.id,
-          date: match.date.toISOString(),
+          date: new Date('2024-01-01'),
+          location: 'Test Location',
+          finished: true,
+          occurrences: 'Test Occurrences',
+          roundNumber: 1
+        }
+
+        const response = await request(app)
+          .post('/api/matches')
+          .set('Authorization', `Bearer ${managerToken}`)
+          .send(matchData)
+
+        expect(response.status).toBe(201)
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            tournamentId: tournament.id,
+            date: matchData.date.toISOString(),
+            location: 'Test Location',
+            finished: false,
+            occurrences: 'Test Occurrences',
+            roundNumber: 1,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
+      })
+
+      it('should return 404 when tournament does not exist', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const matchData = {
+          tournamentId: '999999',
+          date: new Date('2024-01-01'),
+          location: 'Test Location',
+          finished: false,
+          occurrences: 'Test Occurrences',
+          roundNumber: 1
+        }
+
+        const response = await request(app)
+          .post('/api/matches')
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send(matchData)
+
+        expect(response.status).toBe(404)
+        expect(response.body.message).toBe('Torneio não encontrado')
+      })
+
+      it('should return 403 when no token is provided', async () => {
+        const response = await request(app).post('/api/matches').send({})
+
+        expect(response.status).toBe(403)
+        expect(response.body.message).toBe('Acesso negado')
+      })
+    })
+
+    describe('POST /api/matches/:matchId/finish', () => {
+      it('should finish a match when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
+          lastName: 'User',
+          userName: 'manager',
+          email: 'manager@example.com',
+          password: 'password123'
+        })
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
+        })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
+
+        const sport = await Sport.create({
+          name: 'Test Sport'
+        })
+
+        const institution = await Institution.create({
+          name: 'Test Institution'
+        })
+
+        const unit = await Unit.create({
+          name: 'Test Unit',
+          institutionId: institution.id
+        })
+
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
+        const tournament = await Tournament.create({
+          name: 'Test Tournament',
+          eventId: event.id,
+          sportId: sport.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+
+        const matchData = {
+          tournamentId: tournament.id,
+          date: new Date('2024-01-01T10:00:00'),
+          location: 'Test Location',
+          finished: false,
+          occurrences: 'Test occurrences',
+          roundNumber: 1
+        }
+
+        const match = await Match.create(matchData)
+
+        const team = await Team.create({
+          name: 'Test Team',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+
+        const player = await Player.create({
+          name: 'Test Player',
+          unitId: unit.id,
+          email: 'test@test.com'
+        })
+
+        const matchParticipantData = {
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team.id
+        }
+        const matchParticipantData2 = {
+          matchId: match.id,
+          participantType: 'player',
+          playerId: player.id
+        }
+
+        await MatchParticipant.create(matchParticipantData)
+        await MatchParticipant.create(matchParticipantData2)
+
+        const matchScoreData = {
+          matchId: match.id,
+          participantType: 'team',
+          teamId: team.id,
+          score: 10
+        }
+
+        const matchScoreData2 = {
+          matchId: match.id,
+          participantType: 'player',
+          playerId: player.id,
+          score: 10,
+          details: 'Test details'
+        }
+
+        await MatchScore.create(matchScoreData)
+        await MatchScore.create(matchScoreData2)
+
+        const response = await request(app)
+          .post(`/api/matches/${match.id}/finish`)
+          .set('Authorization', `Bearer ${managerToken}`)
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            id: match.id,
+            tournamentId: tournament.id,
+            date: match.date.toISOString(),
+            location: 'Test Location',
+            finished: true,
+            occurrences: 'Test occurrences',
+            roundNumber: 1,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
+
+        const matchSnapshot = await MatchSnapshot.findOne({
+          where: { matchId: match.id }
+        })
+
+        expect(matchSnapshot.toJSON()).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            matchId: match.id,
+            matchDate: new Date('2024-01-01T13:00:00.000Z'),
+            matchLocation: 'Test Location',
+            matchRoundNumber: 1,
+            matchOccurrences: 'Test occurrences',
+            tournamentId: tournament.id,
+            tournamentName: 'Test Tournament',
+            tournamentStartDate: new Date('2024-01-01T00:00:00.000Z'),
+            tournamentEndDate: new Date('2024-01-02T00:00:00.000Z'),
+            tournamentFinished: false,
+            eventId: event.id,
+            eventName: 'Test Event',
+            eventStartDate: new Date('2024-01-01T00:00:00.000Z'),
+            eventEndDate: new Date('2024-01-02T00:00:00.000Z'),
+            unitId: unit.id,
+            unitName: 'Test Unit',
+            institutionId: institution.id,
+            institutionName: 'Test Institution',
+            sportId: sport.id,
+            sportName: 'Test Sport',
+            totalScores: [
+              { id: team.id, name: 'Test Team', totalScore: 10 },
+              { id: player.id, name: 'Test Player', totalScore: 10 }
+            ],
+            matchScores: [
+              {
+                id: team.id,
+                name: 'Test Team',
+                score: 10,
+                details: null,
+                participantType: 'team'
+              },
+              {
+                id: player.id,
+                name: 'Test Player',
+                score: 10,
+                details: 'Test details',
+                participantType: 'player'
+              }
+            ],
+            matchParticipants: [
+              { id: team.id, name: 'Test Team', participantType: 'team' },
+              { id: player.id, name: 'Test Player', participantType: 'player' }
+            ],
+            snapshotTakenAt: expect.any(Date),
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date)
+          })
+        )
+      })
+
+      it('should return 400 when match is already finished', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const sport = await Sport.create({
+          name: 'Test Sport'
+        })
+
+        const institution = await Institution.create({
+          name: 'Test Institution'
+        })
+
+        const unit = await Unit.create({
+          name: 'Test Unit',
+          institutionId: institution.id
+        })
+
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+
+        const tournament = await Tournament.create({
+          name: 'Test Tournament',
+          eventId: event.id,
+          sportId: sport.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+
+        const matchData = {
+          tournamentId: tournament.id,
+          date: new Date('2024-01-01T10:00:00'),
           location: 'Test Location',
           finished: true,
           occurrences: 'Test occurrences',
-          roundNumber: 1,
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
+          roundNumber: 1
+        }
+
+        const match = await Match.create(matchData)
+
+        const response = await request(app)
+          .post(`/api/matches/${match.id}/finish`)
+          .set('Authorization', `Bearer ${adminToken}`)
+
+        expect(response.status).toBe(400)
+        expect(response.body.message).toBe('Partida já finalizada')
+        const matchSnapshot = await MatchSnapshot.findOne({
+          where: { matchId: match.id }
         })
-      )
 
-      const matchSnapshot = await MatchSnapshot.findOne({
-        where: { matchId: match.id }
+        expect(matchSnapshot).toBeNull()
       })
+    })
 
-      expect(matchSnapshot.toJSON()).toEqual(
-        expect.objectContaining({
-          id: expect.any(String),
-          matchId: match.id,
-          matchDate: new Date('2024-01-01T13:00:00.000Z'),
-          matchLocation: 'Test Location',
-          matchRoundNumber: 1,
-          matchOccurrences: 'Test occurrences',
-          tournamentId: tournament.id,
-          tournamentName: 'Test Tournament',
-          tournamentStartDate: new Date('2024-01-01T00:00:00.000Z'),
-          tournamentEndDate: new Date('2024-01-02T00:00:00.000Z'),
-          tournamentFinished: false,
-          eventId: event.id,
-          eventName: 'Test Event',
-          eventStartDate: new Date('2024-01-01T00:00:00.000Z'),
-          eventEndDate: new Date('2024-01-02T00:00:00.000Z'),
+    describe('PUT /api/matches/:matchId', () => {
+      it('should update a match when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
+          lastName: 'User',
+          userName: 'manager',
+          email: 'manager@example.com',
+          password: 'password123'
+        })
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
+        })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
+
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
           unitId: unit.id,
-          unitName: 'Test Unit',
-          institutionId: institution.id,
-          institutionName: 'Test Institution',
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
+        const tournament = await Tournament.create({
           sportId: sport.id,
-          sportName: 'Test Sport',
-          totalScores: [
-            { id: team.id, name: 'Test Team', totalScore: 10 },
-            { id: player.id, name: 'Test Player', totalScore: 10 }
-          ],
-          matchScores: [
-            {
-              id: team.id,
-              name: 'Test Team',
-              score: 10,
-              details: null,
-              participantType: 'team'
-            },
-            {
-              id: player.id,
-              name: 'Test Player',
-              score: 10,
-              details: 'Test details',
-              participantType: 'player'
-            }
-          ],
-          matchParticipants: [
-            { id: team.id, name: 'Test Team', participantType: 'team' },
-            { id: player.id, name: 'Test Player', participantType: 'player' }
-          ],
-          snapshotTakenAt: expect.any(Date),
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date)
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
         })
-      )
-    })
-
-    it('should return 400 when match is already finished', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const sport = await Sport.create({
-        name: 'Test Sport'
-      })
-
-      const institution = await Institution.create({
-        name: 'Test Institution'
-      })
-
-      const unit = await Unit.create({
-        name: 'Test Unit',
-        institutionId: institution.id
-      })
-
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-
-      const tournament = await Tournament.create({
-        name: 'Test Tournament',
-        eventId: event.id,
-        sportId: sport.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-
-      const matchData = {
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01T10:00:00'),
-        location: 'Test Location',
-        finished: true,
-        occurrences: 'Test occurrences',
-        roundNumber: 1
-      }
-
-      const match = await Match.create(matchData)
-
-      const response = await request(app)
-        .post(`/api/matches/${match.id}/finish`)
-        .set('Authorization', `Bearer ${adminToken}`)
-
-      expect(response.status).toBe(400)
-      expect(response.body.message).toBe('Partida já finalizada')
-      const matchSnapshot = await MatchSnapshot.findOne({
-        where: { matchId: match.id }
-      })
-
-      expect(matchSnapshot).toBeNull()
-    })
-  })
-
-  describe('PUT /api/matches/:matchId', () => {
-    it('should update a match when user is admin', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const institution = await Institution.create({ name: 'Test Institution' })
-      const sport = await Sport.create({ name: 'Test Sport' })
-      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const tournament = await Tournament.create({
-        sportId: sport.id,
-        name: 'Tournament 1',
-        eventId: event.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const match = await Match.create({
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      })
-
-      const updatedData = {
-        location: 'Updated Location',
-        finished: true,
-        occurrences: 'Updated Occurrences',
-        roundNumber: 2
-      }
-
-      const response = await request(app)
-        .put(`/api/matches/${match.id}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send(updatedData)
-
-      expect(response.status).toBe(200)
-      expect(response.body).toEqual(
-        expect.objectContaining({
-          id: match.id,
+        const match = await Match.create({
           tournamentId: tournament.id,
-          date: match.date.toISOString(),
-          location: 'Updated Location',
+          date: new Date('2024-01-01'),
+          location: 'Test Location',
           finished: false,
-          occurrences: 'Updated Occurrences',
-          roundNumber: 2,
-          createdAt: expect.any(String),
-          updatedAt: expect.any(String)
+          occurrences: 'Test Occurrences',
+          roundNumber: 1
         })
-      )
+
+        const updatedData = {
+          location: 'Updated Location',
+          finished: true,
+          occurrences: 'Updated Occurrences',
+          roundNumber: 2
+        }
+
+        const response = await request(app)
+          .put(`/api/matches/${match.id}`)
+          .set('Authorization', `Bearer ${managerToken}`)
+          .send(updatedData)
+
+        expect(response.status).toBe(200)
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            id: match.id,
+            tournamentId: tournament.id,
+            date: match.date.toISOString(),
+            location: 'Updated Location',
+            finished: false,
+            occurrences: 'Updated Occurrences',
+            roundNumber: 2,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
+      })
+
+      it('should return 404 when match is not found', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const updatedData = {
+          location: 'Updated Location',
+          finished: true,
+          occurrences: 'Updated Occurrences',
+          roundNumber: 2
+        }
+
+        const response = await request(app)
+          .put('/api/matches/999999')
+          .set('Authorization', `Bearer ${adminToken}`)
+          .send(updatedData)
+
+        expect(response.status).toBe(404)
+        expect(response.body.message).toBe('Partida não encontrada')
+      })
+
+      it('should return 403 when no token is provided', async () => {
+        const response = await request(app).put('/api/matches/1').send({})
+
+        expect(response.status).toBe(403)
+        expect(response.body.message).toBe('Acesso negado')
+      })
     })
 
-    it('should return 404 when match is not found', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
+    describe('DELETE /api/matches/:matchId', () => {
+      it('should delete a match when user is admin', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const institution = await Institution.create({ name: 'Test Institution' })
+        const sport = await Sport.create({ name: 'Test Sport' })
+        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
+        const event = await Event.create({
+          name: 'Test Event',
+          unitId: unit.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const tournament = await Tournament.create({
+          sportId: sport.id,
+          name: 'Tournament 1',
+          eventId: event.id,
+          startDate: new Date('2024-01-01'),
+          endDate: new Date('2024-01-02')
+        })
+        const match = await Match.create({
+          tournamentId: tournament.id,
+          date: new Date('2024-01-01'),
+          location: 'Test Location',
+          finished: false,
+          occurrences: 'Test Occurrences',
+          roundNumber: 1
+        })
+
+        const response = await request(app)
+          .delete(`/api/matches/${match.id}`)
+          .set('Authorization', `Bearer ${adminToken}`)
+
+        expect(response.status).toBe(204)
+
+        const foundMatch = await Match.findByPk(match.id)
+        expect(foundMatch).toBeNull()
       })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
+
+      it('should return 404 when match is not found', async () => {
+        const adminRole = await Role.create({ name: ROLES.ADMIN })
+        const adminUser = await User.create({
+          firstName: 'Admin',
+          lastName: 'User',
+          userName: 'admin',
+          email: 'admin@example.com',
+          password: 'password123'
+        })
+        await adminRole.addUser(adminUser, {
+          through: { userId: adminUser.id, roleId: adminRole.id }
+        })
+        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+        const response = await request(app)
+          .delete('/api/matches/999999')
+          .set('Authorization', `Bearer ${adminToken}`)
+
+        expect(response.status).toBe(404)
+        expect(response.body.message).toBe('Partida não encontrada')
       })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
 
-      const updatedData = {
-        location: 'Updated Location',
-        finished: true,
-        occurrences: 'Updated Occurrences',
-        roundNumber: 2
-      }
+      it('should return 403 when no token is provided', async () => {
+        const response = await request(app).delete('/api/matches/1')
 
-      const response = await request(app)
-        .put('/api/matches/999999')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send(updatedData)
-
-      expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Partida não encontrada')
-    })
-
-    it('should return 403 when no token is provided', async () => {
-      const response = await request(app).put('/api/matches/1').send({})
-
-      expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Acesso negado')
+        expect(response.status).toBe(403)
+        expect(response.body.message).toBe('Acesso negado')
+      })
     })
   })
-
-  describe('DELETE /api/matches/:matchId', () => {
-    it('should delete a match when user is admin', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const institution = await Institution.create({ name: 'Test Institution' })
-      const sport = await Sport.create({ name: 'Test Sport' })
-      const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-      const event = await Event.create({
-        name: 'Test Event',
-        unitId: unit.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const tournament = await Tournament.create({
-        sportId: sport.id,
-        name: 'Tournament 1',
-        eventId: event.id,
-        startDate: new Date('2024-01-01'),
-        endDate: new Date('2024-01-02')
-      })
-      const match = await Match.create({
-        tournamentId: tournament.id,
-        date: new Date('2024-01-01'),
-        location: 'Test Location',
-        finished: false,
-        occurrences: 'Test Occurrences',
-        roundNumber: 1
-      })
-
-      const response = await request(app)
-        .delete(`/api/matches/${match.id}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-
-      expect(response.status).toBe(204)
-
-      const foundMatch = await Match.findByPk(match.id)
-      expect(foundMatch).toBeNull()
-    })
-
-    it('should return 404 when match is not found', async () => {
-      const adminRole = await Role.create({ name: ROLES.ADMIN })
-      const adminUser = await User.create({
-        firstName: 'Admin',
-        lastName: 'User',
-        userName: 'admin',
-        email: 'admin@example.com',
-        password: 'password123'
-      })
-      await adminRole.addUser(adminUser, {
-        through: { userId: adminUser.id, roleId: adminRole.id }
-      })
-      const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
-
-      const response = await request(app)
-        .delete('/api/matches/999999')
-        .set('Authorization', `Bearer ${adminToken}`)
-
-      expect(response.status).toBe(404)
-      expect(response.body.message).toBe('Partida não encontrada')
-    })
-
-    it('should return 403 when no token is provided', async () => {
-      const response = await request(app).delete('/api/matches/1')
-
-      expect(response.status).toBe(403)
-      expect(response.body.message).toBe('Acesso negado')
-    })
-  })
-
   describe('Participants', () => {
     describe('GET /api/matches/:matchId/participants', () => {
       it('should return match participants when user is admin', async () => {
@@ -1165,7 +1190,7 @@ describe('Match Controller', () => {
         expect(response.body.message).toBe('Participante não encontrado')
       })
 
-      it('should return 403 when user is manager', async () => {
+      it('should allow manager to delete participants', async () => {
         const managerRole = await Role.create({ name: ROLES.MANAGER })
         const managerUser = await User.create({
           firstName: 'Manager',
@@ -1190,6 +1215,12 @@ describe('Match Controller', () => {
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
         })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
         const tournament = await Tournament.create({
           sportId: sport.id,
           name: 'Tournament 1',
@@ -1223,8 +1254,7 @@ describe('Match Controller', () => {
           .delete(`/api/matches/${match.id}/participants/${matchParticipant.id}`)
           .set('Authorization', `Bearer ${managerToken}`)
 
-        expect(response.status).toBe(403)
-        expect(response.body.message).toBe('Acesso negado')
+        expect(response.status).toBe(204)
       })
 
       it('should return 403 when no token is provided', async () => {
@@ -1470,7 +1500,7 @@ describe('Match Controller', () => {
         expect(response.body.message).toBe('Jogador não encontrado')
       })
 
-      it('should return 403 when user is manager', async () => {
+      it('should allow manager to create participants', async () => {
         const managerRole = await Role.create({ name: ROLES.MANAGER })
         const managerUser = await User.create({
           firstName: 'Manager',
@@ -1495,6 +1525,12 @@ describe('Match Controller', () => {
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
         })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
         const tournament = await Tournament.create({
           sportId: sport.id,
           name: 'Test Tournament',
@@ -1511,10 +1547,17 @@ describe('Match Controller', () => {
           roundNumber: 1
         })
 
+        const team = await Team.create({
+          name: 'Test Team',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+
         const participantsData = [
           {
             participantType: 'team',
-            teamId: '1'
+            teamId: team.id
           }
         ]
 
@@ -1523,8 +1566,21 @@ describe('Match Controller', () => {
           .set('Authorization', `Bearer ${managerToken}`)
           .send(participantsData)
 
-        expect(response.status).toBe(403)
-        expect(response.body.message).toBe('Acesso negado')
+        expect(response.status).toBe(201)
+
+        expect(response.body).toHaveLength(1)
+
+        expect(response.body[0]).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            matchId: match.id,
+            participantType: 'team',
+            teamId: '1',
+            playerId: null,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
       })
 
       it('should return 403 when no token is provided', async () => {
@@ -1809,7 +1865,7 @@ describe('Match Controller', () => {
         expect(response.body.message).toBe('Jogador não encontrado')
       })
 
-      it('should return 403 when user is manager', async () => {
+      it('should allow manager to create participants', async () => {
         const managerRole = await Role.create({ name: ROLES.MANAGER })
         const managerUser = await User.create({
           firstName: 'Manager',
@@ -1834,6 +1890,12 @@ describe('Match Controller', () => {
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
         })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
         const tournament = await Tournament.create({
           sportId: sport.id,
           name: 'Test Tournament',
@@ -1850,9 +1912,16 @@ describe('Match Controller', () => {
           roundNumber: 1
         })
 
+        const team = await Team.create({
+          name: 'Test Team',
+          description: 'Test Description',
+          unitId: unit.id,
+          sportId: sport.id
+        })
+
         const participantData = {
           participantType: 'team',
-          teamId: '1'
+          teamId: team.id
         }
 
         const response = await request(app)
@@ -1860,8 +1929,18 @@ describe('Match Controller', () => {
           .set('Authorization', `Bearer ${managerToken}`)
           .send(participantData)
 
-        expect(response.status).toBe(403)
-        expect(response.body.message).toBe('Acesso negado')
+        expect(response.status).toBe(201)
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            id: expect.any(String),
+            matchId: match.id,
+            participantType: 'team',
+            teamId: team.id,
+            playerId: null,
+            createdAt: expect.any(String),
+            updatedAt: expect.any(String)
+          })
+        )
       })
 
       it('should return 403 when no token is provided', async () => {
@@ -2095,19 +2174,21 @@ describe('Match Controller', () => {
     })
 
     describe('POST /api/matches/:matchId/scores', () => {
-      it('should create a team score when user is admin', async () => {
-        const adminRole = await Role.create({ name: ROLES.ADMIN })
-        const adminUser = await User.create({
-          firstName: 'Admin',
+      it('should create a team score when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
           lastName: 'User',
           userName: 'admin',
           email: 'admin@example.com',
           password: 'password123'
         })
-        await adminRole.addUser(adminUser, {
-          through: { userId: adminUser.id, roleId: adminRole.id }
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
         })
-        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
 
         const institution = await Institution.create({ name: 'Test Institution' })
         const sport = await Sport.create({ name: 'Test Sport' })
@@ -2118,6 +2199,12 @@ describe('Match Controller', () => {
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
         })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
         const tournament = await Tournament.create({
           sportId: sport.id,
           name: 'Tournament 1',
@@ -2150,7 +2237,7 @@ describe('Match Controller', () => {
 
         const response = await request(app)
           .post(`/api/matches/${match.id}/scores`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set('Authorization', `Bearer ${managerToken}`)
           .send(scoreData)
 
         expect(response.status).toBe(201)
@@ -2393,19 +2480,21 @@ describe('Match Controller', () => {
     })
 
     describe('DELETE /api/matches/:matchId/scores/:scoreId', () => {
-      it('should delete match score when user is admin', async () => {
-        const adminRole = await Role.create({ name: ROLES.ADMIN })
-        const adminUser = await User.create({
-          firstName: 'Admin',
+      it('should delete match score when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
           lastName: 'User',
-          userName: 'admin',
-          email: 'admin@example.com',
+          userName: 'manager',
+          email: 'manager@example.com',
           password: 'password123'
         })
-        await adminRole.addUser(adminUser, {
-          through: { userId: adminUser.id, roleId: adminRole.id }
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
         })
-        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
 
         const institution = await Institution.create({ name: 'Test Institution' })
         const sport = await Sport.create({ name: 'Test Sport' })
@@ -2416,6 +2505,12 @@ describe('Match Controller', () => {
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
         })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
         const tournament = await Tournament.create({
           sportId: sport.id,
           name: 'Tournament 1',
@@ -2449,7 +2544,7 @@ describe('Match Controller', () => {
 
         const response = await request(app)
           .delete(`/api/matches/${match.id}/scores/${score.id}`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set('Authorization', `Bearer ${managerToken}`)
 
         expect(response.status).toBe(204)
 
@@ -2513,19 +2608,21 @@ describe('Match Controller', () => {
     })
 
     describe('PUT /api/matches/:matchId/scores/:scoreId', () => {
-      it('should update match score when user is admin', async () => {
-        const adminRole = await Role.create({ name: ROLES.ADMIN })
-        const adminUser = await User.create({
-          firstName: 'Admin',
+      it('should update match score when user is manager', async () => {
+        const managerRole = await Role.create({ name: ROLES.MANAGER })
+        const managerUser = await User.create({
+          firstName: 'Manager',
           lastName: 'User',
           userName: 'admin',
           email: 'admin@example.com',
           password: 'password123'
         })
-        await adminRole.addUser(adminUser, {
-          through: { userId: adminUser.id, roleId: adminRole.id }
+        await managerRole.addUser(managerUser, {
+          through: { userId: managerUser.id, roleId: managerRole.id }
         })
-        const adminToken = jwt.sign({ id: adminUser.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
+          expiresIn: JWT.EXPIRES_IN
+        })
 
         const institution = await Institution.create({ name: 'Test Institution' })
         const sport = await Sport.create({ name: 'Test Sport' })
@@ -2536,6 +2633,12 @@ describe('Match Controller', () => {
           startDate: new Date('2024-01-01'),
           endDate: new Date('2024-01-02')
         })
+
+        await UserEvent.create({
+          userId: managerUser.id,
+          eventId: event.id
+        })
+
         const tournament = await Tournament.create({
           sportId: sport.id,
           name: 'Tournament 1',
@@ -2574,10 +2677,11 @@ describe('Match Controller', () => {
 
         const response = await request(app)
           .put(`/api/matches/${match.id}/scores/${score.id}`)
-          .set('Authorization', `Bearer ${adminToken}`)
+          .set('Authorization', `Bearer ${managerToken}`)
           .send(updateData)
 
         expect(response.status).toBe(200)
+
         expect(response.body).toEqual(
           expect.objectContaining({
             id: score.id,
@@ -2644,76 +2748,6 @@ describe('Match Controller', () => {
 
         expect(response.status).toBe(404)
         expect(response.body.message).toBe('Pontuação não encontrada')
-      })
-
-      it('should return 403 when user is manager', async () => {
-        const managerRole = await Role.create({ name: ROLES.MANAGER })
-        const managerUser = await User.create({
-          firstName: 'Manager',
-          lastName: 'User',
-          userName: 'manager',
-          email: 'manager@example.com',
-          password: 'password123'
-        })
-        await managerRole.addUser(managerUser, {
-          through: { userId: managerUser.id, roleId: managerRole.id }
-        })
-        const managerToken = jwt.sign({ id: managerUser.id }, JWT.SECRET, {
-          expiresIn: JWT.EXPIRES_IN
-        })
-
-        const institution = await Institution.create({ name: 'Test Institution' })
-        const sport = await Sport.create({ name: 'Test Sport' })
-        const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
-        const event = await Event.create({
-          name: 'Test Event',
-          unitId: unit.id,
-          startDate: new Date('2024-01-01'),
-          endDate: new Date('2024-01-02')
-        })
-        const tournament = await Tournament.create({
-          sportId: sport.id,
-          name: 'Tournament 1',
-          eventId: event.id,
-          startDate: new Date('2024-01-01'),
-          endDate: new Date('2024-01-02')
-        })
-        const match = await Match.create({
-          tournamentId: tournament.id,
-          date: new Date('2024-01-01'),
-          location: 'Test Location',
-          finished: false,
-          occurrences: 'Test Occurrences',
-          roundNumber: 1
-        })
-
-        const team = await Team.create({
-          name: 'Test Team',
-          description: 'Test Description',
-          unitId: unit.id,
-          sportId: sport.id
-        })
-
-        const score = await MatchScore.create({
-          matchId: match.id,
-          participantType: 'team',
-          teamId: team.id,
-          score: 10,
-          details: 'Test details'
-        })
-
-        const updateData = {
-          score: 15,
-          details: 'Updated details'
-        }
-
-        const response = await request(app)
-          .put(`/api/matches/${match.id}/scores/${score.id}`)
-          .set('Authorization', `Bearer ${managerToken}`)
-          .send(updateData)
-
-        expect(response.status).toBe(403)
-        expect(response.body.message).toBe('Acesso negado')
       })
 
       it('should return 403 when no token is provided', async () => {

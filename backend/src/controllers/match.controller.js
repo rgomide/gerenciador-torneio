@@ -199,11 +199,12 @@ router.get(
  *                   type: string
  *                   format: date-time
  */
-router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next) => {
+router.post('/matches', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
     const matchData = req.body
     matchData.finished = false
-    const match = await create(matchData)
+    const user = req.user
+    const match = await create(matchData, user)
     const matchVO = new MatchVO(match)
 
     return res.status(201).json(matchVO)
@@ -259,11 +260,12 @@ router.post('/matches', authorizationMiddleware([ADMIN]), async (req, res, next)
  */
 router.post(
   '/matches/:matchId/finish',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
-      const match = await finish(matchId)
+      const match = await finish(matchId, user)
       const matchVO = new MatchVO(match)
 
       return res.json(matchVO)
@@ -343,12 +345,13 @@ router.put(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const matchData = req.body
 
       delete matchData.finished
 
-      const match = await update(matchId, matchData)
+      const match = await update(matchId, matchData, user)
       const matchVO = new MatchVO(match)
 
       return res.json(matchVO)
@@ -493,11 +496,12 @@ router.get(
  */
 router.delete(
   '/matches/:matchId/participants/:participantId',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
-      const { matchId, participantId } = req.params
-      await matchParticipantService.remove(participantId)
+      const user = req.user
+      const { participantId } = req.params
+      await matchParticipantService.remove(participantId, user)
 
       return res.status(204).send()
     } catch (error) {
@@ -582,16 +586,17 @@ router.delete(
  */
 router.post(
   '/matches/:matchId/participants/bulk',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const participantsData = req.body.map((participant) => ({
         ...participant,
         matchId
       }))
 
-      const participants = await matchParticipantService.bulkCreate(participantsData)
+      const participants = await matchParticipantService.bulkCreate(participantsData, user)
       const participantsVO = participants.map((participant) => new MatchParticipantVO(participant))
 
       res.status(201).json(participantsVO)
@@ -666,16 +671,17 @@ router.post(
  */
 router.post(
   '/matches/:matchId/participants',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const participantData = {
         ...req.body,
         matchId
       }
 
-      const participant = await matchParticipantService.create(participantData)
+      const participant = await matchParticipantService.create(participantData, user)
       const participantVO = new MatchParticipantVO(participant)
 
       return res.status(201).json(participantVO)
@@ -849,13 +855,14 @@ router.post(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { matchId } = req.params
       const scoreData = {
         ...req.body,
         matchId
       }
 
-      const score = await matchScoreService.create(scoreData)
+      const score = await matchScoreService.create(scoreData, user)
       const scoreVO = new MatchScoreVO(score)
 
       return res.status(201).json(scoreVO)
@@ -912,8 +919,9 @@ router.delete(
   authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { scoreId } = req.params
-      await matchScoreService.remove(scoreId)
+      await matchScoreService.remove(scoreId, user)
 
       return res.status(204).send()
     } catch (error) {
@@ -1005,11 +1013,12 @@ router.delete(
  */
 router.put(
   '/matches/:matchId/scores/:scoreId',
-  authorizationMiddleware([ADMIN]),
+  authorizationMiddleware([ADMIN, MANAGER]),
   async (req, res, next) => {
     try {
+      const user = req.user
       const { scoreId } = req.params
-      const score = await matchScoreService.update(scoreId, req.body)
+      const score = await matchScoreService.update(scoreId, req.body, user)
       const scoreVO = new MatchScoreVO(score)
 
       return res.json(scoreVO)

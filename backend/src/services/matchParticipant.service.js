@@ -1,8 +1,15 @@
-const { MatchParticipant, Match, Team, Player } = require('@server/models')
+const { MatchParticipant, Match, Team, Player, Tournament } = require('@server/models')
 const AppError = require('@server/utils/AppError')
-
+const { validateUser } = require('@server/services/event.service')
 const validateMatch = async (matchId) => {
-  const match = await Match.findByPk(matchId)
+  const match = await Match.findByPk(matchId, {
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament'
+      }
+    ]
+  })
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
   }
@@ -25,8 +32,10 @@ const validatePlayer = async (playerId) => {
   return player
 }
 
-const create = async (matchParticipantData) => {
-  await validateMatch(matchParticipantData.matchId)
+const create = async (matchParticipantData, user) => {
+  const match = await validateMatch(matchParticipantData.matchId)
+
+  validateUser(user, { id: match.tournament.eventId })
 
   if (matchParticipantData.participantType === 'team') {
     await validateTeam(matchParticipantData.teamId)
@@ -135,8 +144,11 @@ const update = async (id, matchParticipantData) => {
   return matchParticipant.update(matchParticipantData)
 }
 
-const remove = async (id) => {
+const remove = async (id, user) => {
   const matchParticipant = await findById(id)
+
+  validateUser(user, { id: matchParticipant.match.tournament.eventId })
+
   await matchParticipant.destroy()
   return matchParticipant
 }
@@ -152,11 +164,21 @@ const removeByMatch = async (matchId) => {
   })
 }
 
-const bulkCreate = async (participantsData) => {
-  const match = await Match.findByPk(participantsData[0].matchId)
+const bulkCreate = async (participantsData, user) => {
+  const match = await Match.findByPk(participantsData[0].matchId, {
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament'
+      }
+    ]
+  })
+
   if (!match) {
     throw new AppError('Partida não encontrada', 404)
   }
+
+  validateUser(user, { id: match.tournament.eventId })
 
   for (const participant of participantsData) {
     if (participant.participantType === 'team') {
