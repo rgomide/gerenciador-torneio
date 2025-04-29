@@ -3,8 +3,7 @@ const { sequelize } = require('@server/models')
 
 const usersController = require('@server/controllers/user.controller')
 const authController = require('@server/controllers/auth.controller')
-const loggerMiddleware = require('@server/middleware/logger')
-const apiLogger = require('@server/middleware/apiLogger')
+const apiLoggerMiddleware = require('@server/middleware/apiLogger')
 const authMiddleware = require('@server/middleware/auth')
 const institutionController = require('@server/controllers/institution.controller')
 const unitController = require('@server/controllers/unit.controller')
@@ -15,10 +14,8 @@ const playerController = require('@server/controllers/player.controller')
 const teamController = require('@server/controllers/team.controller')
 const matchController = require('@server/controllers/match.controller')
 
-router.use(loggerMiddleware)
 router.use(authMiddleware)
-
-router.use(apiLogger)
+router.use(apiLoggerMiddleware)
 
 router.use('/users', usersController)
 router.use('/auth', authController)
