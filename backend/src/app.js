@@ -4,6 +4,7 @@ const path = require('path')
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
+const rateLimit = require('express-rate-limit')
 const swaggerUi = require('swagger-ui-express')
 const specs = require('@server/config/swagger.js')
 const history = require('connect-history-api-fallback')
@@ -20,6 +21,18 @@ if (process.env.NODE_ENV === 'production') {
       credentials: true
     })
   )
+
+  const seconds = 60
+
+  const limiter = rateLimit({
+    windowMs: seconds * 1000,
+    limit: 300,
+    message: {
+      message: `Muitas requisições deste IP, por favor tente novamente após ${seconds} segundos`
+    }
+  })
+
+  app.use(limiter)
 } else {
   app.use(cors())
 }

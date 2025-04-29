@@ -39,6 +39,7 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
+    "express-rate-limit": "^7.5.0",
     "helmet": "^8.0.0",
     "imgbb-uploader": "^1.5.1",
     "jsonwebtoken": "^9.0.2",
