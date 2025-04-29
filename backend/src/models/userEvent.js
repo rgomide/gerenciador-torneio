@@ -56,6 +56,7 @@ module.exports = (sequelize, DataTypes) => {
       modelName: 'UserEvent',
       tableName: 'users_events',
       timestamps: true,
+      underscored: true,
       indexes: [
         {
           unique: true,
