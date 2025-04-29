@@ -26,6 +26,7 @@
     "migrate:test": "NODE_ENV=test node --env-file=.test.env node_modules/.bin/sequelize-cli db:migrate",
     "migrate:win:test": "set NODE_ENV=test&& node --env-file=.test.env \"./node_modules/sequelize-cli/lib/sequelize\" db:migrate",
     "migrate:undo:dev": "NODE_ENV=development node --env-file=.dev.env node_modules/.bin/sequelize-cli db:migrate:undo",
+    "migrate:undo:test": "NODE_ENV=test node --env-file=.test.env node_modules/.bin/sequelize-cli db:migrate:undo",
     "seed:dev": "NODE_ENV=development node --env-file=.dev.env node_modules/.bin/sequelize-cli db:seed:undo:all && NODE_ENV=development node --env-file=.dev.env node_modules/.bin/sequelize-cli db:seed:all",
     "seed:prod": "NODE_ENV=production node --env-file=.prod.env node_modules/.bin/sequelize-cli db:seed:undo:all && NODE_ENV=production node --env-file=.prod.env node_modules/.bin/sequelize-cli db:seed:all"
   },
