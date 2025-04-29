@@ -375,7 +375,7 @@ router.delete('/events/:eventId', authorizationMiddleware([ADMIN]), async (req, 
     const { eventId } = req.params
     await remove(eventId)
 
-    return res.status(204).json({ message: 'Event deleted successfully' })
+    return res.status(204).send()
   } catch (error) {
     next(error)
   }

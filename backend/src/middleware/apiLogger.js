@@ -1,12 +1,11 @@
 const router = require('express').Router({ mergeParams: true })
-const requestIp = require('request-ip');
+const requestIp = require('request-ip')
 const { create } = require('@server/services/requestLog.service')
-
 
 const GET = 'get'
 const POST = 'post'
 const PUT = 'put'
-
+const DELETE = 'delete'
 router.use(async (req, res, next) => {
   const { method, url, query, body } = req
 
@@ -28,7 +27,7 @@ router.use(async (req, res, next) => {
 
   // Intercept response.json
   res.json = function (body) {
-    logRequest(req, res, body, startTime, [GET])
+    logRequest(req, res, body, startTime, [GET, DELETE])
     return originalJson.call(this, body)
   }
 
