@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { Separator } from '@/components/ui/separator'
 import {
   Sidebar,
   SidebarContent,
@@ -23,7 +24,6 @@ import {
   SidebarMenuItem
 } from '@/components/ui/sidebar'
 import useCookies from '@/services/useCookies'
-import { Separator } from '@/components/ui/separator'
 import {
   Calendar,
   FileUser,

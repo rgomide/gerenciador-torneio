@@ -1,7 +1,5 @@
 // import { useGetCookies, useSetCookie, useDeleteCookie } from 'cookies-next'
-import { getCookie, setCookie, deleteCookie } from 'cookies-next'
-
-
+import { deleteCookie, getCookie, setCookie } from 'cookies-next'
 
 const useCookies = () => {
   // const getCookie = useGetCookies()
