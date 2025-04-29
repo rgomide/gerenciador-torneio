@@ -8,6 +8,7 @@ router.use(async (req, res, next) => {
 
   // Intercept response.send
   res.send = function (body) {
+    logRequest(req, res, body, startTime)
     return originalSend.call(this, body)
   }
 
