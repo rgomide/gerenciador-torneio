@@ -75,6 +75,7 @@ router.post('/', authorizationMiddleware([ADMIN]), async (req, res, next) => {
  *     description: Get all institutions
  *     tags:
  *       - Institutions
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -119,6 +120,7 @@ router.get('/', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next
  *     description: Get an institution by ID
  *     tags:
  *       - Institutions
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:

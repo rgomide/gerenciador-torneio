@@ -25,6 +25,7 @@ const matchScoreService = require('@server/services/matchScore.service')
  *     description: Get all matches
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -77,6 +78,7 @@ router.get('/matches', authorizationMiddleware([ADMIN, MANAGER]), async (req, re
  *     description: Get a match by ID
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -142,6 +144,7 @@ router.get(
  *     description: Create a new match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -220,6 +223,7 @@ router.post('/matches', authorizationMiddleware([ADMIN, MANAGER]), async (req, r
  *     description: Finish a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -282,6 +286,7 @@ router.post(
  *     description: Update a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -398,6 +403,7 @@ router.delete('/matches/:matchId', authorizationMiddleware([ADMIN]), async (req,
  *     description: Get all participants for a specific match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -468,6 +474,7 @@ router.get(
  *     description: Delete a specific participant from a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -517,6 +524,7 @@ router.delete(
  *     summary: Create multiple participants for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -613,6 +621,7 @@ router.post(
  *     summary: Create a single participant for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -698,6 +707,7 @@ router.post(
  *     summary: Get all scores for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -782,6 +792,7 @@ router.get(
  *     summary: Create a score for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -879,6 +890,7 @@ router.post(
  *     summary: Delete a specific score from a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -937,6 +949,7 @@ router.delete(
  *     summary: Update a specific score for a match
  *     tags:
  *       - Matches
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     parameters:
