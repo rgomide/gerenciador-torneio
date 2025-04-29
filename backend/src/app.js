@@ -59,19 +59,6 @@ app.use(
 app.use('/api', apiMiddleware)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
 
-app.use(
-  history({
-    index: '/admin/index.html',
-    verbose: true
-  })
-)
-
-app.use('/admin', express.static(path.join(__dirname, '../public/admin')))
-
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/admin/index.html'))
-})
-
 app.use(errorHandlingMiddleware)
 
 module.exports = app

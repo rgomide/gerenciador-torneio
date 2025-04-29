@@ -60,7 +60,7 @@ router.post('/', authorizationMiddleware([ADMIN]), async (req, res, next) => {
     const { name } = req.body
     const institution = await create({ name })
 
-    const institutionVO = new InstitutionVO(institution)
+    const institutionVO = new InstitutionVO(institution).toJSON()
 
     return res.status(201).json(institutionVO)
   } catch (error) {
