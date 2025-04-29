@@ -154,6 +154,28 @@ const useApi = () => {
     return makeRequest(url, PUT, payload)
   }
 
+  const getPlayersByUnitId = async (unitId) => {
+    const url = `units/${unitId}/players`
+    return makeRequest(url, GET)
+  }
+
+  const createPlayer = async (name, email, phone, unitId) => {
+    const url = 'players'
+    const payload = { name, email, phone, unitId }
+    return makeRequest(url, POST, payload)
+  }
+
+  const updatePlayer = async (id, name, email, phone, unitId) => {
+    const url = `players/${id}`
+    const payload = { name, email, phone, unitId }
+    return makeRequest(url, PUT, payload)
+  }
+
+  const deletePlayerById = async (playerId) => {
+    const url = `players/${playerId}`
+    return makeRequest(url, DELETE)
+  }
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -266,6 +288,10 @@ const useApi = () => {
     getTeamsByUnitId,
     createTeam,
     updateTeam,
+    getPlayersByUnitId,
+    createPlayer,
+    updatePlayer,
+    deletePlayerById,
     isLoading
   }
 }
