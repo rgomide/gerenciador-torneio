@@ -1,5 +1,7 @@
 const router = require('express').Router({ mergeParams: true })
+const requestIp = require('request-ip');
 const { create } = require('@server/services/requestLog.service')
+
 
 const GET = 'get'
 const POST = 'post'
@@ -36,6 +38,7 @@ router.use(async (req, res, next) => {
 async function logRequest(req, res, responseBody, startTime, ignoreMethods = []) {
   try {
     const { method, body: requestBody, user, originalUrl, url } = req
+    const clientIp = requestIp.getClientIp(req)
 
     if (ignoreMethods.includes(method.toLowerCase())) {
       return
@@ -44,7 +47,7 @@ async function logRequest(req, res, responseBody, startTime, ignoreMethods = [])
     const responseTime = Date.now() - startTime
 
     await create({
-      ip: req.ip,
+      ip: clientIp,
       userId: user?.id,
       userName: user?.userName,
       method,
