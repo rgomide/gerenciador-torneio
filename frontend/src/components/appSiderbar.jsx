@@ -22,7 +22,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from '@/components/ui/sidebar'
-import { deleteCookie } from 'cookies-next'
+import useCookies from '@/services/useCookies'
+import { Separator } from '@/components/ui/separator'
 import {
   Calendar,
   FileUser,
@@ -31,54 +32,92 @@ import {
   ShieldHalf,
   Trophy,
   UserRoundX,
+  Users,
   Volleyball
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-const items = [
+const menuItems = [
   {
     title: 'Início',
     url: '/private/dashboard',
-    icon: Home
+    icon: Home,
+    admin: false
   },
   {
     title: 'Instituições e Unidades',
     url: '/private/institutions',
-    icon: Landmark
+    icon: Landmark,
+    admin: false
   },
   {
     title: 'Eventos',
     url: '/private/events',
-    icon: Calendar
+    icon: Calendar,
+    admin: false
   },
   {
     title: 'Torneios',
     url: '/private/tournaments',
-    icon: Trophy
+    icon: Trophy,
+    admin: false
   },
   {
     title: 'Equipes',
     url: '/private/teams',
-    icon: ShieldHalf
+    icon: ShieldHalf,
+    admin: false
   },
   {
     title: 'Jogadores',
     url: '/private/players',
-    icon: FileUser
+    icon: FileUser,
+    admin: false
   },
   {
     title: 'Esportes',
     url: '/private/sports',
-    icon: Volleyball
+    icon: Volleyball,
+    admin: false
+  },
+  {
+    title: 'Usuários',
+    url: '/private/users',
+    icon: Users,
+    admin: true,
+    addSeparator: true
   }
 ]
 
 export function AppSidebar() {
   const router = useRouter()
+  const [userItems, setUserItems] = useState([])
+  const [user, setUser] = useState(null)
+
+  const { getAuthCookie, deleteAuthCookie } = useCookies()
+
+  useEffect(() => {
+    const { user } = getAuthCookie() ?? {}
+    setUser(user)
+  }, [])
+
+  useEffect(() => {
+    if (user) {
+      const filteredItems = menuItems.filter((item) => {
+        const validateAdminRule = item.admin && user.isAdmin
+        const validateAnyUser = !item.admin
+
+        return validateAdminRule || validateAnyUser
+      })
+
+      setUserItems(filteredItems)
+    }
+  }, [user])
 
   const deleteSession = () => {
-    deleteCookie('token', { path: '/' })
+    deleteAuthCookie()
     toast.success('Sessão deletada com sucesso!')
     router.replace('/')
   }
@@ -90,8 +129,9 @@ export function AppSidebar() {
           <SidebarGroupLabel>Gerenciador de torneios</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {userItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
+                  {item.addSeparator && <Separator />}
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon />

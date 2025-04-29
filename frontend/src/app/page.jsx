@@ -19,10 +19,10 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import useCookies from '@/services/useCookies'
 import { sha256 } from '@/services/cryptoUtil'
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { getCookie, setCookie } from 'cookies-next'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
@@ -32,9 +32,11 @@ import { z } from 'zod'
 export default function Home() {
   const router = useRouter()
   const { auth, isLoading } = useApi()
+  const { getAuthCookie, setAuthCookie } = useCookies()
+
   useEffect(() => {
-    const token = getCookie('token')
-    if (token) {
+    const authCookie = getAuthCookie()
+    if (authCookie?.token) {
       router.replace('/private/dashboard')
     }
   }, [])
@@ -57,8 +59,7 @@ export default function Home() {
     const resp = await auth(values.username, passwordHash)
 
     if (resp.requestSuccessful) {
-      const token = resp.data.token
-      setCookie('token', token, { maxAge: 60 * 60 * 24, path: '/', secure: true, httpOnly: false })
+      setAuthCookie(resp.data)
 
       toast.success('Login realizado com sucesso!')
       router.replace('/private/dashboard')
