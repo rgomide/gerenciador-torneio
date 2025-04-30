@@ -1,6 +1,10 @@
 import { delay, http, HttpResponse } from 'msw'
 
 export const globalHandlers = [
+  http.delete('http://localhost:3000/api/users/:id', async ({ request, params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Usuário deletado com sucesso' }, { status: 204 })
+  }),
   http.post('http://localhost:3000/api/users', async ({ request }) => {
     const { userName, firstName, lastName, email, password } = await request.json()
     return HttpResponse.json(

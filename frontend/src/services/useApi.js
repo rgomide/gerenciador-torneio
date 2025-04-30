@@ -28,6 +28,11 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const deleteUserById = async (userId) => {
+    const url = `users/${userId}`
+    return makeRequest(url, DELETE)
+  }
+
   const getInstitutions = async () => {
     const url = 'institutions'
     return makeRequest(url, GET)
@@ -319,6 +324,7 @@ const useApi = () => {
     getUsers,
     createUser,
     updateUser,
+    deleteUserById,
     isLoading
   }
 }

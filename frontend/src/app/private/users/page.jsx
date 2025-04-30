@@ -26,7 +26,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function page() {
-  const { getUsers, isLoading } = useApi()
+  const { getUsers, deleteUserById, isLoading } = useApi()
   const [users, setUsers] = useState([])
 
   useEffect(() => {
@@ -44,7 +44,14 @@ function page() {
   }
 
   const deleteUser = async (id) => {
-    console.log(id)
+    const response = await deleteUserById(id)
+
+    if (response.requestSuccessful) {
+      toast.success('Usuário deletado com sucesso')
+      fetchUsers()
+    } else {
+      toast.error(response.error)
+    }
   }
 
   return (

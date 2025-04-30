@@ -27,6 +27,80 @@ const validateFields = (user) => {
   }
 }
 
+const validateUpdatePermission = (authUser, updatedUser) => {
+  if (!authUser) {
+    return
+  }
+
+  if (authUser.isAdmin) {
+    return
+  }
+
+  if (authUser.isManager && updatedUser.id !== authUser.id) {
+    throw new AppError('Usuário não tem permissão para atualizar este usuário', 403)
+  }
+
+  if (authUser.isManager) {
+    return
+  }
+
+  throw new AppError('Usuário não tem permissão para atualizar usuários', 403)
+}
+
+const remove = async (id, authUser) => {
+  const user = await User.findByPk(id)
+
+  if (!user) {
+    throw new AppError('Usuário não encontrado', 404)
+  }
+
+  if (authUser && !authUser.isAdmin) {
+    throw new AppError('Usuário não tem permissão para deletar usuários', 403)
+  }
+
+  if (authUser?.id === id) {
+    throw new AppError('Usuário não pode se deletar', 403)
+  }
+
+  await user.destroy()
+}
+
+const update = async (id, user, authUser) => {
+  const where = []
+
+  if (user.userName) {
+    where.push({ userName: user.userName })
+  }
+
+  if (user.email) {
+    where.push({ email: user.email })
+  }
+
+  if (where.length > 0) {
+    const existingUser = await User.findOne({
+      where: {
+        [Op.or]: where
+      }
+    })
+
+    if (existingUser && existingUser.id !== id) {
+      throw new AppError('Usuário já existe', 400)
+    }
+  }
+
+  const updatedUser = await User.findByPk(id)
+
+  if (!updatedUser) {
+    throw new AppError('Usuário não encontrado', 404)
+  }
+
+  validateUpdatePermission(authUser, updatedUser)
+
+  await updatedUser.update(user)
+
+  return updatedUser
+}
+
 const create = async (user, authUser) => {
   validateFields(user)
 
@@ -84,4 +158,4 @@ const findById = async (id) => {
   return user
 }
 
-module.exports = { findAll, findById, create }
+module.exports = { findAll, findById, create, update, remove }

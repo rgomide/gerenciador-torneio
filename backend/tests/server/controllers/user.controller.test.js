@@ -196,4 +196,151 @@ describe('User Controller', () => {
       expect(response.body.message).toBe('Usuário já existe')
     })
   })
+
+  describe('PUT /api/users/:userId', () => {
+    it('should update a user', async () => {
+      const role = await Role.create({ name: 'admin' })
+
+      const user = await User.create({
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      await role.addUser(user, { through: { userId: user.id, roleId: role.id } })
+
+      const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .put(`/api/users/${user.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          userName: 'admin',
+          email: 'denecley@gmail.com',
+          firstName: 'Gosta',
+          lastName: 'Filho'
+        })
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual({
+        id: expect.any(String),
+        firstName: 'Gosta',
+        lastName: 'Filho',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        isAdmin: false,
+        isManager: false,
+        roles: [],
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String)
+      })
+    })
+
+    it('should return a 403 if user is not authorized', async () => {
+      const response = await request(app).put('/api/users/1')
+      expect(response.status).toBe(403)
+      expect(response.body.message).toBe('Acesso negado')
+    })
+
+    it('should return a 403 if user is manager and is not authorized to update the user', async () => {
+      const role = await Role.create({ name: 'manager' })
+
+      const user = await User.create({
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      const otherUser = await User.create({
+        firstName: 'John',
+        lastName: 'Doe',
+        userName: 'john',
+        email: 'john@gmail.com',
+        password: '111'
+      })
+
+      await role.addUser(user, { through: { userId: user.id, roleId: role.id } })
+
+      const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .put(`/api/users/${otherUser.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          userName: 'john',
+          firstName: 'Gosta',
+          lastName: 'Filho',
+          email: 'john@gmail.com',
+          password: '111'
+        })
+
+      expect(response.status).toBe(403)
+      expect(response.body.message).toBe('Usuário não tem permissão para atualizar este usuário')
+    })
+  })
+
+  describe('DELETE /api/users/:userId', () => {
+    it('should delete a user', async () => {
+      const role = await Role.create({ name: 'admin' })
+
+      const user = await User.create({
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      const otherUser = await User.create({
+        firstName: 'John',
+        lastName: 'Doe',
+        userName: 'john',
+        email: 'john@gmail.com',
+        password: '111'
+      })
+
+      await role.addUser(user, { through: { userId: user.id, roleId: role.id } })
+
+      const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .delete(`/api/users/${otherUser.id}`)
+        .set('Authorization', `Bearer ${token}`)
+
+      expect(response.status).toBe(204)
+    })
+
+    it('should return a 403 if user is not authorized', async () => {
+      const response = await request(app).delete('/api/users/1')
+      expect(response.status).toBe(403)
+      expect(response.body.message).toBe('Acesso negado')
+    })
+
+    it('should return a 403 if user is admin and try to delete himself', async () => {
+      const role = await Role.create({ name: 'admin' })
+
+      const user = await User.create({
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      await role.addUser(user, { through: { userId: user.id, roleId: role.id } })
+
+      const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .delete(`/api/users/${user.id}`)
+        .set('Authorization', `Bearer ${token}`)
+
+      expect(response.status).toBe(403)
+      expect(response.body.message).toBe('Usuário não pode se deletar')
+    })
+  })
 })

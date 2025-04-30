@@ -1,5 +1,5 @@
 const { User } = require('@server/models')
-const { findAll, findById, create } = require('@server/services/user.service')
+const { findAll, findById, create, update } = require('@server/services/user.service')
 
 describe('User Service', () => {
   describe('findAll', () => {
@@ -130,6 +130,77 @@ describe('User Service', () => {
           password: '111'
         })
       ).rejects.toThrow('Nome de usuário é obrigatório')
+    })
+  })
+
+  describe('update', () => {
+    it('should update a user', async () => {
+      const user = await User.create({
+        userName: 'admin',
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      const updatedUser = await update(user.id, {
+        userName: 'admin',
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      expect(updatedUser).toEqual(
+        expect.objectContaining({
+          id: user.id,
+          userName: 'admin',
+          firstName: 'Denecley',
+          lastName: 'Alvim',
+          email: 'denecley@gmail.com',
+          password: '111'
+        })
+      )
+    })
+
+    it('should throw an error if user is not found', async () => {
+      await expect(
+        update('123', {
+          userName: 'admin',
+          firstName: 'Denecley',
+          lastName: 'Alvim',
+          email: 'denecley@gmail.com',
+          password: '111'
+        })
+      ).rejects.toThrow('Usuário não encontrado')
+    })
+
+    it('should throw an error if user already exists', async () => {
+      const user = await User.create({
+        userName: 'newuser',
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        email: 'newuser@gmail.com',
+        password: '111'
+      })
+
+      await User.create({
+        userName: 'admin',
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+
+      await expect(
+        update(user.id, {
+          userName: 'admin',
+          firstName: 'Denecley',
+          lastName: 'Alvim',
+          email: 'denecley@gmail.com',
+          password: '111'
+        })
+      ).rejects.toThrow('Usuário já existe')
     })
   })
 })
