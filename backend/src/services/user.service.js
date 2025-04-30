@@ -123,7 +123,7 @@ const create = async (user, authUser) => {
   return newUser
 }
 
-const findAll = async () => {
+const findAll = async (authUser) => {
   const users = await User.findAll({
     include: [
       {
@@ -133,6 +133,10 @@ const findAll = async () => {
     ],
     order: [['id', 'ASC']]
   })
+
+  if (authUser?.isManager) {
+    return users.filter((user) => user.id === authUser.id)
+  }
 
   return users
 }

@@ -14,6 +14,7 @@ const UserVO = require('@server/vo/UserVO')
  *     description: Get all users
  *     tags:
  *       - Users
+ *       - Managers
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -41,9 +42,10 @@ const UserVO = require('@server/vo/UserVO')
  *                 updatedAt: "2024-01-01T00:00:00.000Z"
  *                 roles: ["player"]
  */
-router.get('/', authorizationMiddleware([ADMIN]), async (req, res, next) => {
+router.get('/', authorizationMiddleware([ADMIN, MANAGER]), async (req, res, next) => {
   try {
-    const users = await findAll()
+    const authUser = req.user
+    const users = await findAll(authUser)
     const usersVO = UserVO.parseCollection(users)
 
     res.json(usersVO)
