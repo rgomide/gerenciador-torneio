@@ -126,10 +126,10 @@ function UserForm({ record, onClose }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      userName: userRecord?.userName,
-      firstName: userRecord?.firstName,
-      lastName: userRecord?.lastName,
-      email: userRecord?.email,
+      userName: userRecord?.userName || '',
+      firstName: userRecord?.firstName || '',
+      lastName: userRecord?.lastName || '',
+      email: userRecord?.email || '',
       password: '',
       confirmPassword: ''
     }
