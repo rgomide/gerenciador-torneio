@@ -1,6 +1,7 @@
 'use client'
 import OverlaySpinner from '@/components/common/OverlaySpinner'
 import SelectSearcher from '@/components/common/SelectSearcher'
+import AddPlayerForm from '@/components/TeamsComponents/AddPlayerForm'
 import TeamsForm from '@/components/TeamsComponents/TeamsForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -113,9 +114,11 @@ function page() {
                 <TeamsForm
                   variant="edit"
                   record={team}
-                  unitId={selectedUnit}
                   onClose={fetchTeams}
                 />
+
+                <AddPlayerForm teamId={team.id} unitId={selectedUnit.id} />
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="destructive" size="icon">

@@ -187,6 +187,11 @@ const useApi = () => {
     return makeRequest(url, DELETE)
   }
 
+  const addPlayersToTeam = async (teamId, players) => {
+    const url = `teams/${teamId}/players/bulk`
+    return makeRequest(url, 'post', { players })
+  }  
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -305,6 +310,7 @@ const useApi = () => {
     updatePlayer,
     deletePlayerById,
     getUsers,
+    addPlayersToTeam,
     isLoading
   }
 }
