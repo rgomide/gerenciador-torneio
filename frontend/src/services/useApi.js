@@ -43,6 +43,18 @@ const useApi = () => {
     return makeRequest(url, GET, query)
   }
 
+  const createUser = async (userName, firstName, lastName, email, password) => {
+    const url = 'users'
+    const payload = { userName, firstName, lastName, email, password }
+    return makeRequest(url, POST, payload)
+  }
+
+  const updateUser = async (id, userName, firstName, lastName, email, password) => {
+    const url = `users/${id}`
+    const payload = { userName, firstName, lastName, email, password }
+    return makeRequest(url, PUT, payload)
+  }
+
   const createUnit = async (name, institutionId) => {
     const url = 'units'
     const payload = { name, institutionId }
@@ -305,6 +317,8 @@ const useApi = () => {
     updatePlayer,
     deletePlayerById,
     getUsers,
+    createUser,
+    updateUser,
     isLoading
   }
 }

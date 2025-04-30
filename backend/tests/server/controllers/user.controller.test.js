@@ -125,4 +125,75 @@ describe('User Controller', () => {
       expect(response.body.message).toBe('Acesso negado')
     })
   })
+
+  describe('POST /api/users', () => {
+    it('should create a new user', async () => {
+      const role = await Role.create({ name: 'admin' })
+
+      const user = await User.create({
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+      await role.addUser(user, { through: { userId: user.id, roleId: role.id } })
+
+      const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .post('/api/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          userName: 'denecley',
+          firstName: 'Denecley',
+          lastName: 'Alvim',
+          email: 'newemail@gmail.com',
+          password: '111'
+        })
+
+      expect(response.status).toBe(201)
+      expect(response.body).toEqual({
+        id: expect.any(String),
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'denecley',
+        email: 'newemail@gmail.com',
+        isAdmin: false,
+        isManager: false,
+        roles: [],
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String)
+      })
+    })
+
+    it('should return a 400 if user already exists', async () => {
+      const role = await Role.create({ name: 'admin' })
+
+      const user = await User.create({
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        userName: 'admin',
+        email: 'denecley@gmail.com',
+        password: '111'
+      })
+      await role.addUser(user, { through: { userId: user.id, roleId: role.id } })
+
+      const token = jwt.sign({ id: user.id }, JWT.SECRET, { expiresIn: JWT.EXPIRES_IN })
+
+      const response = await request(app)
+        .post('/api/users')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          userName: 'denecley',
+          firstName: 'Denecley',
+          lastName: 'Alvim',
+          email: 'denecley@gmail.com',
+          password: '111'
+        })
+
+      expect(response.status).toBe(400)
+      expect(response.body.message).toBe('Usuário já existe')
+    })
+  })
 })

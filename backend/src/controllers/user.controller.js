@@ -3,7 +3,7 @@ const authorizationMiddleware = require('@server/middleware/authorization')
 const {
   ROLES: { ADMIN }
 } = require('@server/config/constants')
-const { findAll, findById } = require('@server/services/user.service')
+const { findAll, findById, create } = require('@server/services/user.service')
 
 const UserVO = require('@server/vo/UserVO')
 
@@ -92,6 +92,62 @@ router.get('/:userId', authorizationMiddleware([ADMIN]), async (req, res, next) 
     const userVO = new UserVO(user)
 
     res.json(userVO.toJSON())
+  } catch (err) {
+    next(err)
+  }
+})
+
+/**
+ * @openapi
+ * /api/users:
+ *   post:
+ *     description: Create a new user
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userName:
+ *                 type: string
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *             example:
+ *               id: "1"
+ *               userName: "john.doe"
+ *               firstName: "John"
+ *               lastName: "Doe"
+ *               email: "john.doe@example.com"
+ *               createdAt: "2024-01-01T00:00:00.000Z"
+ *               updatedAt: "2024-01-01T00:00:00.000Z"
+ */
+router.post('/', authorizationMiddleware([ADMIN]), async (req, res, next) => {
+  try {
+    const authUser = req.user
+    const user = req.body
+
+    const newUser = await create(user, authUser)
+    const userVO = new UserVO(newUser)
+
+    res.status(201).json(userVO.toJSON())
   } catch (err) {
     next(err)
   }

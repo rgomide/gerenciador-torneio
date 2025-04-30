@@ -1,5 +1,53 @@
+const { Op } = require('sequelize')
 const { User, Role, Event } = require('@server/models')
 const AppError = require('@server/utils/AppError')
+
+const validateFields = (user) => {
+  const { userName, firstName, email, password } = user
+
+  if (!userName) {
+    throw new AppError('Nome de usuário é obrigatório', 400)
+  }
+
+  if (!firstName) {
+    throw new AppError('Nome é obrigatório', 400)
+  }
+
+  if (!email) {
+    throw new AppError('Email é obrigatório', 400)
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email)) {
+    throw new AppError('Formato de email inválido', 400)
+  }
+
+  if (!password) {
+    throw new AppError('Senha é obrigatória', 400)
+  }
+}
+
+const create = async (user, authUser) => {
+  validateFields(user)
+
+  if (authUser && !authUser.isAdmin) {
+    throw new AppError('Usuário não tem permissão para criar usuário', 403)
+  }
+
+  const existingUser = await User.findOne({
+    where: {
+      [Op.or]: [{ userName: user.userName }, { email: user.email }]
+    }
+  })
+
+  if (existingUser) {
+    throw new AppError('Usuário já existe', 400)
+  }
+
+  const newUser = await User.create(user)
+
+  return newUser
+}
 
 const findAll = async () => {
   const users = await User.findAll({
@@ -36,4 +84,4 @@ const findById = async (id) => {
   return user
 }
 
-module.exports = { findAll, findById }
+module.exports = { findAll, findById, create }
