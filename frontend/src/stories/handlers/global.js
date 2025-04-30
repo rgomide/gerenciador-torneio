@@ -1,6 +1,70 @@
 import { delay, http, HttpResponse } from 'msw'
 
 export const globalHandlers = [
+  http.delete('http://localhost:3000/api/users/:id', async ({ request, params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Usuário deletado com sucesso' }, { status: 204 })
+  }),
+  http.post('http://localhost:3000/api/users', async ({ request }) => {
+    const { userName, firstName, lastName, email, password } = await request.json()
+    return HttpResponse.json(
+      {
+        id: '1',
+        userName,
+        firstName,
+        lastName,
+        email,
+        password
+      },
+      { status: 201 }
+    )
+  }),
+  http.put('http://localhost:3000/api/users/:id', async ({ request, params }) => {
+    const { userName, firstName, lastName, email, password } = await request.json()
+    const { id } = params
+
+    return HttpResponse.json(
+      {
+        id,
+        userName,
+        firstName,
+        lastName,
+        email,
+        password
+      },
+      { status: 200 }
+    )
+  }),
+  http.get('http://localhost:3000/api/users', async () => {
+    await delay(1000)
+
+    return HttpResponse.json([
+      {
+        id: '3',
+        email: 'denecley@gmail.com',
+        userName: 'admin',
+        firstName: 'Denecley',
+        lastName: 'Alvim',
+        isAdmin: true,
+        isManager: true,
+        roles: ['admin', 'manager'],
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: '4',
+        email: 'jane@example.com',
+        userName: 'janesmith',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        isAdmin: false,
+        isManager: true,
+        roles: ['manager'],
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
+    ])
+  }),
   http.get('http://localhost:3000/api/units', async () => {
     await delay(1000)
 
