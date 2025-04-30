@@ -37,8 +37,8 @@ function UserForm({ record, onClose }) {
     .object({
       userName: z.string().min(3, 'O nome do usuário deve ter pelo menos 3 caracteres'),
       email: z.string().email('Email inválido'),
-      firstName: z.string().min(3, 'O nome é obrigatório'),
-      lastName: z.string().optional(),
+      firstName: z.string().min(3, 'O nome deve ter pelo menos 3 caracteres'),
+      lastName: z.string().min(3, 'O sobrenome deve ter pelo menos 3 caracteres'),
       password: z.string().optional(),
       confirmPassword: z.string().optional()
     })
