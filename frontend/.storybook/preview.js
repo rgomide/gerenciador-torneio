@@ -11,6 +11,9 @@ const preview = {
         color: /(background|color)$/i,
         date: /Date$/i
       }
+    },
+    nextjs: {
+      appDirectory: true
     }
   },
   loaders: [mswLoader]

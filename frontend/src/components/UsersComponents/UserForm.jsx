@@ -100,7 +100,7 @@ function UserForm({ record, onClose }) {
       closeDialog()
       toast.success('Usuário criado com sucesso')
     } else {
-      toast.error('Erro ao criar usuário')
+      toast.error(response.error)
     }
   }
 
@@ -114,7 +114,7 @@ function UserForm({ record, onClose }) {
       closeDialog()
       toast.success('Usuário atualizado com sucesso')
     } else {
-      toast.error('Erro ao atualizar usuário')
+      toast.error(response.error)
     }
   }
 

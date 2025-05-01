@@ -3,6 +3,67 @@ import { delay, http, HttpResponse } from 'msw'
 const DELAY = 200
 
 export const globalHandlers = [
+  http.get('http://localhost:3000/api/institutions/:institutionId/units', async ({ params }) => {
+    const { institutionId } = params
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Campus Trindade',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 2,
+        name: 'Campus Rio Verde',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
+    ])
+  }),
+  http.get('http://localhost:3000/api/units/:unitId/players', async ({ params }) => {
+    const { unitId } = params
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Player 1',
+        email: 'player1@example.com',
+        phone: '12345678901',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 2,
+        name: 'Player 2',
+        email: 'player2@example.com',
+        phone: '12345678902',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 3,
+        name: 'Player 3',
+        email: 'player3@example.com',
+        phone: '12345678903',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
+    ])
+  }),
+  http.post('http://localhost:3000/api/players', async ({ request }) => {
+    const { name, email, phone } = await request.json()
+    return HttpResponse.json({ id: 1, name, email, phone }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/players/:id', async ({ request, params }) => {
+    const { name, email, phone } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name, email, phone }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/players/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Player deletado com sucesso' }, { status: 204 })
+  }),
   http.get('http://localhost:3000/api/institutions', async () => {
     await delay(DELAY)
     return HttpResponse.json([
@@ -64,7 +125,7 @@ export const globalHandlers = [
     )
   }),
   http.get('http://localhost:3000/api/users', async () => {
-    await delay(1000)
+    await delay(DELAY)
 
     return HttpResponse.json([
       {
@@ -94,7 +155,7 @@ export const globalHandlers = [
     ])
   }),
   http.get('http://localhost:3000/api/units', async () => {
-    await delay(1000)
+    await delay(DELAY)
 
     return HttpResponse.json([
       {

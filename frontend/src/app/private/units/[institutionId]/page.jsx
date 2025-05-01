@@ -14,13 +14,15 @@ import UnitForm from '@/components/unitsComponents/UnitForm'
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { ArrowLeft } from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { use, useEffect, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
-function page({ params }) {
-  const router = useRouter()
-  const { institutionId } = use(params)
+function page() {
   const [units, setUnits] = useState([])
+
+  const router = useRouter()
+  const { institutionId } = useParams()
   const { getUnitsByInstitutionId, isLoading } = useApi()
 
   useEffect(() => {
