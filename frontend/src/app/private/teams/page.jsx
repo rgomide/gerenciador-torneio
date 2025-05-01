@@ -97,7 +97,7 @@ function page() {
             <TableHead>Última atualização</TableHead>
             {selectedUnit && (
               <TableHead>
-                <TeamsForm unitId={selectedUnit.id} onClose={fetchTeams} />
+                <TeamsForm unit={selectedUnit} onClose={fetchTeams} />
               </TableHead>
             )}
           </TableRow>
@@ -110,12 +110,7 @@ function page() {
               <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
               <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
               <TableCell className="font-medium space-x-2">
-                <TeamsForm
-                  variant="edit"
-                  record={team}
-                  unitId={selectedUnit}
-                  onClose={fetchTeams}
-                />
+                <TeamsForm variant="edit" record={team} unit={selectedUnit} onClose={fetchTeams} />
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="destructive" size="icon">

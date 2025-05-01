@@ -1,6 +1,34 @@
 import { delay, http, HttpResponse } from 'msw'
 
+const DELAY = 200
+
 export const globalHandlers = [
+  http.get('http://localhost:3000/api/institutions', async () => {
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Instituto Federal de Goiás',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 2,
+        name: 'Instituto Federal Goiano',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
+    ])
+  }),
+  http.post('http://localhost:3000/api/institutions', async ({ request }) => {
+    const { name } = await request.json()
+    return HttpResponse.json({ id: 1, name }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/institutions/:id', async ({ request, params }) => {
+    const { name } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name }, { status: 200 })
+  }),
   http.delete('http://localhost:3000/api/users/:id', async ({ request, params }) => {
     const { id } = params
     return HttpResponse.json({ message: 'Usuário deletado com sucesso' }, { status: 204 })
@@ -92,7 +120,7 @@ export const globalHandlers = [
     ])
   }),
   http.get('http://localhost:3000/api/sports', async () => {
-    await delay(500)
+    await delay(DELAY)
     return HttpResponse.json([
       { id: 1, name: 'Futebol' },
       { id: 2, name: 'Vôlei' },
@@ -100,6 +128,19 @@ export const globalHandlers = [
       { id: 4, name: 'Handebol' },
       { id: 5, name: 'Tênis' }
     ])
+  }),
+  http.post('http://localhost:3000/api/sports', async ({ request }) => {
+    const { name } = await request.json()
+    return HttpResponse.json({ id: 1, name }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/sports/:id', async ({ request, params }) => {
+    const { name } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/sports/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Esporte deletado com sucesso' }, { status: 204 })
   }),
   http.post('http://localhost:3000/api/tournaments', async ({ request }) => {
     const { name, startDate, endDate, sportId } = await request.json()
@@ -128,18 +169,84 @@ export const globalHandlers = [
     )
   }),
   http.get('http://localhost:3000/api/events', async () => {
-    await delay(500)
+    await delay(DELAY)
     return HttpResponse.json([
       { id: 1, name: 'Event 1' },
       { id: 2, name: 'Event 2' }
     ])
   }),
+  http.get('http://localhost:3000/api/units/:unitId/events', async () => {
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Event 1',
+        startDate: '2024-01-01',
+        endDate: '2024-01-02',
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      },
+      {
+        id: 2,
+        name: 'Event 2',
+        startDate: '2024-01-03',
+        endDate: '2024-01-04',
+        createdAt: '2024-01-03T00:00:00.000Z',
+        updatedAt: '2024-01-03T00:00:00.000Z'
+      }
+    ])
+  }),
+  http.get('http://localhost:3000/api/units/:unitId/teams', async () => {
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Team 1',
+        sport: { id: 1, name: 'Futebol' },
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      },
+      {
+        id: 2,
+        name: 'Team 2',
+        sport: { id: 2, name: 'Vôlei' },
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      }
+    ])
+  }),
+  http.post('http://localhost:3000/api/teams', async ({ request }) => {
+    const { name, unitId, sportId } = await request.json()
+    return HttpResponse.json({ id: 1, name, unitId, sportId }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/teams/:id', async ({ request, params }) => {
+    const { name, unitId, sportId } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name, unitId, sportId }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/teams/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Equipe deletada com sucesso' }, { status: 204 })
+  }),
+  http.post('http://localhost:3000/api/events', async ({ request }) => {
+    const { name, unitId, startDate, endDate } = await request.json()
+    return HttpResponse.json({ id: 1, name, unitId, startDate, endDate }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/events/:id', async ({ request, params }) => {
+    const { name, unitId, startDate, endDate } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name, unitId, startDate, endDate }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/events/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Evento deletado com sucesso' }, { status: 204 })
+  }),
   http.delete('http://localhost:3000/api/tournaments/:id', async () => {
-    await delay(500)
+    await delay(DELAY)
     return HttpResponse.json({ message: 'Torneio deletado com sucesso' }, { status: 200 })
   }),
   http.get('http://localhost:3000/api/events/:eventId/tournaments', async () => {
-    await delay(500)
+    await delay(DELAY)
     return HttpResponse.json([
       {
         id: 1,
