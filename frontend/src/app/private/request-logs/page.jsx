@@ -48,6 +48,23 @@ function page() {
     }
   }
 
+  const getStatusColor = (status) => {
+    const statusCategory = Math.trunc(status / 100)
+
+    switch (statusCategory) {
+      case 2:
+        return 'green'
+      case 3:
+        return 'blue'
+      case 4:
+        return 'red'
+      case 5:
+        return 'purple'
+      default:
+        return 'gray'
+    }
+  }
+
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
       {isLoading && <OverlaySpinner />}
@@ -75,7 +92,9 @@ function page() {
                 <Tag label={requestLog.method} color={getMethodColor(requestLog.method)} />
               </TableCell>
               <TableCell className="font-medium">{requestLog.url}</TableCell>
-              <TableCell className="font-medium">{requestLog.status}</TableCell>
+              <TableCell className="font-medium">
+                <Tag label={requestLog.status} color={getStatusColor(requestLog.status)} />
+              </TableCell>
               <TableCell className="font-medium">{requestLog.responseTime}</TableCell>
               <TableCell className="font-medium">
                 {formatDate(requestLog.createdAt, true)}
