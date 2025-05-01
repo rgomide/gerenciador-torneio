@@ -132,7 +132,7 @@ function page() {
               <TableCell className="font-medium">{event.name}</TableCell>
               <TableCell className="font-medium">{formatDate(event.startDate)}</TableCell>
               <TableCell className="font-medium">{formatDate(event.endDate)}</TableCell>
-              <TableCell className="font-medium">{formatDate(event.updatedAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(event.createdAt, true)}</TableCell>
               <TableCell className="font-medium">{formatDate(event.updatedAt, true)}</TableCell>
               <TableCell className="font-medium space-x-2">
                 <EventsForm
