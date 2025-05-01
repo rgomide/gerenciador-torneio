@@ -196,11 +196,36 @@ export const globalHandlers = [
   http.get('http://localhost:3000/api/sports', async () => {
     await delay(DELAY)
     return HttpResponse.json([
-      { id: 1, name: 'Futebol', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
-      { id: 2, name: 'Vôlei', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
-      { id: 3, name: 'Basquete', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
-      { id: 4, name: 'Handebol', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
-      { id: 5, name: 'Tênis', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' }
+      {
+        id: 1,
+        name: 'Futebol',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 2,
+        name: 'Vôlei',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 3,
+        name: 'Basquete',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 4,
+        name: 'Handebol',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 5,
+        name: 'Tênis',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
     ])
   }),
   http.post('http://localhost:3000/api/sports', async ({ request }) => {

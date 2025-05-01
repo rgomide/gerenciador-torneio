@@ -101,7 +101,7 @@ function UnitForm({ record, institutionId, onClose }) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -116,7 +116,11 @@ function UnitForm({ record, institutionId, onClose }) {
               )}
             />
             <DialogTrigger asChild>
-              <Button onClick={handleSubmit} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
                 Salvar
               </Button>
             </DialogTrigger>

@@ -128,7 +128,7 @@ function page() {
         <TableBody>
           {events.map((event) => (
             <TableRow key={event.id}>
-              {(console.log(event))}
+              {console.log(event)}
               <TableCell className="font-medium">{event.name}</TableCell>
               <TableCell className="font-medium">{formatDate(event.startDate)}</TableCell>
               <TableCell className="font-medium">{formatDate(event.endDate)}</TableCell>

@@ -105,7 +105,7 @@ function PlayersForm({ record, onClose, unitId }) {
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -127,11 +127,7 @@ function PlayersForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Email do atleta</FormLabel>
                   <FormControl>
-                    <Input
-                      type="email"
-                      placeholder="Email do atleta"
-                      {...field}
-                    />
+                    <Input type="email" placeholder="Email do atleta" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -145,11 +141,7 @@ function PlayersForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Telefone do atleta</FormLabel>
                   <FormControl>
-                    <Input
-                      type="phone"
-                      placeholder="(xx) xxxxx-xxxx"
-                      {...field}
-                    />
+                    <Input type="phone" placeholder="(xx) xxxxx-xxxx" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
