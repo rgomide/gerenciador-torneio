@@ -117,7 +117,7 @@ function TeamsForm({ record, unit, onClose }) {
                 <FormItem>
                   <FormLabel>Nome da equipe</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome da equipe' : record.name} {...field} />
+                    <Input placeholder="Nome da equipe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
