@@ -13,10 +13,11 @@ const sportController = require('@server/controllers/sport.controller')
 const playerController = require('@server/controllers/player.controller')
 const teamController = require('@server/controllers/team.controller')
 const matchController = require('@server/controllers/match.controller')
+const requestLogController = require('@server/controllers/requestLog.controller')
 
 router.use(authMiddleware)
 router.use(apiLoggerMiddleware)
-
+router.use('/request-logs', requestLogController)
 router.use('/users', usersController)
 router.use('/auth', authController)
 router.use('/institutions', institutionController)

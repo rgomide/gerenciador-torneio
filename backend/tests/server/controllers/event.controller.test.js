@@ -42,8 +42,6 @@ describe('Event Controller', () => {
         endDate
       })
 
-      console.log(event.toJSON())
-
       const response = await request(app)
         .get('/api/events')
         .set('Authorization', `Bearer ${adminToken}`)

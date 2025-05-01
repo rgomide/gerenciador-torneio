@@ -28,6 +28,11 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getRequestLogs = async () => {
+    const url = 'request-logs'
+    return makeRequest(url, GET)
+  }
+
   const deleteUserById = async (userId) => {
     const url = `users/${userId}`
     return makeRequest(url, DELETE)
@@ -325,6 +330,7 @@ const useApi = () => {
     createUser,
     updateUser,
     deleteUserById,
+    getRequestLogs,
     isLoading
   }
 }
