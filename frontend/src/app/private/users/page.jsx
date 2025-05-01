@@ -81,8 +81,8 @@ function page() {
                 {user.firstName} {user.lastName}
               </TableCell>
               <TableCell className="font-medium">{user.email}</TableCell>
-              <TableCell className="font-medium">{formatDate(user.createdAt)}</TableCell>
-              <TableCell className="font-medium">{formatDate(user.updatedAt)}</TableCell>
+              <TableCell className="font-medium">{formatDate(user.createdAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(user.updatedAt, true)}</TableCell>
               <TableCell className="font-medium flex gap-4">
                 <UserForm record={user} onClose={fetchUsers} />
 

@@ -59,8 +59,8 @@ function page() {
           {units.map((unit) => (
             <TableRow key={unit.id}>
               <TableCell className="font-medium">{unit.name}</TableCell>
-              <TableCell className="font-medium">{formatDate(unit.createdAt)}</TableCell>
-              <TableCell className="font-medium">{formatDate(unit.updatedAt)}</TableCell>
+              <TableCell className="font-medium">{formatDate(unit.createdAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(unit.updatedAt, true)}</TableCell>
               <TableCell className="font-medium">
                 <UnitForm record={unit} institutionId={institutionId} onClose={fetchUnits} />
               </TableCell>

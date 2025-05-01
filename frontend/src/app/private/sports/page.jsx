@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -62,6 +63,8 @@ function page() {
         <TableHeader>
           <TableRow>
             <TableHead>Nome</TableHead>
+            <TableHead>Data de registro</TableHead>
+            <TableHead>Última atualização</TableHead>
             <TableHead>
               <SportsForm onClose={fetchSports} />
             </TableHead>
@@ -71,6 +74,8 @@ function page() {
           {sports.map((sport) => (
             <TableRow key={sport.id}>
               <TableCell className="font-medium">{sport.name}</TableCell>
+              <TableCell className="font-medium">{formatDate(sport.createdAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(sport.updatedAt, true)}</TableCell>
               <TableCell className="font-medium flex gap-4">
                 <SportsForm record={sport} onClose={fetchSports} />
 

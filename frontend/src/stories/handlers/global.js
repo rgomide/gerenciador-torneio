@@ -196,11 +196,11 @@ export const globalHandlers = [
   http.get('http://localhost:3000/api/sports', async () => {
     await delay(DELAY)
     return HttpResponse.json([
-      { id: 1, name: 'Futebol' },
-      { id: 2, name: 'Vôlei' },
-      { id: 3, name: 'Basquete' },
-      { id: 4, name: 'Handebol' },
-      { id: 5, name: 'Tênis' }
+      { id: 1, name: 'Futebol', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 2, name: 'Vôlei', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 3, name: 'Basquete', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 4, name: 'Handebol', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 5, name: 'Tênis', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' }
     ])
   }),
   http.post('http://localhost:3000/api/sports', async ({ request }) => {
@@ -255,16 +255,16 @@ export const globalHandlers = [
       {
         id: 1,
         name: 'Event 1',
-        startDate: '2024-01-01',
-        endDate: '2024-01-02',
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-01-02T00:00:00.000Z',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z'
       },
       {
         id: 2,
         name: 'Event 2',
-        startDate: '2024-01-03',
-        endDate: '2024-01-04',
+        startDate: '2024-01-03T00:00:00.000Z',
+        endDate: '2024-01-04T00:00:00.000Z',
         createdAt: '2024-01-03T00:00:00.000Z',
         updatedAt: '2024-01-03T00:00:00.000Z'
       }
@@ -325,8 +325,8 @@ export const globalHandlers = [
       {
         id: 1,
         name: 'Eliminatórias',
-        startDate: '2024-01-01',
-        endDate: '2024-01-02',
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-01-02T00:00:00.000Z',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
         sport: {
@@ -337,8 +337,8 @@ export const globalHandlers = [
       {
         id: 2,
         name: 'Final',
-        startDate: '2024-01-03',
-        endDate: '2024-01-04',
+        startDate: '2024-01-03T00:00:00.000Z',
+        endDate: '2024-01-04T00:00:00.000Z',
         createdAt: '2024-01-03T00:00:00.000Z',
         updatedAt: '2024-01-03T00:00:00.000Z',
         sport: {

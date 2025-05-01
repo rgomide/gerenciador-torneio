@@ -113,7 +113,7 @@ function PlayersForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Nome do atleta</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome do atleta' : record.name} {...field} />
+                    <Input placeholder="Nome do atleta" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -129,7 +129,7 @@ function PlayersForm({ record, onClose, unitId }) {
                   <FormControl>
                     <Input
                       type="email"
-                      placeholder={isCreate ? 'email' : record.email}
+                      placeholder="Email do atleta"
                       {...field}
                     />
                   </FormControl>
@@ -147,7 +147,7 @@ function PlayersForm({ record, onClose, unitId }) {
                   <FormControl>
                     <Input
                       type="phone"
-                      placeholder={isCreate ? '(xx) xxxxx-xxxx' : record.phone}
+                      placeholder="(xx) xxxxx-xxxx"
                       {...field}
                     />
                   </FormControl>

@@ -204,7 +204,7 @@ function UserForm({ record, onClose }) {
                 <FormItem>
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome' : userRecord.firstName} {...field} />
+                    <Input placeholder="Nome" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -218,7 +218,7 @@ function UserForm({ record, onClose }) {
                 <FormItem>
                   <FormLabel>Sobrenome</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Sobrenome' : userRecord.lastName} {...field} />
+                    <Input placeholder="Sobrenome" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
