@@ -2,7 +2,7 @@
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { FileUser, Pencil, Plus, Trash2, X } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -21,7 +21,7 @@ import { Label } from '../ui/label'
 import { ScrollArea } from '../ui/scroll-area'
 
 function AddPlayerForm({ unitId, onClose, teamId }) {
-  const { getPlayersByUnitId, addPlayersToTeam } = useApi()
+  const { getPlayersByUnitId, getPlayersByTeamId, addPlayersToTeam } = useApi()
   const [selectedPlayers, setSelectedPlayers] = useState([{ player: null, details: '' }])
 
   const handleChange = (index, field, value) => {
@@ -41,12 +41,12 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
 
   const handleSave = async () => {
     const formattedPlayers = selectedPlayers
-      .filter(p => p.player?.id) // evita enviar nulls
+      .filter(p => p.player?.id)
       .map(({ player, details }) => ({
         id: player.id,
         details,
       }))
-  
+
     try {
       await addPlayersToTeam(teamId, formattedPlayers)
       toast.success('Jogadores adicionados com sucesso!')
@@ -56,9 +56,9 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
       toast.error('Erro ao salvar jogadores.')
     }
   }
-  
 
-  async function fetchPlayers() {
+
+  const fetchPlayers = async () => {
     const response = await getPlayersByUnitId(unitId)
     if (response.requestSuccessful) {
       return response.data
@@ -66,8 +66,22 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
     return []
   }
 
+  const fetchPlayersBtTeamId = async () => {
+    const response = await getPlayersByTeamId(teamId)
+    if (response.requestSuccessful) {
+      const mappedPlayers = response.data.map(player => ({
+        player: { id: player.id, name: player.name },
+        details: player.details
+      }))
+
+      console.log(mappedPlayers);
+
+      setSelectedPlayers(mappedPlayers.length > 0 ? mappedPlayers : [{ player: null, details: '' }])
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog onOpenChange={(open) => open && fetchPlayersBtTeamId()}>
       <DialogTrigger asChild>
         <Button size="icon">
           <FileUser className="h-4 w-4" />
@@ -91,6 +105,7 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
                     placeholder="Selecione o atleta"
                     minCharacters={2}
                     onLoad={fetchPlayers}
+                    value={selectedPlayers[index].player}
                     onChange={(value) => handleChange(index, 'player', value)}
                   />
                 </div>
@@ -99,10 +114,12 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
                   <Label>Observação</Label>
                   <Input
                     placeholder="Observação"
-                    value={entry.details}
+                    value={entry.details ?? ''}
                     onChange={(e) => handleChange(index, 'details', e.target.value)}
                   />
                 </div>
+
+                <p>{entry?.details}</p>
 
                 <div>
                   {selectedPlayers.length > 1 && (

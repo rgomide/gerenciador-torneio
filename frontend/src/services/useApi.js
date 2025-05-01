@@ -188,9 +188,14 @@ const useApi = () => {
   }
 
   const addPlayersToTeam = async (teamId, players) => {
-    const url = `teams/${teamId}/players/bulk`
-    return makeRequest(url, 'post', { players })
-  }  
+    const url = `teams/${teamId}/players`
+    return makeRequest(url, POST, { players })
+  }
+
+  const getPlayersByTeamId = async (teamId) => {
+    const url = `teams/${teamId}/players`
+    return makeRequest(url, GET)
+  }
 
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
@@ -311,6 +316,7 @@ const useApi = () => {
     deletePlayerById,
     getUsers,
     addPlayersToTeam,
+    getPlayersByTeamId,
     isLoading
   }
 }
