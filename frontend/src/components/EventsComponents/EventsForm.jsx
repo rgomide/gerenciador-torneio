@@ -1,4 +1,5 @@
 'use client'
+import { removeTime } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
@@ -35,8 +36,8 @@ function EventsForm({ record, onClose, unitId }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: event?.name || '',
-      startDate: event?.startDate || '',
-      endDate: event?.endDate || ''
+      startDate: event?.startDate ? removeTime(event.startDate) : '',
+      endDate: event?.endDate ? removeTime(event.endDate) : ''
     }
   })
 
@@ -109,7 +110,7 @@ function EventsForm({ record, onClose, unitId }) {
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="flex flex-col gap-4 space-y-4">
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -145,9 +146,9 @@ function EventsForm({ record, onClose, unitId }) {
               control={form.control}
               name="endDate"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  {(console.log(field))}
-                  {(console.log(event))}
+                <FormItem className="flex flex-col gap-4">
+                  {console.log(field)}
+                  {console.log(event)}
                   <FormLabel>Data de término</FormLabel>
                   <input
                     type="date"

@@ -101,7 +101,7 @@ function InstitutionForm({ record, onClose }) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"

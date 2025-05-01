@@ -161,7 +161,7 @@ function UserForm({ record, onClose }) {
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="flex flex-col gap-4 space-y-4">
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="userName"
