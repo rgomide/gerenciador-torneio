@@ -3,6 +3,923 @@ import { delay, http, HttpResponse } from 'msw'
 const DELAY = 200
 
 export const globalHandlers = [
+  http.get('http://localhost:3000/api/request-logs', async () => {
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: '30',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDYxMTA4OTYsImV4cCI6MTc3NzY2ODQ5Nn0.u1X6qgUMHwFz5M9Ww0veusxtWXzoBM2BXOt8EU2gGLU'
+        },
+        responseTime: 74,
+        status: 200,
+        createdAt: '2025-05-01T14:48:16.473Z'
+      },
+      {
+        id: '29',
+        ip: '::1',
+        userId: '3',
+        userName: 'admin',
+        method: 'DELETE',
+        url: '/api/sports/20',
+        payload: {},
+        response: null,
+        responseTime: 17,
+        status: 204,
+        createdAt: '2025-04-29T23:50:22.457Z'
+      },
+      {
+        id: '28',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NzAzNzEsImV4cCI6MTc3NzUyNzk3MX0.VEcNgivTZ2NYpiZuFRlay17tHLuKfGJeNXE2oCXxec8'
+        },
+        responseTime: 5,
+        status: 200,
+        createdAt: '2025-04-29T23:46:11.264Z'
+      },
+      {
+        id: '27',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njk5ODksImV4cCI6MTc3NzUyNzU4OX0.nqS3GMkVwyvBdjhlGTNf0NIyq389wiMUazb_Re2RyBs'
+        },
+        responseTime: 4,
+        status: 200,
+        createdAt: '2025-04-29T23:39:49.630Z'
+      },
+      {
+        id: '26',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njk5MjcsImV4cCI6MTc3NzUyNzUyN30.-gHTpDlYiXEmp_PwlkEcCnnUV8uoq7-NQ5og6kgcy_s'
+        },
+        responseTime: 12,
+        status: 200,
+        createdAt: '2025-04-29T23:38:47.391Z'
+      },
+      {
+        id: '25',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njk5MDIsImV4cCI6MTc3NzUyNzUwMn0.AHk2wxDRSIGhcWXTYBGR0NayspoTeKCw6hfL9Au45sk'
+        },
+        responseTime: 4,
+        status: 200,
+        createdAt: '2025-04-29T23:38:22.323Z'
+      },
+      {
+        id: '24',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njk4OTksImV4cCI6MTc3NzUyNzQ5OX0.hgCQAIzD5dBLV9OkjxH8IRpXmG4eK3E6Pd_yq_OkE4E'
+        },
+        responseTime: 11,
+        status: 200,
+        createdAt: '2025-04-29T23:38:19.221Z'
+      },
+      {
+        id: '23',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjkzMzcsImV4cCI6MTc3NzUyNjkzN30.R21FAdCZTBJRijNuOYWUzzRVXbRc-K7EBrOZIpWAwoQ'
+        },
+        responseTime: 15,
+        status: 200,
+        createdAt: '2025-04-29T23:28:57.741Z'
+      },
+      {
+        id: '22',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjkyODAsImV4cCI6MTc3NzUyNjg4MH0.hJ7anXrpWl1tOKqoxtrfqsItt-0GkgzpEtB56JQM_NM'
+        },
+        responseTime: 3,
+        status: 200,
+        createdAt: '2025-04-29T23:28:00.615Z'
+      },
+      {
+        id: '21',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjkyNzQsImV4cCI6MTc3NzUyNjg3NH0.kHv01-qMEVIqQbgVs79t-HPQne9xgqD7fzS_LvTIjXM'
+        },
+        responseTime: 18,
+        status: 200,
+        createdAt: '2025-04-29T23:27:54.222Z'
+      },
+      {
+        id: '20',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjkwMzcsImV4cCI6MTc3NzUyNjYzN30.FVj0oBWLIGFQzAIocxd_6uG4n0x2LguKptyybiFbkig'
+        },
+        responseTime: 12,
+        status: 200,
+        createdAt: '2025-04-29T23:23:57.149Z'
+      },
+      {
+        id: '19',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njg5NDMsImV4cCI6MTc3NzUyNjU0M30.grZzMODo1Pe6gh4KB_h7l5kVj7XgDkyTvToXDmnsImE'
+        },
+        responseTime: 17,
+        status: 200,
+        createdAt: '2025-04-29T23:22:23.881Z'
+      },
+      {
+        id: '18',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjgwMzcsImV4cCI6MTc3NzUyNTYzN30.UFHopuDYaLvJ07n-fPfs1YOxUoTVi4YiQgTXoVnwgFA'
+        },
+        responseTime: 45,
+        status: 200,
+        createdAt: '2025-04-29T23:07:17.458Z'
+      },
+      {
+        id: '17',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjgwMTIsImV4cCI6MTc3NzUyNTYxMn0.p0WDiHTRCdwlBsE__HcIVBoVsB50VgpZSyLdKNufc34'
+        },
+        responseTime: 40,
+        status: 200,
+        createdAt: '2025-04-29T23:06:52.820Z'
+      },
+      {
+        id: '16',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc5NjIsImV4cCI6MTc3NzUyNTU2Mn0.XRin6HMT-KFo1q-aqHhxirDRzTku5FvFR_aY_fSHA7I'
+        },
+        responseTime: 52,
+        status: 200,
+        createdAt: '2025-04-29T23:06:02.381Z'
+      },
+      {
+        id: '15',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc2OTIsImV4cCI6MTc3NzUyNTI5Mn0.bKTFrpNmcQc92j1md1SfIOgXvErVddfr3rPgxf0A9vM'
+        },
+        responseTime: 50,
+        status: 200,
+        createdAt: '2025-04-29T23:01:32.580Z'
+      },
+      {
+        id: '14',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc2NDgsImV4cCI6MTc3NzUyNTI0OH0.Dt-9g9iWK1q1kcAtZmUkY6XrbM2FdBLygJekCLBPNlA'
+        },
+        responseTime: 13,
+        status: 200,
+        createdAt: '2025-04-29T23:00:48.309Z'
+      },
+      {
+        id: '13',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc1NjQsImV4cCI6MTc3NzUyNTE2NH0.UbydCZT4uCIFpwpFEjhBTMK19bfByj2BsCnV1RLtvSw'
+        },
+        responseTime: 3,
+        status: 200,
+        createdAt: '2025-04-29T22:59:24.394Z'
+      },
+      {
+        id: '12',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc1MTUsImV4cCI6MTc3NzUyNTExNX0.iFSjBdGuIGVk4nR9CYF9pwSfuFol87cFTcIKKe4ZvfA'
+        },
+        responseTime: 4,
+        status: 200,
+        createdAt: '2025-04-29T22:58:35.255Z'
+      },
+      {
+        id: '11',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc0MTcsImV4cCI6MTc3NzUyNTAxN30.erJm2wavXm_aufO7ymg12ciIX48VLJdvyUsHgjoI_dU'
+        },
+        responseTime: 5,
+        status: 200,
+        createdAt: '2025-04-29T22:56:57.252Z'
+      },
+      {
+        id: '10',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5Njc0MDUsImV4cCI6MTc3NzUyNTAwNX0.YUbD9FLyYMbjs8fORYzbjw3atKMIGo423KtHLU_uCSY'
+        },
+        responseTime: 3,
+        status: 200,
+        createdAt: '2025-04-29T22:56:45.432Z'
+      },
+      {
+        id: '9',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjczODAsImV4cCI6MTc3NzUyNDk4MH0.7koLFoGX4pG5Q2dN-oc3w8_dy0M2kFEaHIK7g3HOzDk'
+        },
+        responseTime: 5,
+        status: 200,
+        createdAt: '2025-04-29T22:56:20.478Z'
+      },
+      {
+        id: '8',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjcyNzcsImV4cCI6MTc3NzUyNDg3N30.FqZ-R4aRyq5e75-7Q35m2AeGXLoVvfTWkoGqX4Qie-0'
+        },
+        responseTime: 3,
+        status: 200,
+        createdAt: '2025-04-29T22:54:37.450Z'
+      },
+      {
+        id: '7',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjcyNTAsImV4cCI6MTc3NzUyNDg1MH0.Ns6-VW7i9OfHLp1qUkxMmv6uYb0xyygD28qpNdIFEpk'
+        },
+        responseTime: 13,
+        status: 200,
+        createdAt: '2025-04-29T22:54:10.079Z'
+      },
+      {
+        id: '6',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjcyMzgsImV4cCI6MTc3NzUyNDgzOH0.d_Pe2_gjFEpQogt2YzRHG3-EV-wc2oqxTdc1GxP2Vk4'
+        },
+        responseTime: 19,
+        status: 200,
+        createdAt: '2025-04-29T22:53:58.027Z'
+      },
+      {
+        id: '5',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjcxNDEsImV4cCI6MTc3NzUyNDc0MX0.xUEUx2LowxKbsYnlAl8V4SpNdybwPhKjUiemiWtUaPs'
+        },
+        responseTime: 15,
+        status: 200,
+        createdAt: '2025-04-29T22:52:21.686Z'
+      },
+      {
+        id: '4',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjcxMjcsImV4cCI6MTc3NzUyNDcyN30.N_zFkzhAqmaR6ylD7VqK2XpzUA5do8AN7-5KVQ8UAWs'
+        },
+        responseTime: 14,
+        status: 200,
+        createdAt: '2025-04-29T22:52:07.094Z'
+      },
+      {
+        id: '3',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjcwNTYsImV4cCI6MTc3NzUyNDY1Nn0.Vt-sMPwl3Kb9IzpBh9_NpMfhQOi9hGtkK5G97mOoDxQ'
+        },
+        responseTime: 18,
+        status: 200,
+        createdAt: '2025-04-29T22:50:56.129Z'
+      },
+      {
+        id: '2',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjY4NDksImV4cCI6MTc3NzUyNDQ0OX0.XJ72To55qGqTPL4XCJYjuWfsZYYZXP0CSlCf8he9S6M'
+        },
+        responseTime: 8,
+        status: 200,
+        createdAt: '2025-04-29T22:47:29.989Z'
+      },
+      {
+        id: '1',
+        ip: '::1',
+        userId: null,
+        userName: null,
+        method: 'POST',
+        url: '/api/auth/login',
+        payload: {
+          password: 'f6e0a1e2ac41945a9aa7ff8a8aaa0cebc12a3bcc981a929ad5cf810a090e11ae',
+          userName: 'admin'
+        },
+        response: {
+          user: {
+            id: '3',
+            email: 'denecley@gmail.com',
+            roles: ['admin', 'manager'],
+            isAdmin: true,
+            lastName: 'Alvim',
+            userName: 'admin',
+            createdAt: '2025-04-22T22:16:05.615Z',
+            firstName: 'Denecley',
+            isManager: true,
+            updatedAt: '2025-04-22T22:16:05.615Z'
+          },
+          token:
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjMiLCJpYXQiOjE3NDU5NjY1MjAsImV4cCI6MTc3NzUyNDEyMH0.yJXan2FxF03yBs_SvKPHeMo8r6g6q4bsf7ypy1YyeSI'
+        },
+        responseTime: 51,
+        status: 200,
+        createdAt: '2025-04-29T22:42:00.533Z'
+      }
+    ])
+  }),
   http.get('http://localhost:3000/api/institutions/:institutionId/units', async ({ params }) => {
     const { institutionId } = params
     await delay(DELAY)
