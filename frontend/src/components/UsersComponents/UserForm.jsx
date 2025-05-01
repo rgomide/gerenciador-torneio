@@ -120,7 +120,7 @@ function UserForm({ record, onClose }) {
 
   const closeDialog = () => {
     onClose?.()
-    setIsOpen(false)
+    handleOpenChange(false)
   }
 
   const form = useForm({
@@ -135,8 +135,15 @@ function UserForm({ record, onClose }) {
     }
   })
 
+  const handleOpenChange = (open) => {
+    setIsOpen(open)
+    if (!open) {
+      form.reset()
+    }
+  }
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isCreate ? (
           <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">

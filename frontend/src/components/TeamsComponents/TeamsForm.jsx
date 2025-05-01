@@ -19,9 +19,12 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
 
-function TeamsForm({ record, unitId, onClose }) {
-  const { getSports, createTeam, updateTeam } = useApi()
+function TeamsForm({ record, unit, onClose }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [team, setTeam] = useState(record)
   const [selectedSport, setSelectedSport] = useState(record?.sport)
+
+  const { getSports, createTeam, updateTeam } = useApi()
 
   const isCreate = record === undefined
 
@@ -32,7 +35,7 @@ function TeamsForm({ record, unitId, onClose }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ''
+      name: team?.name || ''
     }
   })
 
@@ -44,46 +47,51 @@ function TeamsForm({ record, unitId, onClose }) {
     return []
   }
 
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const isValid = await form.trigger()
+    if (isValid) {
+      form.handleSubmit(isCreate ? onSubmitCreate : onSubmitUpdate)()
+    }
+  }
+
   async function onSubmitCreate(values) {
-    try {
-      const resp = await createTeam(values.name, unitId, selectedSport?.id)
+    const resp = await createTeam(values.name, unit.id, selectedSport?.id)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao criar equipe')
-      }
-
-      form.reset()
+    if (resp.requestSuccessful) {
       toast.success('Equipe criada com sucesso!')
-      if (onClose) {
-        onClose()
-      }
-    } catch (error) {
-      console.error('Erro na criação:', error)
-      toast.error(error.message || 'Erro ao criar equipe')
+      closeDialog()
+    } else {
+      toast.error(resp.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    try {
-      const resp = await updateTeam(record.id, values.name)
+    const resp = await updateTeam(team.id, values.name, unit.id, selectedSport?.id)
 
-      if (!resp || resp.error) {
-        throw new Error(resp?.error || 'Erro ao editar equipe')
-      }
-
-      form.reset()
+    if (resp.requestSuccessful) {
       toast.success('Equipe editada com sucesso!')
-      if (onClose) {
-        onClose()
-      }
-    } catch (error) {
-      console.error('Erro ao editar:', error.error)
-      toast.error(error.error || 'Erro ao editar equipe')
+      closeDialog()
+    } else {
+      toast.error(resp.error)
+    }
+  }
+
+  const closeDialog = () => {
+    onClose?.()
+    handleOpenChange(false)
+  }
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open)
+    if (!open) {
+      form.reset()
     }
   }
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isCreate ? (
           <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
@@ -101,12 +109,7 @@ function TeamsForm({ record, unitId, onClose }) {
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={
-              isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
-            }
-            className="space-y-4"
-          >
+          <form className="space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -143,7 +146,7 @@ function TeamsForm({ record, unitId, onClose }) {
             />
 
             <DialogTrigger asChild>
-              <Button type={'submit'} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={handleSubmit} className="bg-emerald-600 hover:bg-emerald-700">
                 Salvar
               </Button>
             </DialogTrigger>
