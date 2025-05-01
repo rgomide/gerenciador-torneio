@@ -20,6 +20,7 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
+import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -91,6 +92,8 @@ function page() {
             <TableHead>Nome</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Telefone</TableHead>
+            <TableHead>Data de registro</TableHead>
+            <TableHead>Última atualização</TableHead>
             {selectedUnit && (
               <TableHead>
                 <PlayersForm unitId={selectedUnit?.id} onClose={fetchPlayers} />
@@ -104,6 +107,8 @@ function page() {
               <TableCell className="font-medium">{player.name}</TableCell>
               <TableCell className="font-medium">{player.email}</TableCell>
               <TableCell className="font-medium">{player.phone}</TableCell>
+              <TableCell className="font-medium">{formatDate(player.createdAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(player.updatedAt, true)}</TableCell>
               <TableCell className="font-medium flex gap-4">
                 <PlayersForm unitId={selectedUnit?.id} record={player} onClose={fetchPlayers} />
 

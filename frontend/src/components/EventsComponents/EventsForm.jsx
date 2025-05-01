@@ -117,7 +117,7 @@ function EventsForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Nome do evento</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome do evento' : record.name} {...field} />
+                    <Input placeholder="Nome do evento" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -133,7 +133,7 @@ function EventsForm({ record, onClose, unitId }) {
                   <input
                     type="date"
                     className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.startDate}
+                    placeholder="Data de início"
                     {...field}
                   />
                   <FormMessage />
@@ -146,11 +146,13 @@ function EventsForm({ record, onClose, unitId }) {
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
+                  {(console.log(field))}
+                  {(console.log(event))}
                   <FormLabel>Data de término</FormLabel>
                   <input
                     type="date"
                     className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.endDate}
+                    placeholder="Data de término"
                     {...field}
                   />
                   <FormMessage />

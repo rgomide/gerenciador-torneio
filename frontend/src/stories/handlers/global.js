@@ -3,6 +3,80 @@ import { delay, http, HttpResponse } from 'msw'
 const DELAY = 200
 
 export const globalHandlers = [
+  http.get('http://localhost:3000/api/institutions/:institutionId/units', async ({ params }) => {
+    const { institutionId } = params
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Campus Trindade',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 2,
+        name: 'Campus Rio Verde',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
+    ])
+  }),
+  http.post('http://localhost:3000/api/units', async ({ request }) => {
+    const { name } = await request.json()
+    return HttpResponse.json({ id: 1, name }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/units/:id', async ({ request, params }) => {
+    const { name } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/units/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Unidade deletada com sucesso' }, { status: 204 })
+  }),
+  http.get('http://localhost:3000/api/units/:unitId/players', async ({ params }) => {
+    const { unitId } = params
+    await delay(DELAY)
+    return HttpResponse.json([
+      {
+        id: 1,
+        name: 'Player 1',
+        email: 'player1@example.com',
+        phone: '12345678901',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 2,
+        name: 'Player 2',
+        email: 'player2@example.com',
+        phone: '12345678902',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      },
+      {
+        id: 3,
+        name: 'Player 3',
+        email: 'player3@example.com',
+        phone: '12345678903',
+        createdAt: '2025-04-22T22:16:05.615Z',
+        updatedAt: '2025-04-22T22:16:05.615Z'
+      }
+    ])
+  }),
+  http.post('http://localhost:3000/api/players', async ({ request }) => {
+    const { name, email, phone } = await request.json()
+    return HttpResponse.json({ id: 1, name, email, phone }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/players/:id', async ({ request, params }) => {
+    const { name, email, phone } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name, email, phone }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/players/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Player deletado com sucesso' }, { status: 204 })
+  }),
   http.get('http://localhost:3000/api/institutions', async () => {
     await delay(DELAY)
     return HttpResponse.json([
@@ -64,7 +138,7 @@ export const globalHandlers = [
     )
   }),
   http.get('http://localhost:3000/api/users', async () => {
-    await delay(1000)
+    await delay(DELAY)
 
     return HttpResponse.json([
       {
@@ -94,7 +168,7 @@ export const globalHandlers = [
     ])
   }),
   http.get('http://localhost:3000/api/units', async () => {
-    await delay(1000)
+    await delay(DELAY)
 
     return HttpResponse.json([
       {
@@ -122,11 +196,11 @@ export const globalHandlers = [
   http.get('http://localhost:3000/api/sports', async () => {
     await delay(DELAY)
     return HttpResponse.json([
-      { id: 1, name: 'Futebol' },
-      { id: 2, name: 'Vôlei' },
-      { id: 3, name: 'Basquete' },
-      { id: 4, name: 'Handebol' },
-      { id: 5, name: 'Tênis' }
+      { id: 1, name: 'Futebol', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 2, name: 'Vôlei', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 3, name: 'Basquete', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 4, name: 'Handebol', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' },
+      { id: 5, name: 'Tênis', createdAt: '2025-04-22T22:16:05.615Z', updatedAt: '2025-04-22T22:16:05.615Z' }
     ])
   }),
   http.post('http://localhost:3000/api/sports', async ({ request }) => {
@@ -181,16 +255,16 @@ export const globalHandlers = [
       {
         id: 1,
         name: 'Event 1',
-        startDate: '2024-01-01',
-        endDate: '2024-01-02',
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-01-02T00:00:00.000Z',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z'
       },
       {
         id: 2,
         name: 'Event 2',
-        startDate: '2024-01-03',
-        endDate: '2024-01-04',
+        startDate: '2024-01-03T00:00:00.000Z',
+        endDate: '2024-01-04T00:00:00.000Z',
         createdAt: '2024-01-03T00:00:00.000Z',
         updatedAt: '2024-01-03T00:00:00.000Z'
       }
@@ -251,8 +325,8 @@ export const globalHandlers = [
       {
         id: 1,
         name: 'Eliminatórias',
-        startDate: '2024-01-01',
-        endDate: '2024-01-02',
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-01-02T00:00:00.000Z',
         createdAt: '2024-01-01T00:00:00.000Z',
         updatedAt: '2024-01-01T00:00:00.000Z',
         sport: {
@@ -263,8 +337,8 @@ export const globalHandlers = [
       {
         id: 2,
         name: 'Final',
-        startDate: '2024-01-03',
-        endDate: '2024-01-04',
+        startDate: '2024-01-03T00:00:00.000Z',
+        endDate: '2024-01-04T00:00:00.000Z',
         createdAt: '2024-01-03T00:00:00.000Z',
         updatedAt: '2024-01-03T00:00:00.000Z',
         sport: {

@@ -107,8 +107,8 @@ function page() {
             <TableRow key={team.id}>
               <TableCell className="font-medium">{team.name}</TableCell>
               <TableCell className="font-medium">{team.sport?.name}</TableCell>
-              <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
-              <TableCell className="font-medium">{formatDate(team.updatedAt)}</TableCell>
+              <TableCell className="font-medium">{formatDate(team.createdAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(team.updatedAt, true)}</TableCell>
               <TableCell className="font-medium space-x-2">
                 <TeamsForm variant="edit" record={team} unit={selectedUnit} onClose={fetchTeams} />
                 <Dialog>

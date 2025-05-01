@@ -34,12 +34,15 @@ describe('Event Controller', () => {
       const unit = await Unit.create({ name: 'Test Unit', institutionId: institution.id })
       const startDate = new Date('2024-01-01')
       const endDate = new Date('2024-01-02')
-      await Event.create({
+
+      const event = await Event.create({
         name: 'Event 1',
         unitId: unit.id,
         startDate,
         endDate
       })
+
+      console.log(event.toJSON())
 
       const response = await request(app)
         .get('/api/events')
@@ -51,8 +54,8 @@ describe('Event Controller', () => {
           id: expect.any(String),
           name: 'Event 1',
           unitId: unit.id,
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
+          startDate: '2024-01-01T00:00:00.000Z',
+          endDate: '2024-01-02T00:00:00.000Z',
           createdAt: expect.any(String),
           updatedAt: expect.any(String)
         })

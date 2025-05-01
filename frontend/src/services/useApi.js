@@ -66,9 +66,9 @@ const useApi = () => {
     return makeRequest(url, POST, payload)
   }
 
-  const updateUnit = async (id, name) => {
+  const updateUnit = async (id, name, institutionId) => {
     const url = `units/${id}`
-    const payload = { name }
+    const payload = { name, institutionId }
     return makeRequest(url, PUT, payload)
   }
 
