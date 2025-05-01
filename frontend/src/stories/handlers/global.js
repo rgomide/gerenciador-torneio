@@ -21,6 +21,19 @@ export const globalHandlers = [
       }
     ])
   }),
+  http.post('http://localhost:3000/api/units', async ({ request }) => {
+    const { name } = await request.json()
+    return HttpResponse.json({ id: 1, name }, { status: 201 })
+  }),
+  http.put('http://localhost:3000/api/units/:id', async ({ request, params }) => {
+    const { name } = await request.json()
+    const { id } = params
+    return HttpResponse.json({ id, name }, { status: 200 })
+  }),
+  http.delete('http://localhost:3000/api/units/:id', async ({ params }) => {
+    const { id } = params
+    return HttpResponse.json({ message: 'Unidade deletada com sucesso' }, { status: 204 })
+  }),
   http.get('http://localhost:3000/api/units/:unitId/players', async ({ params }) => {
     const { unitId } = params
     await delay(DELAY)
