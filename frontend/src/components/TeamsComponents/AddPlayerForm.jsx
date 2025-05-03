@@ -95,7 +95,7 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
 
         <div className="flex flex-col gap-4">
           <ScrollArea className='max-h-[300px]'>
-            {selectedPlayers.map((entry, index) => (
+            {selectedPlayers.map((selectedPlayer, index) => (
               <div key={index} className="border p-4 rounded-md space-y-2 flex flex-col gap-2">
                 <div className='flex flex-col gap-4'>
                   <Label>Atleta</Label>
@@ -105,7 +105,7 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
                     placeholder="Selecione o atleta"
                     minCharacters={2}
                     onLoad={fetchPlayers}
-                    value={selectedPlayers[index].player}
+                    value={selectedPlayer.player}
                     onChange={(value) => handleChange(index, 'player', value)}
                   />
                 </div>
@@ -114,12 +114,12 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
                   <Label>Observação</Label>
                   <Input
                     placeholder="Observação"
-                    value={entry.details ?? ''}
+                    value={selectedPlayer.details ?? ''}
                     onChange={(e) => handleChange(index, 'details', e.target.value)}
                   />
                 </div>
 
-                <p>{entry?.details}</p>
+                <p>{selectedPlayer?.details}</p>
 
                 <div>
                   {selectedPlayers.length > 1 && (
