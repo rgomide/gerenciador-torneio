@@ -21,7 +21,7 @@ import { Label } from '../ui/label'
 import { ScrollArea } from '../ui/scroll-area'
 
 function AddPlayerForm({ unitId, onClose, teamId }) {
-  const { getPlayersByUnitId, getPlayersByTeamId, addPlayersToTeam } = useApi()
+  const { getPlayersByUnitId, addPlayersToTeam } = useApi()
   const [selectedPlayers, setSelectedPlayers] = useState([{ player: null, details: '' }])
 
   const handleChange = (index, field, value) => {
@@ -49,14 +49,13 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
 
     try {
       await addPlayersToTeam(teamId, formattedPlayers)
-      toast.success('Jogadores adicionados com sucesso!')
+      toast.success('Salvo com sucesso!')
       onClose?.()
     } catch (error) {
       console.error(error)
       toast.error('Erro ao salvar jogadores.')
     }
   }
-
 
   const fetchPlayers = async () => {
     const response = await getPlayersByUnitId(unitId)
@@ -66,22 +65,8 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
     return []
   }
 
-  const fetchPlayersBtTeamId = async () => {
-    const response = await getPlayersByTeamId(teamId)
-    if (response.requestSuccessful) {
-      const mappedPlayers = response.data.map(player => ({
-        player: { id: player.id, name: player.name },
-        details: player.details
-      }))
-
-      console.log(mappedPlayers);
-
-      setSelectedPlayers(mappedPlayers.length > 0 ? mappedPlayers : [{ player: null, details: '' }])
-    }
-  }
-
   return (
-    <Dialog onOpenChange={(open) => open && fetchPlayersBtTeamId()}>
+    <Dialog>
       <DialogTrigger asChild>
         <Button size="icon">
           <FileUser className="h-4 w-4" />
@@ -119,8 +104,6 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
                   />
                 </div>
 
-                <p>{selectedPlayer?.details}</p>
-
                 <div>
                   {selectedPlayers.length > 1 && (
                     <Button variant="outline" className='text-red-500 hover:text-white hover:bg-red-500' onClick={() => removeField(index)}>
@@ -137,9 +120,11 @@ function AddPlayerForm({ unitId, onClose, teamId }) {
             + Adicionar jogador
           </Button>
 
-          <Button onClick={handleSave} className="bg-emerald-600 hover:bg-emerald-700 text-white">
-            Salvar jogadores
-          </Button>
+          <DialogTrigger asChild>
+            <Button onClick={handleSave} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+              Salvar jogadores
+            </Button>
+          </DialogTrigger>
         </div>
       </DialogContent>
     </Dialog>

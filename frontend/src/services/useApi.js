@@ -188,7 +188,7 @@ const useApi = () => {
   }
 
   const addPlayersToTeam = async (teamId, players) => {
-    const url = `teams/${teamId}/players`
+    const url = `teams/${teamId}/players/bulk`
     return makeRequest(url, POST, { players })
   }
 
