@@ -29,6 +29,7 @@ import {
   FileUser,
   Home,
   Landmark,
+  Logs,
   ShieldHalf,
   Trophy,
   UserRoundX,
@@ -88,6 +89,12 @@ const menuItems = [
     icon: Users,
     admin: true,
     addSeparator: true
+  },
+  {
+    title: 'Logs de requisições',
+    url: '/private/request-logs',
+    icon: Logs,
+    admin: true
   }
 ]
 

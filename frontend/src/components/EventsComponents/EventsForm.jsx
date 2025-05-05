@@ -1,7 +1,9 @@
 'use client'
+import { removeTime } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -18,6 +20,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function EventsForm({ record, onClose, unitId }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [event, setEvent] = useState(record)
+
   const { createEvent, updateEvent } = useApi()
   const isCreate = record === undefined
 
@@ -30,21 +35,28 @@ function EventsForm({ record, onClose, unitId }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      startDate: record?.startDate || '',
-      endDate: record?.endDate || ''
+      name: event?.name || '',
+      startDate: event?.startDate ? removeTime(event.startDate) : '',
+      endDate: event?.endDate ? removeTime(event.endDate) : ''
     }
   })
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const isValid = await form.trigger()
+
+    if (isValid) {
+      form.handleSubmit(isCreate ? onSubmitCreate : onSubmitUpdate)()
+    }
+  }
 
   async function onSubmitCreate(values) {
     const response = await createEvent(values.name, unitId, values.startDate, values.endDate)
 
     if (response.requestSuccessful) {
-      form.reset()
       toast.success('Evento criado com sucesso!')
-      if (onClose) {
-        onClose()
-      }
+      closeDialog()
     } else {
       toast.error(response.error)
     }
@@ -60,18 +72,27 @@ function EventsForm({ record, onClose, unitId }) {
     )
 
     if (response.requestSuccessful) {
-      form.reset()
+      closeDialog()
       toast.success('Evento editado com sucesso!')
-      if (onClose) {
-        onClose()
-      }
     } else {
       toast.error(response.error)
     }
   }
 
+  const closeDialog = () => {
+    onClose?.()
+    handleOpenChange(false)
+  }
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open)
+    if (!open) {
+      form.reset()
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isCreate ? (
           <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
@@ -89,12 +110,7 @@ function EventsForm({ record, onClose, unitId }) {
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={
-              isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
-            }
-            className="flex flex-col gap-4 space-y-4"
-          >
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -102,7 +118,7 @@ function EventsForm({ record, onClose, unitId }) {
                 <FormItem>
                   <FormLabel>Nome do evento</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome do evento' : record.name} {...field} />
+                    <Input placeholder="Nome do evento" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -118,7 +134,7 @@ function EventsForm({ record, onClose, unitId }) {
                   <input
                     type="date"
                     className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.startDate}
+                    placeholder="Data de início"
                     {...field}
                   />
                   <FormMessage />
@@ -130,12 +146,14 @@ function EventsForm({ record, onClose, unitId }) {
               control={form.control}
               name="endDate"
               render={({ field }) => (
-                <FormItem className="flex flex-col">
+                <FormItem className="flex flex-col gap-4">
+                  {console.log(field)}
+                  {console.log(event)}
                   <FormLabel>Data de término</FormLabel>
                   <input
                     type="date"
                     className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.endDate}
+                    placeholder="Data de término"
                     {...field}
                   />
                   <FormMessage />
@@ -144,7 +162,7 @@ function EventsForm({ record, onClose, unitId }) {
             />
 
             <DialogTrigger asChild>
-              <Button type={'submit'} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={handleSubmit} className="bg-emerald-600 hover:bg-emerald-700">
                 Salvar
               </Button>
             </DialogTrigger>

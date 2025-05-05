@@ -1,6 +1,7 @@
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -17,6 +18,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function UnitForm({ record, institutionId, onClose }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [unit, setUnit] = useState(record)
+
   const { createUnit, updateUnit } = useApi()
   const isCreate = record === undefined
 
@@ -27,40 +31,56 @@ function UnitForm({ record, institutionId, onClose }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: ''
+      name: unit?.name || ''
     }
   })
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const isValid = form.trigger()
+
+    if (isValid) {
+      form.handleSubmit(isCreate ? onSubmitCreate : onSubmitUpdate)()
+    }
+  }
 
   async function onSubmitCreate(values) {
     const response = await createUnit(values.name, institutionId)
 
     if (response.requestSuccessful) {
-      form.reset()
+      closeDialog()
       toast.success('Unidade criada com sucesso!')
-      if (onClose) {
-        onClose()
-      }
     } else {
       toast.error(response.error)
     }
   }
 
   async function onSubmitUpdate(values) {
-    const response = await updateUnit(record.id, values.name)
+    const response = await updateUnit(record.id, values.name, institutionId)
 
     if (response.requestSuccessful) {
-      form.reset()
+      closeDialog()
       toast.success('Unidade editada com sucesso!')
-      if (onClose) {
-        onClose()
-      }
     } else {
       toast.error(response.error)
     }
   }
 
+  const closeDialog = () => {
+    onClose?.()
+    setIsOpen(false)
+  }
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open)
+    if (!open) {
+      form.reset()
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isCreate ? (
           <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
@@ -81,12 +101,7 @@ function UnitForm({ record, institutionId, onClose }) {
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={
-              isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
-            }
-            className="space-y-4"
-          >
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -94,17 +109,18 @@ function UnitForm({ record, institutionId, onClose }) {
                 <FormItem>
                   <FormLabel>Nome da unidade</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder={isCreate ? 'Nome da instituição' : record.name}
-                      {...field}
-                    />
+                    <Input placeholder="Nome da instituição" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogTrigger asChild>
-              <Button type={'submit'} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button
+                type="button"
+                onClick={handleSubmit}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
                 Salvar
               </Button>
             </DialogTrigger>

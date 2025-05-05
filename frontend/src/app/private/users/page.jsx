@@ -1,7 +1,6 @@
 'use client'
+import UserForm from '@/components/UsersComponents/UserForm'
 import OverlaySpinner from '@/components/common/OverlaySpinner'
-import SelectSearcher from '@/components/common/SelectSearcher'
-import PlayersForm from '@/components/PlayerComponents/PlayerForm'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -27,45 +26,29 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 function page() {
-  const { getPlayersByUnitId, deletePlayerById, isLoading, getUnits } = useApi()
-  const [players, setPlayers] = useState([])
-  const [selectedUnit, setSelectedUnit] = useState(null)
+  const { getUsers, deleteUserById, isLoading } = useApi()
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
-    fetchPlayers()
-  }, [selectedUnit])
+    fetchUsers()
+  }, [])
 
-  const fetchPlayers = async () => {
-    if (!selectedUnit) {
-      return
-    }
+  const fetchUsers = async () => {
+    const response = await getUsers()
 
-    const response = await getPlayersByUnitId(selectedUnit.id)
     if (response.requestSuccessful) {
-      setPlayers(response.data)
+      setUsers(response.data)
     } else {
-      setPlayers([])
       toast.error(response.error)
     }
   }
 
-  const fetchUnits = async (searchTerm) => {
-    const response = await getUnits({ name: searchTerm })
+  const deleteUser = async (id) => {
+    const response = await deleteUserById(id)
 
     if (response.requestSuccessful) {
-      return response.data
-    } else {
-      toast.error(response.error)
-      return []
-    }
-  }
-
-  const deletePlayer = async (id) => {
-    const response = await deletePlayerById(id)
-
-    if (response.requestSuccessful) {
-      toast.success('Atleta deletado com sucesso!')
-      await fetchPlayers()
+      toast.success('Usuário deletado com sucesso')
+      fetchUsers()
     } else {
       toast.error(response.error)
     }
@@ -74,43 +57,34 @@ function page() {
   return (
     <div className="flex flex-col items-center self-center h-screen w-full p-12 gap-8">
       {isLoading && <OverlaySpinner />}
-      <h1>Atletas</h1>
-
-      <div className="flex flex-col gap-2">
-        <SelectSearcher
-          onLoad={fetchUnits}
-          labelField="name"
-          onChange={setSelectedUnit}
-          placeholder="Selecione a Unidade correspondente"
-        />
-      </div>
+      <h1>Usuários</h1>
 
       <Table className="w-full">
-        <TableCaption>Lista de jogadores cadastrados no sistema</TableCaption>
+        <TableCaption>Lista de Usuários cadastrados no sistema</TableCaption>
         <TableHeader>
           <TableRow>
+            <TableHead>Usuário</TableHead>
             <TableHead>Nome</TableHead>
             <TableHead>Email</TableHead>
-            <TableHead>Telefone</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
-            {selectedUnit && (
-              <TableHead>
-                <PlayersForm unitId={selectedUnit?.id} onClose={fetchPlayers} />
-              </TableHead>
-            )}
+            <TableHead>
+              <UserForm onClose={fetchUsers} />
+            </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {players.map((player) => (
-            <TableRow key={player.id}>
-              <TableCell className="font-medium">{player.name}</TableCell>
-              <TableCell className="font-medium">{player.email}</TableCell>
-              <TableCell className="font-medium">{player.phone}</TableCell>
-              <TableCell className="font-medium">{formatDate(player.createdAt, true)}</TableCell>
-              <TableCell className="font-medium">{formatDate(player.updatedAt, true)}</TableCell>
+          {users.map((user) => (
+            <TableRow key={user.id}>
+              <TableCell className="font-medium">{user.userName}</TableCell>
+              <TableCell className="font-medium">
+                {user.firstName} {user.lastName}
+              </TableCell>
+              <TableCell className="font-medium">{user.email}</TableCell>
+              <TableCell className="font-medium">{formatDate(user.createdAt, true)}</TableCell>
+              <TableCell className="font-medium">{formatDate(user.updatedAt, true)}</TableCell>
               <TableCell className="font-medium flex gap-4">
-                <PlayersForm unitId={selectedUnit?.id} record={player} onClose={fetchPlayers} />
+                <UserForm record={user} onClose={fetchUsers} />
 
                 <Dialog>
                   <DialogTrigger asChild>
@@ -120,9 +94,9 @@ function page() {
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>Deletar atleta?</DialogTitle>
+                      <DialogTitle>Deletar usuário?</DialogTitle>
                       <DialogDescription>
-                        Você tem certeza que deseja deletar esse atleta?
+                        Você tem certeza que deseja deletar esse usuário?
                       </DialogDescription>
                     </DialogHeader>
 
@@ -133,7 +107,7 @@ function page() {
                       <DialogTrigger asChild>
                         <Button
                           type="submit"
-                          onClick={() => deletePlayer(player.id)}
+                          onClick={() => deleteUser(user.id)}
                           variant="destructive"
                         >
                           Deletar

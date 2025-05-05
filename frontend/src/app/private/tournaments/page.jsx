@@ -141,8 +141,12 @@ function page() {
               <TableCell className="font-medium">{tournament.sport?.name}</TableCell>
               <TableCell className="font-medium">{formatDate(tournament.startDate)}</TableCell>
               <TableCell className="font-medium">{formatDate(tournament.endDate)}</TableCell>
-              <TableCell className="font-medium">{formatDate(tournament.createdAt)}</TableCell>
-              <TableCell className="font-medium">{formatDate(tournament.updatedAt)}</TableCell>
+              <TableCell className="font-medium">
+                {formatDate(tournament.createdAt, true)}
+              </TableCell>
+              <TableCell className="font-medium">
+                {formatDate(tournament.updatedAt, true)}
+              </TableCell>
               <TableCell className="font-medium space-x-2">
                 <TournamentsForm
                   variant="edit"

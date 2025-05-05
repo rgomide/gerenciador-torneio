@@ -55,8 +55,12 @@ function page() {
           {institutions.map((institution) => (
             <TableRow key={institution.id}>
               <TableCell className="font-medium">{institution.name}</TableCell>
-              <TableCell className="font-medium">{formatDate(institution.createdAt)}</TableCell>
-              <TableCell className="font-medium">{formatDate(institution.updatedAt)}</TableCell>
+              <TableCell className="font-medium">
+                {formatDate(institution.createdAt, true)}
+              </TableCell>
+              <TableCell className="font-medium">
+                {formatDate(institution.updatedAt, true)}
+              </TableCell>
               <TableCell className="font-medium">
                 <Link href={`./units/${institution.id}`}>
                   <Button variant="outline" size="icon">

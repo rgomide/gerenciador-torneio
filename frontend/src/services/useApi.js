@@ -28,6 +28,16 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getRequestLogs = async () => {
+    const url = 'request-logs'
+    return makeRequest(url, GET)
+  }
+
+  const deleteUserById = async (userId) => {
+    const url = `users/${userId}`
+    return makeRequest(url, DELETE)
+  }
+
   const getInstitutions = async () => {
     const url = 'institutions'
     return makeRequest(url, GET)
@@ -43,15 +53,27 @@ const useApi = () => {
     return makeRequest(url, GET, query)
   }
 
+  const createUser = async (userName, firstName, lastName, email, password) => {
+    const url = 'users'
+    const payload = { userName, firstName, lastName, email, password }
+    return makeRequest(url, POST, payload)
+  }
+
+  const updateUser = async (id, userName, firstName, lastName, email, password) => {
+    const url = `users/${id}`
+    const payload = { userName, firstName, lastName, email, password }
+    return makeRequest(url, PUT, payload)
+  }
+
   const createUnit = async (name, institutionId) => {
     const url = 'units'
     const payload = { name, institutionId }
     return makeRequest(url, POST, payload)
   }
 
-  const updateUnit = async (id, name) => {
+  const updateUnit = async (id, name, institutionId) => {
     const url = `units/${id}`
-    const payload = { name }
+    const payload = { name, institutionId }
     return makeRequest(url, PUT, payload)
   }
 
@@ -317,6 +339,10 @@ const useApi = () => {
     getUsers,
     addPlayersToTeam,
     getPlayersByTeamId,
+    createUser,
+    updateUser,
+    deleteUserById,
+    getRequestLogs,
     isLoading
   }
 }

@@ -20,6 +20,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function TournamentsForm({ record, onClose, eventId }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [tournament, setTournament] = useState(record)
+
   const { getSports, createTournament, updateTournament } = useApi()
 
   const isCreate = record === undefined
@@ -35,9 +38,9 @@ function TournamentsForm({ record, onClose, eventId }) {
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: '',
-      startDate: record?.startDate || '',
-      endDate: record?.endDate || ''
+      name: tournament?.name || '',
+      startDate: tournament?.startDate || '',
+      endDate: tournament?.endDate || ''
     }
   })
 
@@ -48,6 +51,16 @@ function TournamentsForm({ record, onClose, eventId }) {
     } else {
       toast.error(response.error)
       return []
+    }
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+
+    const isValid = await form.trigger()
+
+    if (isValid) {
+      form.handleSubmit(isCreate ? onSubmitCreate : onSubmitUpdate)()
     }
   }
 
@@ -63,12 +76,8 @@ function TournamentsForm({ record, onClose, eventId }) {
     )
 
     if (response.requestSuccessful) {
-      form.reset()
+      closeDialog()
       toast.success('Torneio criado com sucesso!')
-
-      if (onClose) {
-        onClose()
-      }
     } else {
       toast.error(response.error)
     }
@@ -87,18 +96,27 @@ function TournamentsForm({ record, onClose, eventId }) {
     )
 
     if (response.requestSuccessful) {
-      form.reset()
+      closeDialog()
       toast.success('Torneio editado com sucesso!')
-      if (onClose) {
-        onClose()
-      }
     } else {
       toast.error(response.error)
     }
   }
 
+  const closeDialog = () => {
+    onClose?.()
+    handleOpenChange(false)
+  }
+
+  const handleOpenChange = (open) => {
+    setIsOpen(open)
+    if (!open) {
+      form.reset()
+    }
+  }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isCreate ? (
           <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
@@ -116,12 +134,7 @@ function TournamentsForm({ record, onClose, eventId }) {
           <DialogDescription>Preencha os dados corretamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form
-            onSubmit={
-              isCreate ? form.handleSubmit(onSubmitCreate) : form.handleSubmit(onSubmitUpdate)
-            }
-            className="flex flex-col gap-4 space-y-4"
-          >
+          <form className="flex flex-col gap-4">
             <FormField
               control={form.control}
               name="name"
@@ -129,7 +142,7 @@ function TournamentsForm({ record, onClose, eventId }) {
                 <FormItem>
                   <FormLabel>Nome do Torneio</FormLabel>
                   <FormControl>
-                    <Input placeholder={isCreate ? 'Nome do torneio' : record.name} {...field} />
+                    <Input placeholder="Nome do torneio" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -166,7 +179,7 @@ function TournamentsForm({ record, onClose, eventId }) {
                   <input
                     type="date"
                     className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.startDate}
+                    placeholder="Data de início"
                     {...field}
                   />
                   <FormMessage />
@@ -183,7 +196,7 @@ function TournamentsForm({ record, onClose, eventId }) {
                   <input
                     type="date"
                     className="rounded-sm bg-gray-100 p-2"
-                    placeholder={isCreate ? null : record.endDate}
+                    placeholder="Data de término"
                     {...field}
                   />
                   <FormMessage />
@@ -192,7 +205,7 @@ function TournamentsForm({ record, onClose, eventId }) {
             />
 
             <DialogTrigger asChild>
-              <Button type={'submit'} className="bg-emerald-600 hover:bg-emerald-700">
+              <Button onClick={handleSubmit} className="bg-emerald-600 hover:bg-emerald-700">
                 Salvar
               </Button>
             </DialogTrigger>
