@@ -111,14 +111,9 @@ function page() {
               <TableCell className="font-medium">{formatDate(team.createdAt, true)}</TableCell>
               <TableCell className="font-medium">{formatDate(team.updatedAt, true)}</TableCell>
               <TableCell className="font-medium space-x-2">
+                <TeamsForm variant="edit" record={team} onClose={fetchTeams} />
 
-                <TeamsForm
-                  variant="edit"
-                  record={team}
-                  onClose={fetchTeams}
-                />
-
-                <AddPlayerForm teamId={team.id} unitId={selectedUnit.id} />
+                <AddPlayerForm team={team} unitId={selectedUnit.id} />
 
                 <Dialog>
                   <DialogTrigger asChild>

@@ -405,8 +405,16 @@ describe('Team Controller', () => {
         unitId: unit.id
       })
 
-      await TeamPlayer.create({ teamId: team.id, playerId: player1.id })
-      await TeamPlayer.create({ teamId: team.id, playerId: player2.id })
+      await TeamPlayer.create({
+        teamId: team.id,
+        playerId: player1.id,
+        details: 'this is my details'
+      })
+      await TeamPlayer.create({
+        teamId: team.id,
+        playerId: player2.id,
+        details: 'this is my details'
+      })
 
       const response = await request(app)
         .get(`/api/teams/${team.id}/players`)
@@ -418,13 +426,35 @@ describe('Team Controller', () => {
           id: player1.id,
           name: player1.name,
           email: player1.email,
-          unitId: unit.id
+          unitId: unit.id,
+          teams: expect.arrayContaining([
+            expect.objectContaining({
+              id: team.id,
+              name: team.name,
+              unitId: unit.id,
+              sportId: sport.id,
+              teamPlayer: {
+                details: 'this is my details'
+              }
+            })
+          ])
         }),
         expect.objectContaining({
           id: player2.id,
           name: player2.name,
           email: player2.email,
-          unitId: unit.id
+          unitId: unit.id,
+          teams: expect.arrayContaining([
+            expect.objectContaining({
+              id: team.id,
+              name: team.name,
+              unitId: unit.id,
+              sportId: sport.id,
+              teamPlayer: {
+                details: 'this is my details'
+              }
+            })
+          ])
         })
       ])
     })

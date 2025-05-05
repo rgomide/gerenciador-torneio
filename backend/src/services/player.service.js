@@ -45,6 +45,11 @@ const findByTeam = async (teamId) => {
         as: 'teams',
         where: {
           id: teamId
+        },
+        through: {
+          model: TeamPlayer,
+          as: 'teamPlayer',
+          attributes: ['details']
         }
       },
       {
