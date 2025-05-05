@@ -1,6 +1,7 @@
 'use client'
 import OverlaySpinner from '@/components/common/OverlaySpinner'
 import SelectSearcher from '@/components/common/SelectSearcher'
+import AddPlayerForm from '@/components/TeamsComponents/AddPlayerForm'
 import TeamsForm from '@/components/TeamsComponents/TeamsForm'
 import { Button } from '@/components/ui/button'
 import {
@@ -110,7 +111,15 @@ function page() {
               <TableCell className="font-medium">{formatDate(team.createdAt, true)}</TableCell>
               <TableCell className="font-medium">{formatDate(team.updatedAt, true)}</TableCell>
               <TableCell className="font-medium space-x-2">
-                <TeamsForm variant="edit" record={team} unit={selectedUnit} onClose={fetchTeams} />
+
+                <TeamsForm
+                  variant="edit"
+                  record={team}
+                  onClose={fetchTeams}
+                />
+
+                <AddPlayerForm teamId={team.id} unitId={selectedUnit.id} />
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="destructive" size="icon">
