@@ -6,9 +6,14 @@ class TeamVO {
   }
 
   toJSON() {
-    const { id, name, unitId, sportId, sport, createdAt, updatedAt } = this.team
+    const { id, name, unitId, sportId, sport, teamPlayer, createdAt, updatedAt } = this.team
 
     const sportVO = sport ? new SportVO(sport).toJSON() : null
+
+    let teamPlayerVO
+    if (teamPlayer) {
+      teamPlayerVO = { details: teamPlayer.details }
+    }
 
     return {
       id,
@@ -16,6 +21,7 @@ class TeamVO {
       unitId,
       sportId,
       sport: sportVO,
+      teamPlayer: teamPlayerVO,
       createdAt,
       updatedAt
     }

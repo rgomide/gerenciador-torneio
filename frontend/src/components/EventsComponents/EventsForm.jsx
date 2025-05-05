@@ -147,8 +147,6 @@ function EventsForm({ record, onClose, unitId }) {
               name="endDate"
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-4">
-                  {console.log(field)}
-                  {console.log(event)}
                   <FormLabel>Data de término</FormLabel>
                   <input
                     type="date"
