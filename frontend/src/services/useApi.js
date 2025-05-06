@@ -28,6 +28,16 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const createMatch = async (match) => {
+    const url = 'matches'
+    return makeRequest(url, POST, match)
+  }
+
+  const updateMatch = async (matchId, match) => {
+    const url = `matches/${matchId}`
+    return makeRequest(url, PUT, match)
+  }
+
   const getRequestLogs = async () => {
     const url = 'request-logs'
     return makeRequest(url, GET)
@@ -355,6 +365,8 @@ const useApi = () => {
     getTournamentById,
     getMatchesByTournamentId,
     getRequestLogs,
+    createMatch,
+    updateMatch,
     isLoading
   }
 }

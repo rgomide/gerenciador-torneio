@@ -1,6 +1,6 @@
 import { delay, http, HttpResponse } from 'msw'
 
-const DELAY = 500
+const DELAY = 200
 
 export const globalHandlers = [
   http.get('http://localhost:3000/api/teams/:teamId/players', async ({ params }) => {
@@ -1324,6 +1324,25 @@ export const globalHandlers = [
         updatedAt: '2024-01-01T00:00:00.000Z'
       },
       { status: 200 }
+    )
+  }),
+  http.put('http://localhost:3000/api/matches/:matchId', async ({ request, params }) => {
+    await delay(DELAY)
+
+    const { matchId } = params
+    const { description, date, location, finished, occurrences, roundNumber } = await request.json()
+
+    return HttpResponse.json(
+      { id: matchId, description, date, location, finished, occurrences, roundNumber },
+      { status: 200 }
+    )
+  }),
+  http.post('http://localhost:3000/api/matches', async ({ request }) => {
+    const { description, tournamentId, date, location, roundNumber, occurrences } =
+      await request.json()
+    return HttpResponse.json(
+      { id: 1, description, tournamentId, date, location, roundNumber, occurrences },
+      { status: 201 }
     )
   }),
   http.get('http://localhost:3000/api/tournaments/:tournamentId/matches', async ({ params }) => {
