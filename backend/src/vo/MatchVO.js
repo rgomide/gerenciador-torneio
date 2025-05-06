@@ -7,6 +7,7 @@ class MatchVO {
     const {
       id,
       tournamentId,
+      description,
       date,
       location,
       finished,
@@ -41,6 +42,7 @@ class MatchVO {
       id,
       tournamentId,
       date,
+      description,
       location,
       finished,
       occurrences,

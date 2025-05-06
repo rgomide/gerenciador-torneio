@@ -1,5 +1,5 @@
 'use client'
-import { removeTime } from '@/services/dateUtil'
+import { formatDateToInput } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Pencil, Plus } from 'lucide-react'
@@ -21,23 +21,27 @@ import { Input } from '../ui/input'
 
 function EventsForm({ record, onClose, unitId }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [event, setEvent] = useState(record)
+  const [event, _] = useState(record)
 
   const { createEvent, updateEvent } = useApi()
   const isCreate = record === undefined
 
   const formSchema = z.object({
     name: z.string().min(3, 'O nome do Evento deve ter pelo menos 3 caracteres'),
-    startDate: z.string().min(1, 'A data de início é obrigatória'),
-    endDate: z.string().min(1, 'A data de término \é obrigatória')
+    startDate: z.coerce.date(),
+    endDate: z.coerce.date()
   })
 
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: event?.name || '',
-      startDate: event?.startDate ? removeTime(event.startDate) : '',
-      endDate: event?.endDate ? removeTime(event.endDate) : ''
+      startDate: event?.startDate
+        ? formatDateToInput(new Date(event.startDate))
+        : formatDateToInput(new Date()),
+      endDate: event?.endDate
+        ? formatDateToInput(new Date(event.endDate))
+        : formatDateToInput(new Date())
     }
   })
 

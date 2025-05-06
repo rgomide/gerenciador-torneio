@@ -30,7 +30,8 @@ import {
 } from '@/components/ui/table'
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
-import { Trash } from 'lucide-react'
+import { Swords, Trash } from 'lucide-react'
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -154,6 +155,13 @@ function page() {
                   eventId={selectedEvent}
                   onClose={fetchTournaments}
                 />
+
+                <Link href={`./matches/${tournament.id}`}>
+                  <Button variant="gray" size="icon">
+                    <Swords />
+                  </Button>
+                </Link>
+
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="destructive" size="icon">

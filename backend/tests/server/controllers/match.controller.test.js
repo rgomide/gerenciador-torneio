@@ -58,7 +58,7 @@ describe('Match Controller', () => {
         })
         const match = await Match.create({
           tournamentId: tournament.id,
-          date: new Date('2024-01-01'),
+          date: new Date('2024-01-01T15:30:00.000Z'),
           location: 'Test Location',
           finished: false,
           occurrences: 'Test Occurrences',
@@ -106,7 +106,7 @@ describe('Match Controller', () => {
           expect.objectContaining({
             id: match.id,
             tournamentId: tournament.id,
-            date: match.date.toISOString(),
+            date: '2024-01-01T15:30:00.000Z',
             location: 'Test Location',
             finished: false,
             occurrences: 'Test Occurrences',
