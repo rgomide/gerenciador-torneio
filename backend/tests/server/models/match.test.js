@@ -34,6 +34,7 @@ describe('Match Model', () => {
       date: new Date('2024-01-01T10:00:00'),
       location: 'Test Location',
       finished: false,
+      description: 'Test description',
       occurrences: 'Test occurrences',
       roundNumber: 1
     }
@@ -46,6 +47,7 @@ describe('Match Model', () => {
       date: matchData.date,
       location: matchData.location,
       finished: matchData.finished,
+      description: matchData.description,
       occurrences: matchData.occurrences,
       roundNumber: matchData.roundNumber,
       createdAt: expect.any(Date),
@@ -87,6 +89,7 @@ describe('Match Model', () => {
       date: new Date('2024-01-01T10:00:00'),
       location: 'Test Location',
       finished: false,
+      description: 'Test description',
       occurrences: 'Test occurrences',
       roundNumber: 1
     })
@@ -108,6 +111,7 @@ describe('Match Model', () => {
       finished: updatedData.finished,
       occurrences: updatedData.occurrences,
       roundNumber: updatedData.roundNumber,
+      description: 'Test description',
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date)
     })

@@ -20,6 +20,7 @@ module.exports = {
         matches.push({
           tournament_id: tournament.id,
           date,
+          description: 'Partida de teste',
           location: locations[i],
           finished: i % 2 === 0, // Alternate between finished and not finished
           occurrences: i === 0 ? occurrences[0] : null, // Only first match has an occurrence

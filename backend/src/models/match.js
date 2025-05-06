@@ -34,6 +34,11 @@ module.exports = (sequelize, DataTypes) => {
           key: 'id'
         }
       },
+      description: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: ''
+      },
       date: {
         type: DataTypes.DATE,
         allowNull: false
