@@ -82,6 +82,16 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getTournamentById = async (tournamentId) => {
+    const url = `tournaments/${tournamentId}`
+    return makeRequest(url, GET)
+  }
+
+  const getMatchesByTournamentId = async (tournamentId) => {
+    const url = `tournaments/${tournamentId}/matches`
+    return makeRequest(url, GET)
+  }
+
   const getTeamsByUnitId = async (unitId) => {
     const url = `units/${unitId}/teams`
     return makeRequest(url, GET)
@@ -342,6 +352,8 @@ const useApi = () => {
     createUser,
     updateUser,
     deleteUserById,
+    getTournamentById,
+    getMatchesByTournamentId,
     getRequestLogs,
     isLoading
   }

@@ -1310,6 +1310,54 @@ export const globalHandlers = [
     await delay(DELAY)
     return HttpResponse.json({ message: 'Torneio deletado com sucesso' }, { status: 200 })
   }),
+  http.get('http://localhost:3000/api/tournaments/:tournamentId', async ({ params }) => {
+    await delay(DELAY)
+    const { tournamentId } = params
+    return HttpResponse.json(
+      {
+        id: tournamentId,
+        name: 'Torneio 1',
+        startDate: '2024-01-01T00:00:00.000Z',
+        endDate: '2024-01-02T00:00:00.000Z',
+        sport: { id: 1, name: 'Futebol' },
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      },
+      { status: 200 }
+    )
+  }),
+  http.get('http://localhost:3000/api/tournaments/:tournamentId/matches', async ({ params }) => {
+    await delay(DELAY)
+
+    const { tournamentId } = params
+
+    return HttpResponse.json([
+      {
+        id: 1,
+        description: 'Partida 1',
+        tournamentId: tournamentId,
+        date: '2024-01-01T15:30:00.000Z',
+        location: 'Location 1',
+        finished: false,
+        occurrences: 'Occurrences 1',
+        roundNumber: 1,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      },
+      {
+        id: 2,
+        description: 'Partida 2',
+        tournamentId: tournamentId,
+        date: '2024-01-10T12:27:00.000Z',
+        location: 'Location 2',
+        finished: true,
+        occurrences: 'Occurrences 2',
+        roundNumber: 2,
+        createdAt: '2024-01-01T00:00:00.000Z',
+        updatedAt: '2024-01-01T00:00:00.000Z'
+      }
+    ])
+  }),
   http.get('http://localhost:3000/api/events/:eventId/tournaments', async () => {
     await delay(DELAY)
     return HttpResponse.json([
