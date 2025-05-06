@@ -1,3 +1,4 @@
+'use client'
 import OverlaySpinner from '@/components/common/OverlaySpinner'
 import MatchForm from '@/components/MatchesComponents/MatchForm'
 import { Button } from '@/components/ui/button'
