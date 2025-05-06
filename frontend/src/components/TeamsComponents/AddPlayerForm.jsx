@@ -38,7 +38,10 @@ function AddPlayerForm({ unitId, onClose, team }) {
 
     if (response.requestSuccessful) {
       const teamPlayers = response.data.map((player) => {
-        const details = player.teams?.find((team) => team.id === teamId)?.teamPlayer?.details
+        const details = player.teams?.find((team) => team.id == teamId)?.teamPlayer?.details
+
+        console.log(player)
+        console.log(teamId)
 
         return {
           details,
@@ -113,14 +116,14 @@ function AddPlayerForm({ unitId, onClose, team }) {
           <FileUser className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="min-w-[900px]">
+      <DialogContent className="min-w-[300px] md:min-w-[900px]">
         <DialogHeader>
           <DialogTitle>{team.name} - Adicionar jogadores</DialogTitle>
           <DialogDescription>Adicione atletas e observações abaixo.</DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
-          <ScrollArea className="max-h-[600px] w-full">
+          <ScrollArea className="max-h-[300px] md:max-h-[500px] w-full">
             {isLoading ? (
               <div className="flex justify-center items-center w-full my-4">
                 <Spinner />
@@ -129,10 +132,10 @@ function AddPlayerForm({ unitId, onClose, team }) {
               selectedPlayers.map((selectedPlayer, index) => (
                 <div
                   key={index}
-                  className="border p-4 rounded-md space-y-2 flex flex-row gap-2 mb-2"
+                  className="border p-4 rounded-md space-y-2 flex flex-col md:flex-row gap-2 mb-2 bg-gray-100"
                 >
-                  <div className="flex flex-col gap-4 w-[500px]">
-                    <Label>Atleta</Label>
+                  <div className="flex flex-col gap-4 md:w-[500px]">
+                    <Label>Atleta #{index + 1}</Label>
                     <SelectSearcher
                       labelField="name"
                       idField="id"
@@ -149,6 +152,7 @@ function AddPlayerForm({ unitId, onClose, team }) {
                     <div className="flex flex-row gap-2">
                       <Input
                         placeholder="Observação"
+                        className="w-full bg-white"
                         value={selectedPlayer.details ?? ''}
                         onChange={(e) => handleChange(index, 'details', e.target.value)}
                       />
@@ -172,7 +176,12 @@ function AddPlayerForm({ unitId, onClose, team }) {
           <Button onClick={addField}>+ Adicionar jogador</Button>
 
           <DialogTrigger asChild>
-            <Button onClick={handleSave} className="bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button
+              disabled={isLoading}
+              onClick={handleSave}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {isLoading && <Spinner size="sm" color="gray" />}
               Salvar jogadores
             </Button>
           </DialogTrigger>

@@ -1,8 +1,57 @@
 import { delay, http, HttpResponse } from 'msw'
 
-const DELAY = 200
+const DELAY = 500
 
 export const globalHandlers = [
+  http.get('http://localhost:3000/api/teams/:teamId/players', async ({ params }) => {
+    await delay(DELAY)
+
+    const teamId = params.teamId
+
+    return HttpResponse.json([
+      {
+        id: '1',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        phone: '1234567890',
+        address: '123 Main St, Anytown, USA',
+        city: 'Anytown',
+        teams: [
+          {
+            id: teamId,
+            name: 'Team 1',
+            teamPlayer: {
+              details: 'Atacante'
+            }
+          }
+        ]
+      },
+      {
+        id: '2',
+        name: 'Jane Doe',
+        email: 'jane.doe@example.com',
+        phone: '1234567890',
+        address: '123 Main St, Anytown, USA',
+        city: 'Anytown',
+        teams: [
+          {
+            id: teamId,
+            name: 'Team 1',
+            teamPlayer: {
+              details: 'Zagueiro'
+            }
+          }
+        ]
+      }
+    ])
+  }),
+  http.post('http://localhost:3000/api/teams/:teamId/players/bulk', async ({ params }) => {
+    await delay(DELAY)
+
+    const teamId = params.teamId
+
+    return HttpResponse.json({})
+  }),
   http.get('http://localhost:3000/api/request-logs', async () => {
     await delay(DELAY)
     return HttpResponse.json([

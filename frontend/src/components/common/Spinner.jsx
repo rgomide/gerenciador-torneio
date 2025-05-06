@@ -1,9 +1,9 @@
 const Spinner = ({ size = 'md', color = 'blue' }) => {
   const sizes = {
-    sm: 'w-4 h-4',
-    md: 'w-8 h-8',
-    lg: 'w-16 h-16',
-    xl: 'w-24 h-24'
+    sm: 'w-4 h-4 border-2',
+    md: 'w-8 h-8 border-4',
+    lg: 'w-16 h-16 border-6',
+    xl: 'w-24 h-24 border-6'
   }
 
   const colors = {
@@ -20,11 +20,7 @@ const Spinner = ({ size = 'md', color = 'blue' }) => {
   const sizeClass = sizes[size] ? sizes[size] : sizes.md
   const colorClass = colors[color] ? colors[color] : colors.blue
 
-  return (
-    <div
-      className={`${sizeClass} border-4 border-white-200 ${colorClass} rounded-full animate-spin`}
-    />
-  )
+  return <div className={`${sizeClass} border-white-200 ${colorClass} rounded-full animate-spin`} />
 }
 
 export default Spinner
