@@ -74,20 +74,23 @@ function page() {
         <TableCaption>Logs de requisições</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead>IP</TableHead>
+            <TableHead>Data</TableHead>
             <TableHead>Usuário</TableHead>
+            <TableHead>IP</TableHead>
             <TableHead>Método</TableHead>
             <TableHead>URL</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Tempo de resposta (ms)</TableHead>
-            <TableHead>Data</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {requestLogs.map((requestLog) => (
             <TableRow key={requestLog.id}>
-              <TableCell className="font-medium">{requestLog.ip}</TableCell>
+              <TableCell className="font-medium">
+                {formatDate(requestLog.createdAt, true)}
+              </TableCell>
               <TableCell className="font-medium">{requestLog.userName}</TableCell>
+              <TableCell className="font-medium">{requestLog.ip}</TableCell>
               <TableCell className="font-medium">
                 <Tag label={requestLog.method} color={getMethodColor(requestLog.method)} />
               </TableCell>
@@ -96,9 +99,6 @@ function page() {
                 <Tag label={requestLog.status} color={getStatusColor(requestLog.status)} />
               </TableCell>
               <TableCell className="font-medium">{requestLog.responseTime}</TableCell>
-              <TableCell className="font-medium">
-                {formatDate(requestLog.createdAt, true)}
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>

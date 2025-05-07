@@ -74,7 +74,7 @@ export const globalHandlers = [
             isAdmin: true,
             lastName: 'Alvim',
             userName: 'admin',
-            createdAt: '2025-04-22T22:16:05.615Z',
+            createdAt: '2025-05-07T00:08:25.686Z',
             firstName: 'Denecley',
             isManager: true,
             updatedAt: '2025-04-22T22:16:05.615Z'
@@ -84,7 +84,7 @@ export const globalHandlers = [
         },
         responseTime: 74,
         status: 200,
-        createdAt: '2025-05-01T14:48:16.473Z'
+        createdAt: '2025-05-07T00:08:25.686Z'
       },
       {
         id: '29',
