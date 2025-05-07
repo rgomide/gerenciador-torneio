@@ -1236,8 +1236,8 @@ export const globalHandlers = [
   http.get('http://localhost:3000/api/events', async () => {
     await delay(DELAY)
     return HttpResponse.json([
-      { id: 1, name: 'Event 1' },
-      { id: 2, name: 'Event 2' }
+      { id: 1, name: 'Event 1', unit: { id: 1, name: 'Campus Trindade' } },
+      { id: 2, name: 'Event 2', unit: { id: 2, name: 'Campus Morrinhos' } }
     ])
   }),
   http.get('http://localhost:3000/api/units/:unitId/events', async () => {
