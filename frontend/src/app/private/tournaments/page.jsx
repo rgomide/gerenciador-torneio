@@ -81,7 +81,16 @@ function page() {
   const fetchEvents = async () => {
     const response = await getEvents()
     if (response.requestSuccessful) {
-      setEvents(response.data)
+      const loadedEvents = response.data
+        .map((event) => {
+          if (event.unit?.name) {
+            event.name = `${event.unit.name} - ${event.name}`
+          }
+          return event
+        })
+        .sort((a, b) => a.name.localeCompare(b.name))
+
+      setEvents(loadedEvents)
     } else {
       toast.error(response.error)
     }
