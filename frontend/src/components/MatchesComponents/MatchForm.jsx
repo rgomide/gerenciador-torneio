@@ -65,6 +65,7 @@ function MatchForm({ record, onClose, tournament }) {
   }
 
   const onSubmitCreate = async (data) => {
+    data.tournamentId = tournament.id
     const response = await createMatch(data)
 
     if (response.requestSuccessful) {
@@ -76,6 +77,7 @@ function MatchForm({ record, onClose, tournament }) {
   }
 
   const onSubmitUpdate = async (data) => {
+    data.tournamentId = tournament.id
     const response = await updateMatch(match.id, data)
 
     if (response.requestSuccessful) {
