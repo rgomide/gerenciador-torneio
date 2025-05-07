@@ -73,7 +73,6 @@ function page() {
       toast.success('Torneio deletado com sucesso!')
       await fetchTournaments()
     } else {
-      console.error(resp.error)
       toast.error(resp.error)
     }
   }
@@ -101,13 +100,13 @@ function page() {
       {isLoading && <OverlaySpinner />}
       <h1>Torneios</h1>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-full sm:w-[500px]">
         <Select
           onValueChange={(value) => {
             setSelectedEvent(value)
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Selecione o Evento" />
           </SelectTrigger>
           <SelectContent>
