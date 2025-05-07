@@ -1,11 +1,12 @@
 export const formatDate = (dateString, addTime = false) => {
   const date = new Date(dateString)
 
-  const dateOnly = maskDate(date, 'dd/mm/yyyy')
-
   if (addTime) {
-    return dateOnly + ' ' + date.toLocaleTimeString('pt-BR')
+    return date.toLocaleDateString('pt-BR') + ' ' + date.toLocaleTimeString('pt-BR')
   }
+
+  // Ignore timezone
+  const dateOnly = maskDate(date, 'dd/mm/yyyy')
 
   return dateOnly
 }
