@@ -74,7 +74,7 @@ function page() {
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
             <TableHead>
-              <MatchForm onClose={fetchMatches} tournamentId={tournamentId} />
+              <MatchForm onClose={fetchMatches} tournament={tournament} />
             </TableHead>
           </TableRow>
         </TableHeader>
