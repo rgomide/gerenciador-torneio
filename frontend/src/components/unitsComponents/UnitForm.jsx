@@ -83,12 +83,14 @@ function UnitForm({ record, institutionId, onClose }) {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         {isCreate ? (
-          <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700" size="icon">
+          <Button variant="outline" className="bg-emerald-600 hover:bg-emerald-700 text-white">
             <Plus className="h-4 w-4" />
+            Inserir
           </Button>
         ) : (
-          <Button variant="outline" size="icon">
+          <Button variant="outline">
             <Pencil />
+            Editar
           </Button>
         )}
       </DialogTrigger>

@@ -45,7 +45,6 @@ function page() {
             <TableHead className="w-[100px]">Nome</TableHead>
             <TableHead>Data de registro</TableHead>
             <TableHead>Última atualização</TableHead>
-            <TableHead>Unidades</TableHead>
             <TableHead>
               <InstitutionForm onClose={fetchInstitutions} />
             </TableHead>
@@ -61,14 +60,13 @@ function page() {
               <TableCell className="font-medium">
                 {formatDate(institution.updatedAt, true)}
               </TableCell>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium flex gap-2">
                 <Link href={`./units/${institution.id}`}>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline">
                     <SquareArrowUpRight />
+                    Ver unidades
                   </Button>
                 </Link>
-              </TableCell>
-              <TableCell className="font-medium">
                 <InstitutionForm record={institution} onClose={fetchInstitutions} />
               </TableCell>
             </TableRow>
