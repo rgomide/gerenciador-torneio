@@ -112,8 +112,9 @@ function AddPlayerForm({ unitId, onClose, team }) {
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogTrigger asChild>
-        <Button size="icon">
+        <Button>
           <FileUser className="h-4 w-4" />
+          Adicionar jogadores
         </Button>
       </DialogTrigger>
       <DialogContent className="min-w-[300px] md:min-w-[900px]">

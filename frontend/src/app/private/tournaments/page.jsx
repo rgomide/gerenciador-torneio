@@ -165,15 +165,17 @@ function page() {
                 />
 
                 <Link href={`./matches/${tournament.id}`}>
-                  <Button variant="gray" size="icon">
+                  <Button variant="gray">
                     <Swords />
+                    Ver partidas
                   </Button>
                 </Link>
 
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
+                    <Button variant="destructive">
                       <Trash />
+                      Excluir
                     </Button>
                   </DialogTrigger>
                   <DialogContent>

@@ -46,8 +46,9 @@ const EventCard = ({ event }) => {
                       <h3 className="text-sm text-gray-800">{formatDate(match.date)}</h3>
                     </div>
                     <div className="flex flex-col">
-                      <Button variant="outline" size="icon" className="cursor-pointer">
+                      <Button variant="outline" className="cursor-pointer">
                         <SquareArrowUpRight />
+                        Ver partida
                       </Button>
                     </div>
                   </div>

@@ -88,8 +88,9 @@ function page() {
 
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="destructive" size="icon">
+                    <Button variant="destructive">
                       <Trash />
+                      Excluir
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
