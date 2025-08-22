@@ -79,7 +79,7 @@ function page() {
       {isLoading && <OverlaySpinner />}
       <h1>Equipes</h1>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 w-full sm:w-[500px]">
         <SelectSearcher
           onLoad={fetchUnits}
           labelField="name"
