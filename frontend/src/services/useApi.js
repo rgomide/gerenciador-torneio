@@ -239,6 +239,24 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const addParticipant = async (participantType, teamId, playerId, matchId) => {
+    const url = `matches/${matchId}/participants`
+    const payload = { participantType, teamId, playerId }
+    return makeRequest(url, POST, payload)
+  }
+
+  const getMatchParticipants = async (matchId) => {
+    const url = `matches/${matchId}/participants`
+    return makeRequest(url, GET)
+  }
+
+  const deleteMatchParticipant = async (matchId, participantId) => {
+    const url = `matches/${matchId}/participants/${participantId}`
+    return makeRequest(url, GET)
+  }
+
+
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -367,6 +385,9 @@ const useApi = () => {
     getRequestLogs,
     createMatch,
     updateMatch,
+    addParticipant,
+    getMatchParticipants,
+    deleteMatchParticipant,
     isLoading
   }
 }
