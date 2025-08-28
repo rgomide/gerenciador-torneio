@@ -97,7 +97,8 @@ function page() {
               </TableCell>
               <TableCell className="font-medium">
                 <ParticipantsForm record={match} />
-              </TableCell><TableCell className="font-medium">
+              </TableCell>
+              <TableCell className="font-medium">
                 <MatchForm matchId={match.id} tournament={tournament} onClose={fetchMatches} />
                 <p>{match.id}</p>
               </TableCell>

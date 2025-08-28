@@ -16,7 +16,6 @@ import {
 } from '../ui/dialog'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { ScrollArea } from '../ui/scroll-area'
 
 function AddPlayerForm({ unitId, onClose, team }) {
   const { getPlayersByUnitId } = useApi()
@@ -65,7 +64,7 @@ function AddPlayerForm({ unitId, onClose, team }) {
   }
 
   const addField = () => {
-    setSelectedPlayers([{ player: null, details: '' }, ...selectedPlayers ])
+    setSelectedPlayers([{ player: null, details: '' }, ...selectedPlayers])
   }
 
   const removeField = (index) => {
@@ -124,7 +123,7 @@ function AddPlayerForm({ unitId, onClose, team }) {
         </DialogHeader>
 
         <div className="flex flex-col gap-4">
-          <div className='flex gap-4 items-center'>
+          <div className="flex gap-4 items-center">
             <Button onClick={addField}>+ Adicionar jogador</Button>
 
             <DialogTrigger asChild>

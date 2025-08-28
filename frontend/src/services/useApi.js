@@ -255,8 +255,6 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
-
-
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
