@@ -2,32 +2,74 @@
 
 import useApi from '@/services/useApi'
 import { DialogDescription } from '@radix-ui/react-dialog'
-import { FileUser } from 'lucide-react'
+import { FileUser, MinusCircle, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import Spinner from '../common/Spinner'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
+import { Label } from '../ui/label'
+import SelectSearcher from '../common/SelectSearcher'
+import { toast } from 'sonner'
 
 function ParticipantsForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
-  const { getMatchParticipants, isLoading } = useApi()
+  const [participantType, setParticipantType] = useState('')
+  const [teams, setTeams] = useState([])
+  const [playres, setPlayers] = useState([])
+  const [selectedParticipant, setSelectedParticipant] = useState(null)
+
+  const { getAllTeams, getAllPlayers, getMatchParticipants, addParticipant, deleteMatchParticipant, isLoading } = useApi()
+
+  const fetchParticipants = async () => {
+    const response = await getMatchParticipants(matchRecord.id)
+
+    if (response.requestSuccessful) {
+      setParticipants(response.data)
+      return response.data
+    } else {
+      toast.error(response.error)
+    }
+  }
+
+  const fetchPlayers = async () => {
+    const response = await getAllPlayers()
+
+    if (response.requestSuccessful) {
+      setPlayers(response.data)
+      return response.data
+    } else {
+      toast.error(response.error)
+    }
+  }
+
+  const fetchTeams = async () => {
+    const response = await getAllTeams()
+
+    if (response.requestSuccessful) {
+      setTeams(response.data)
+      return response.data
+    } else {
+      toast.error(response.error)
+    }
+  }
+
+  const createParticipant = async () => {
+    const resp = await addParticipant(participantType, participantType === 'team' ? selectedParticipant.id : null, participantType === 'player' ? selectedParticipant.id : null, matchRecord.id)
+    return resp.requestSuccessful ? fetchParticipants() : toast.error(resp.error)
+  }
+
+  const removeParticipant = async (participantId) => {
+    const resp = await deleteMatchParticipant(matchRecord.id, participantId)
+    return resp.requestSuccessful ? fetchParticipants() : toast.error(resp.error)
+  }
 
   useEffect(() => {
-    const fetchParticipants = async () => {
-      const response = await getMatchParticipants(matchRecord.id)
-
-      if (response.requestSuccessful) {
-        setParticipants(response.data)
-      } else {
-        toast.error(response.error)
-      }
-    }
-
     fetchParticipants()
   }, [])
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={(isOpen) => isOpen && fetchParticipants()}>
       <DialogTrigger asChild>
         <Button>
           <FileUser />
@@ -41,6 +83,40 @@ function ParticipantsForm({ record: matchRecord }) {
           <DialogDescription>Adicionar participantes à partida.</DialogDescription>
         </DialogHeader>
 
+        <div className='flex flex-col gap-4'>
+          <Select onValueChange={(value) => setParticipantType(value)} value={participantType}>
+            <SelectTrigger className='w-full'>
+              <SelectValue placeholder="Tipo do participante" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Escolha</SelectLabel>
+                <SelectItem value="team">Time</SelectItem>
+                <SelectItem value="player">Jogador</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          <div className="flex flex-col gap-4 w-full">
+            <Label>{participantType === 'team' ? 'Time' : 'Jogador'}</Label>
+            <SelectSearcher
+              labelField="name"
+              placeholder="Selecione"
+              minCharacters={2}
+              onLoad={participantType === 'team' ? fetchTeams : fetchPlayers}
+              value={selectedParticipant}
+              onChange={setSelectedParticipant}
+            />
+          </div>
+
+          <Button
+            onClick={createParticipant}
+            disabled={isLoading || !participantType || !selectedParticipant}>
+            <Plus />
+            Adicionar
+          </Button>
+        </div>
+
         <div>
           <h1 className="font-bold">Lista de participantes</h1>
           {isLoading ? (
@@ -49,12 +125,19 @@ function ParticipantsForm({ record: matchRecord }) {
             </div>
           ) : (
             participants.map((participant) => (
-              <div key={participant.id} className="border p-2 my-2 rounded">
+              <div key={participant.id} className="border p-2 my-2 rounded flex justify-between items-center">
                 <p className="font-medium">
                   {participant.participantType === 'team'
                     ? participant.team?.name
                     : participant.player?.name}
                 </p>
+                <Button
+                  variant='destructive'
+                  size='icon'
+                  onClick={() => removeParticipant(participant.id)}
+                >
+                  <MinusCircle />
+                </Button>
               </div>
             ))
           )}

@@ -100,7 +100,6 @@ function page() {
               </TableCell>
               <TableCell className="font-medium">
                 <MatchForm matchId={match.id} tournament={tournament} onClose={fetchMatches} />
-                <p>{match.id}</p>
               </TableCell>
             </TableRow>
           ))}
@@ -108,8 +107,7 @@ function page() {
       </Table>
 
       <Button variant="outline" onClick={router.back}>
-        {' '}
-        <ArrowLeft /> Voltar para torneios{' '}
+        <ArrowLeft /> Voltar para torneios
       </Button>
     </div>
   )
