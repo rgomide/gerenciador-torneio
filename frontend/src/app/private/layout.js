@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className='w-fit overflow-hidden'>
+      <main className="w-fit overflow-hidden">
         <SidebarTrigger />
         {children}
       </main>

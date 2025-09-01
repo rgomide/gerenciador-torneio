@@ -107,6 +107,11 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getAllTeams = async () => {
+    const url = `teams`
+    return makeRequest(url, GET)
+  }
+
   const createTeam = async (name, unitId, sportId) => {
     const url = 'teams'
     const payload = { name, unitId, sportId }
@@ -212,6 +217,11 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getAllPlayers = async () => {
+    const url = `players`
+    return makeRequest(url, GET)
+  }
+
   const createPlayer = async (name, email, phone, unitId) => {
     const url = 'players'
     const payload = { name, email, phone, unitId }
@@ -237,6 +247,22 @@ const useApi = () => {
   const getPlayersByTeamId = async (teamId) => {
     const url = `teams/${teamId}/players`
     return makeRequest(url, GET)
+  }
+
+  const addParticipant = async (participantType, teamId, playerId, matchId) => {
+    const url = `matches/${matchId}/participants`
+    const payload = { participantType, teamId, playerId }
+    return makeRequest(url, POST, payload)
+  }
+
+  const getMatchParticipants = async (matchId) => {
+    const url = `matches/${matchId}/participants`
+    return makeRequest(url, GET)
+  }
+
+  const deleteMatchParticipant = async (matchId, participantId) => {
+    const url = `matches/${matchId}/participants/${participantId}`
+    return makeRequest(url, DELETE)
   }
 
   async function makeRequest(url, method, payload) {
@@ -367,6 +393,11 @@ const useApi = () => {
     getRequestLogs,
     createMatch,
     updateMatch,
+    addParticipant,
+    getMatchParticipants,
+    deleteMatchParticipant,
+    getAllTeams,
+    getAllPlayers,
     isLoading
   }
 }

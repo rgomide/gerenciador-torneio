@@ -1,6 +1,7 @@
 'use client'
 import OverlaySpinner from '@/components/common/OverlaySpinner'
 import MatchForm from '@/components/MatchesComponents/MatchForm'
+import ParticipantsForm from '@/components/MatchesComponents/ParticipantsForm'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -94,14 +95,19 @@ function page() {
               <TableCell className="font-medium">
                 <MatchForm record={match} tournament={tournament} onClose={fetchMatches} />
               </TableCell>
+              <TableCell className="font-medium">
+                <ParticipantsForm record={match} />
+              </TableCell>
+              <TableCell className="font-medium">
+                <MatchForm matchId={match.id} tournament={tournament} onClose={fetchMatches} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
 
       <Button variant="outline" onClick={router.back}>
-        {' '}
-        <ArrowLeft /> Voltar para torneios{' '}
+        <ArrowLeft /> Voltar para torneios
       </Button>
     </div>
   )
