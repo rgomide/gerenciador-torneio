@@ -4,13 +4,21 @@ import useApi from '@/services/useApi'
 import { DialogDescription } from '@radix-ui/react-dialog'
 import { FileUser, MinusCircle, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import SelectSearcher from '../common/SelectSearcher'
 import Spinner from '../common/Spinner'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import { Label } from '../ui/label'
-import SelectSearcher from '../common/SelectSearcher'
-import { toast } from 'sonner'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from '../ui/select'
 
 function ParticipantsForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
@@ -19,7 +27,14 @@ function ParticipantsForm({ record: matchRecord }) {
   const [playres, setPlayers] = useState([])
   const [selectedParticipant, setSelectedParticipant] = useState(null)
 
-  const { getAllTeams, getAllPlayers, getMatchParticipants, addParticipant, deleteMatchParticipant, isLoading } = useApi()
+  const {
+    getAllTeams,
+    getAllPlayers,
+    getMatchParticipants,
+    addParticipant,
+    deleteMatchParticipant,
+    isLoading
+  } = useApi()
 
   const fetchParticipants = async () => {
     const response = await getMatchParticipants(matchRecord.id)
@@ -55,7 +70,12 @@ function ParticipantsForm({ record: matchRecord }) {
   }
 
   const createParticipant = async () => {
-    const resp = await addParticipant(participantType, participantType === 'team' ? selectedParticipant.id : null, participantType === 'player' ? selectedParticipant.id : null, matchRecord.id)
+    const resp = await addParticipant(
+      participantType,
+      participantType === 'team' ? selectedParticipant.id : null,
+      participantType === 'player' ? selectedParticipant.id : null,
+      matchRecord.id
+    )
     return resp.requestSuccessful ? fetchParticipants() : toast.error(resp.error)
   }
 
@@ -83,9 +103,9 @@ function ParticipantsForm({ record: matchRecord }) {
           <DialogDescription>Adicionar participantes à partida.</DialogDescription>
         </DialogHeader>
 
-        <div className='flex flex-col gap-4'>
+        <div className="flex flex-col gap-4">
           <Select onValueChange={(value) => setParticipantType(value)} value={participantType}>
-            <SelectTrigger className='w-full'>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Tipo do participante" />
             </SelectTrigger>
             <SelectContent>
@@ -111,7 +131,8 @@ function ParticipantsForm({ record: matchRecord }) {
 
           <Button
             onClick={createParticipant}
-            disabled={isLoading || !participantType || !selectedParticipant}>
+            disabled={isLoading || !participantType || !selectedParticipant}
+          >
             <Plus />
             Adicionar
           </Button>
@@ -125,15 +146,18 @@ function ParticipantsForm({ record: matchRecord }) {
             </div>
           ) : (
             participants.map((participant) => (
-              <div key={participant.id} className="border p-2 my-2 rounded flex justify-between items-center">
+              <div
+                key={participant.id}
+                className="border p-2 my-2 rounded flex justify-between items-center"
+              >
                 <p className="font-medium">
                   {participant.participantType === 'team'
                     ? participant.team?.name
                     : participant.player?.name}
                 </p>
                 <Button
-                  variant='destructive'
-                  size='icon'
+                  variant="destructive"
+                  size="icon"
                   onClick={() => removeParticipant(participant.id)}
                 >
                   <MinusCircle />
