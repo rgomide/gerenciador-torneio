@@ -15,25 +15,26 @@ import { toast } from 'sonner'
 function MatchScoreForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
   const [selectedParticipant, setSelectedParticipant] = useState(null)
-  const [teams, setTeams] = useState([])
-  const [players, setPlayers] = useState([])
   const [score, setScore] = useState(0)
 
-  const { getMatchParticipants, isLoading } = useApi()
+  const { getMatchParticipants, addScoreToMatch, isLoading } = useApi()
 
-  const fetchParticipants = async () => {
+  const fetchParticipants = async (p) => {
     const response = await getMatchParticipants(matchRecord.id)
+    const formattedData = response.data.map((participant) => ({
+      label: participant.team?.name || participant.player?.name,
+      value: participant.id,
+    }))
 
     if (response.requestSuccessful) {
-      setParticipants(response.data)
-      console.log(response.data);
-      
-      return response.data
+      setParticipants(formattedData)
+
+      return formattedData
     } else {
       toast.error(response.error)
     }
   }
-  
+
   useEffect(() => {
     fetchParticipants()
   }, [])
@@ -44,6 +45,10 @@ function MatchScoreForm({ record: matchRecord }) {
     } else if (buttonType !== 'remove') {
       setScore(score + 1)
     }
+  }
+
+  const saveScore = async () => {
+    const resp = await addScoreToMatch(matchRecord.id, participants.value, )
   }
 
   return (
@@ -77,7 +82,7 @@ function MatchScoreForm({ record: matchRecord }) {
           <div className="flex flex-col gap-4 w-full">
             <Label>Jogador ou time</Label>
             <SelectSearcher
-              labelField='name'
+              labelField='label'
               placeholder="Selecione"
               minCharacters={2}
               onLoad={fetchParticipants}
@@ -86,12 +91,12 @@ function MatchScoreForm({ record: matchRecord }) {
             />
           </div>
 
-          {/* <Button
-            onClick={createParticipant}
-            disabled={isLoading || !participantType || !selectedParticipant}>
+          <Button
+            onClick={saveScore}
+            disabled={isLoading || !selectedParticipant}>
             <Plus />
             Adicionar
-          </Button> */}
+          </Button>
         </div>
 
         <div>

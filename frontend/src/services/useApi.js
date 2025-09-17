@@ -265,6 +265,20 @@ const useApi = () => {
     return makeRequest(url, DELETE)
   }
 
+  /*
+    "participantType": "team",
+    "teamId": "string",
+    "playerId": "string",
+    "score": 0,
+    "details": "string"
+  */
+
+  const addScoreToMatch = async (matchId, participantId, teamId, playerId, score, details) => {
+    const url = `matches/${matchId}/scores`
+    const payload = { participantId, teamId, playerId, score, details }
+    return makeRequest(url, POST, payload)
+  }
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -398,6 +412,7 @@ const useApi = () => {
     deleteMatchParticipant,
     getAllTeams,
     getAllPlayers,
+    addScoreToMatch,
     isLoading
   }
 }
