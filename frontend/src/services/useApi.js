@@ -273,9 +273,9 @@ const useApi = () => {
     "details": "string"
   */
 
-  const addScoreToMatch = async (matchId, participantId, teamId, playerId, score, details) => {
+  const addScoreToMatch = async (matchId, participantType, teamId, playerId, score, details) => {
     const url = `matches/${matchId}/scores`
-    const payload = { participantId, teamId, playerId, score, details }
+    const payload = { participantType, teamId, playerId, score, details }
     return makeRequest(url, POST, payload)
   }
 

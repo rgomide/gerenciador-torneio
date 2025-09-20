@@ -16,6 +16,7 @@ function MatchScoreForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
   const [selectedParticipant, setSelectedParticipant] = useState(null)
   const [score, setScore] = useState(0)
+  const [details, setDetails] = useState('')
 
   const { getMatchParticipants, addScoreToMatch, isLoading } = useApi()
 
@@ -24,10 +25,13 @@ function MatchScoreForm({ record: matchRecord }) {
     const formattedData = response.data.map((participant) => ({
       label: participant.team?.name || participant.player?.name,
       value: participant.id,
+      participantType: participant.participantType
     }))
 
     if (response.requestSuccessful) {
       setParticipants(formattedData)
+      console.log(formattedData);
+
 
       return formattedData
     } else {
@@ -48,7 +52,17 @@ function MatchScoreForm({ record: matchRecord }) {
   }
 
   const saveScore = async () => {
-    const resp = await addScoreToMatch(matchRecord.id, participants.value, )
+    const payload = {
+      matchId: matchRecord.id,
+      participantType: selectedParticipant.participantType, // "team" ou "player"
+      participantId: selectedParticipant.value,             // id do participante
+      score: Number(score),                                 // garante número
+      details
+    }
+
+    const resp = await addScoreToMatch(payload)
+
+    return resp.requestSuccessful ? null : toast.error(resp.error)
   }
 
   return (
@@ -91,6 +105,17 @@ function MatchScoreForm({ record: matchRecord }) {
             />
           </div>
 
+          <div className='flex flex-col gap-4 w-full'>
+            <label htmlFor="txtar">Detalhes</label>
+            <textarea
+              id='txtar'
+              placeholder='...'
+              className='p-2 border rounded-md focus:outline-none focus:ring-2'
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+            />
+          </div>
+
           <Button
             onClick={saveScore}
             disabled={isLoading || !selectedParticipant}>
@@ -100,7 +125,7 @@ function MatchScoreForm({ record: matchRecord }) {
         </div>
 
         <div>
-          <h1 className="font-bold">Lista de participantes</h1>
+          <h1 className="font-bold">Pontos</h1>
           {isLoading ? (
             <div className="flex justify-center items-center w-full my-4">
               <Spinner />
