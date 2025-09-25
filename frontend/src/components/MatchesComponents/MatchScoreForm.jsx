@@ -24,9 +24,11 @@ function MatchScoreForm({ record: matchRecord }) {
     const response = await getMatchParticipants(matchRecord.id)
     const formattedData = response.data.map((participant) => ({
       label: participant.team?.name || participant.player?.name,
-      value: participant.id,
+      value: Number(participant.id),
       participantType: participant.participantType
     }))
+
+
 
     if (response.requestSuccessful) {
       setParticipants(formattedData)
@@ -54,9 +56,9 @@ function MatchScoreForm({ record: matchRecord }) {
   const saveScore = async () => {
     const payload = {
       matchId: matchRecord.id,
-      participantType: selectedParticipant.participantType, // "team" ou "player"
-      participantId: selectedParticipant.value,             // id do participante
-      score: Number(score),                                 // garante número
+      participantType: selectedParticipant.participantType,
+      participantId: selectedParticipant.value,
+      score: Number(score),
       details
     }
 
@@ -124,7 +126,7 @@ function MatchScoreForm({ record: matchRecord }) {
           </Button>
         </div>
 
-        <div>
+        {/* <div>
           <h1 className="font-bold">Pontos</h1>
           {isLoading ? (
             <div className="flex justify-center items-center w-full my-4">
@@ -148,7 +150,7 @@ function MatchScoreForm({ record: matchRecord }) {
               </div>
             ))
           )}
-        </div>
+        </div> */}
       </DialogContent>
     </Dialog>
   )
