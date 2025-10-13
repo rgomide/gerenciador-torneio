@@ -28,12 +28,9 @@ function MatchScoreForm({ record: matchRecord }) {
       participantType: participant.participantType
     }))
 
-
-
     if (response.requestSuccessful) {
       setParticipants(formattedData)
       console.log(formattedData);
-
 
       return formattedData
     } else {
