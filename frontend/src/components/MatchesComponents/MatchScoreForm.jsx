@@ -11,26 +11,30 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 import { Label } from '../ui/label'
 import SelectSearcher from '../common/SelectSearcher'
 import { toast } from 'sonner'
+import { ScrollArea } from '../ui/scroll-area'
 
 function MatchScoreForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
   const [selectedParticipant, setSelectedParticipant] = useState(null)
   const [score, setScore] = useState(0)
   const [details, setDetails] = useState('')
+  const [matchScores, setMatchScores] = useState([])
 
-  const { getMatchParticipants, addScoreToMatch, isLoading } = useApi()
+  const { getMatchParticipants, addScoreToMatch, getMatchScores, removeScoreFromMatch, isLoading } = useApi()
 
-  const fetchParticipants = async (p) => {
+  const fetchParticipants = async () => {
     const response = await getMatchParticipants(matchRecord.id)
     const formattedData = response.data.map((participant) => ({
       label: participant.team?.name || participant.player?.name,
-      value: Number(participant.id),
+      teamId: participant.teamId || null,
+      playerId: participant.playerId || null,
       participantType: participant.participantType
     }))
 
+    console.log(formattedData);
+
     if (response.requestSuccessful) {
       setParticipants(formattedData)
-      console.log(formattedData);
 
       return formattedData
     } else {
@@ -38,8 +42,19 @@ function MatchScoreForm({ record: matchRecord }) {
     }
   }
 
+  const fetchMatchScores = async () => {
+    const resp = await getMatchScores(matchRecord.id)
+    if (resp.requestSuccessful) {
+      setMatchScores(resp.data)
+
+    } else {
+      toast.error(resp.error)
+    }
+  }
+
   useEffect(() => {
     fetchParticipants()
+    fetchMatchScores()
   }, [])
 
   const handleScore = (buttonType) => {
@@ -51,17 +66,21 @@ function MatchScoreForm({ record: matchRecord }) {
   }
 
   const saveScore = async () => {
-    const payload = {
-      matchId: matchRecord.id,
-      participantType: selectedParticipant.participantType,
-      participantId: selectedParticipant.value,
-      score: Number(score),
+    const resp = await addScoreToMatch(
+      matchRecord.id,
+      selectedParticipant.participantType,
+      selectedParticipant.teamId,
+      selectedParticipant.playerId,
+      Number(score),
       details
-    }
+    )
 
-    const resp = await addScoreToMatch(payload)
+    return resp.requestSuccessful ? fetchMatchScores() : toast.error(resp.error)
+  }
 
-    return resp.requestSuccessful ? null : toast.error(resp.error)
+  const removeScore = async (scoreId) => {
+    const resp = await removeScoreFromMatch(matchRecord.id, scoreId)
+    return resp.requestSuccessful ? fetchMatchScores() : toast.error(resp.error)
   }
 
   return (
@@ -123,31 +142,35 @@ function MatchScoreForm({ record: matchRecord }) {
           </Button>
         </div>
 
-        {/* <div>
+        <div>
           <h1 className="font-bold">Pontos</h1>
           {isLoading ? (
             <div className="flex justify-center items-center w-full my-4">
               <Spinner />
             </div>
           ) : (
-            participants.map((participant) => (
-              <div key={participant.id} className="border p-2 my-2 rounded flex justify-between items-center">
-                <p className="font-medium">
-                  {participant.participantType === 'team'
-                    ? participant.team?.name
-                    : participant.player?.name}
-                </p>
+            <ScrollArea className='w-full h-48'>
+              {matchScores.map((score) => (
+              <div key={score.id} className="border p-2 my-2 rounded flex justify-between items-center">
+                <div className="flex flex-col justify-between items-start">
+                  <p className="font-medium">
+                    {score.participantType === 'team' ? score.team.name : score.player.name} - <b>{score.score}</b> ponto(s)
+                  </p>
+                  <p>Detalhes: {score.details} </p>
+                  <p>{score.id}</p>
+                </div>
                 <Button
                   variant='destructive'
                   size='icon'
-                  onClick={() => removeParticipant(participant.id)}
+                  onClick={() => { removeScore(score.id) }}
                 >
                   <MinusCircle />
                 </Button>
               </div>
-            ))
+              ))}
+            </ScrollArea>
           )}
-        </div> */}
+        </div>
       </DialogContent>
     </Dialog>
   )
