@@ -102,9 +102,6 @@ function page() {
               <TableCell className="font-medium">
                 <MatchScoreForm record={match} />
               </TableCell>
-              <TableCell className="font-medium">
-                <MatchForm matchId={match.id} tournament={tournament} onClose={fetchMatches} />
-              </TableCell>
             </TableRow>
           ))}
         </TableBody>
