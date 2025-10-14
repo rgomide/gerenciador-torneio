@@ -10,6 +10,7 @@ import Spinner from '../common/Spinner'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import { Label } from '../ui/label'
+import { ScrollArea } from '../ui/scroll-area'
 import {
   Select,
   SelectContent,
@@ -19,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue
 } from '../ui/select'
-import { ScrollArea } from '../ui/scroll-area'
 
 function ParticipantsForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
@@ -146,26 +146,26 @@ function ParticipantsForm({ record: matchRecord }) {
               <Spinner />
             </div>
           ) : (
-            <ScrollArea className='w-full h-48'>
+            <ScrollArea className="w-full h-48">
               {participants.map((participant) => (
-              <div
-                key={participant.id}
-                className="border p-2 my-2 rounded flex justify-between items-center"
-              >
-                <p className="font-medium">
-                  {participant.participantType === 'team'
-                    ? participant.team?.name
-                    : participant.player?.name}
-                </p>
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  onClick={() => removeParticipant(participant.id)}
+                <div
+                  key={participant.id}
+                  className="border p-2 my-2 rounded flex justify-between items-center"
                 >
-                  <MinusCircle />
-                </Button>
-              </div>
-            ))}
+                  <p className="font-medium">
+                    {participant.participantType === 'team'
+                      ? participant.team?.name
+                      : participant.player?.name}
+                  </p>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => removeParticipant(participant.id)}
+                  >
+                    <MinusCircle />
+                  </Button>
+                </div>
+              ))}
             </ScrollArea>
           )}
         </div>

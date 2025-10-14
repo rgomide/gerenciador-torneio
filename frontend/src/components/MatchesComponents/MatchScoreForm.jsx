@@ -2,15 +2,14 @@
 
 import useApi from '@/services/useApi'
 import { DialogDescription } from '@radix-ui/react-dialog'
-import { FileUser, Goal, Minus, MinusCircle, Plus } from 'lucide-react'
+import { Goal, Minus, MinusCircle, Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import SelectSearcher from '../common/SelectSearcher'
 import Spinner from '../common/Spinner'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '../ui/select'
 import { Label } from '../ui/label'
-import SelectSearcher from '../common/SelectSearcher'
-import { toast } from 'sonner'
 import { ScrollArea } from '../ui/scroll-area'
 
 function MatchScoreForm({ record: matchRecord }) {
@@ -20,7 +19,8 @@ function MatchScoreForm({ record: matchRecord }) {
   const [details, setDetails] = useState('')
   const [matchScores, setMatchScores] = useState([])
 
-  const { getMatchParticipants, addScoreToMatch, getMatchScores, removeScoreFromMatch, isLoading } = useApi()
+  const { getMatchParticipants, addScoreToMatch, getMatchScores, removeScoreFromMatch, isLoading } =
+    useApi()
 
   const fetchParticipants = async () => {
     const response = await getMatchParticipants(matchRecord.id)
@@ -31,7 +31,7 @@ function MatchScoreForm({ record: matchRecord }) {
       participantType: participant.participantType
     }))
 
-    console.log(formattedData);
+    console.log(formattedData)
 
     if (response.requestSuccessful) {
       setParticipants(formattedData)
@@ -46,7 +46,6 @@ function MatchScoreForm({ record: matchRecord }) {
     const resp = await getMatchScores(matchRecord.id)
     if (resp.requestSuccessful) {
       setMatchScores(resp.data)
-
     } else {
       toast.error(resp.error)
     }
@@ -98,10 +97,12 @@ function MatchScoreForm({ record: matchRecord }) {
           <DialogDescription>Adicione ou remova pontos à partida.</DialogDescription>
         </DialogHeader>
 
-        <div className='flex flex-col gap-4'>
-          <div className='flex gap-8'>
-            <h1 className='text-3xl'>Pontos: <span className='text-emerald-600 font-bold'>{score}</span> </h1>
-            <div className='flex gap-2'>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-8">
+            <h1 className="text-3xl">
+              Pontos: <span className="text-emerald-600 font-bold">{score}</span>{' '}
+            </h1>
+            <div className="flex gap-2">
               <Button onClick={handleScore}>
                 <Plus />
               </Button>
@@ -114,7 +115,7 @@ function MatchScoreForm({ record: matchRecord }) {
           <div className="flex flex-col gap-4 w-full">
             <Label>Jogador ou time</Label>
             <SelectSearcher
-              labelField='label'
+              labelField="label"
               placeholder="Selecione"
               minCharacters={2}
               onLoad={fetchParticipants}
@@ -123,20 +124,18 @@ function MatchScoreForm({ record: matchRecord }) {
             />
           </div>
 
-          <div className='flex flex-col gap-4 w-full'>
+          <div className="flex flex-col gap-4 w-full">
             <label htmlFor="txtar">Detalhes</label>
             <textarea
-              id='txtar'
-              placeholder='...'
-              className='p-2 border rounded-md focus:outline-none focus:ring-2'
+              id="txtar"
+              placeholder="..."
+              className="p-2 border rounded-md focus:outline-none focus:ring-2"
               value={details}
               onChange={(e) => setDetails(e.target.value)}
             />
           </div>
 
-          <Button
-            onClick={saveScore}
-            disabled={isLoading || !selectedParticipant}>
+          <Button onClick={saveScore} disabled={isLoading || !selectedParticipant}>
             <Plus />
             Adicionar
           </Button>
@@ -149,24 +148,30 @@ function MatchScoreForm({ record: matchRecord }) {
               <Spinner />
             </div>
           ) : (
-            <ScrollArea className='w-full h-48'>
+            <ScrollArea className="w-full h-48">
               {matchScores.map((score) => (
-              <div key={score.id} className="border p-2 my-2 rounded flex justify-between items-center">
-                <div className="flex flex-col justify-between items-start">
-                  <p className="font-medium">
-                    {score.participantType === 'team' ? score.team.name : score.player.name} - <b>{score.score}</b> ponto(s)
-                  </p>
-                  <p>Detalhes: {score.details} </p>
-                  <p>{score.id}</p>
-                </div>
-                <Button
-                  variant='destructive'
-                  size='icon'
-                  onClick={() => { removeScore(score.id) }}
+                <div
+                  key={score.id}
+                  className="border p-2 my-2 rounded flex justify-between items-center"
                 >
-                  <MinusCircle />
-                </Button>
-              </div>
+                  <div className="flex flex-col justify-between items-start">
+                    <p className="font-medium">
+                      {score.participantType === 'team' ? score.team.name : score.player.name} -{' '}
+                      <b>{score.score}</b> ponto(s)
+                    </p>
+                    <p>Detalhes: {score.details} </p>
+                    <p>{score.id}</p>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    onClick={() => {
+                      removeScore(score.id)
+                    }}
+                  >
+                    <MinusCircle />
+                  </Button>
+                </div>
               ))}
             </ScrollArea>
           )}
