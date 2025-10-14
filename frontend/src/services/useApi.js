@@ -265,6 +265,22 @@ const useApi = () => {
     return makeRequest(url, DELETE)
   }
 
+  const getMatchScores = async (matchId) => {
+    const url = `matches/${matchId}/scores`
+    return makeRequest(url, GET)
+  }
+
+  const addScoreToMatch = async (matchId, participantType, teamId, playerId, score, details) => {
+    const url = `matches/${matchId}/scores`
+    const payload = { participantType, teamId, playerId, score, details }
+    return makeRequest(url, POST, payload)
+  }
+
+  const removeScoreFromMatch = async (matchId, scoreId) => {
+    const url = `matches/${matchId}/scores/${scoreId}`
+    return makeRequest(url, DELETE)
+  }
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -398,6 +414,9 @@ const useApi = () => {
     deleteMatchParticipant,
     getAllTeams,
     getAllPlayers,
+    addScoreToMatch,
+    getMatchScores,
+    removeScoreFromMatch,
     isLoading
   }
 }

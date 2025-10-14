@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '../ui/select'
+import { ScrollArea } from '../ui/scroll-area'
 
 function ParticipantsForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
@@ -145,7 +146,8 @@ function ParticipantsForm({ record: matchRecord }) {
               <Spinner />
             </div>
           ) : (
-            participants.map((participant) => (
+            <ScrollArea className='w-full h-48'>
+              {participants.map((participant) => (
               <div
                 key={participant.id}
                 className="border p-2 my-2 rounded flex justify-between items-center"
@@ -163,7 +165,8 @@ function ParticipantsForm({ record: matchRecord }) {
                   <MinusCircle />
                 </Button>
               </div>
-            ))
+            ))}
+            </ScrollArea>
           )}
         </div>
       </DialogContent>
