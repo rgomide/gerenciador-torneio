@@ -101,14 +101,13 @@ function MatchForm({ record, onClose, tournament }) {
 
   const handleFinishMatch = async () => {
     const resp = await finishMatch(record.id)
-    if (resp.requestSuccessful) { 
+    if (resp.requestSuccessful) {
       closeDialog()
       toast.success('Partida finalizada com sucesso!')
     } else {
       toast.error(resp.error)
     }
   }
-
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -201,11 +200,7 @@ function MatchForm({ record, onClose, tournament }) {
               )}
             />
             <DialogTrigger asChild>
-              <Button
-                disabled={isLoading}
-                onClick={handleFinishMatch}
-                variant='outline'
-              >
+              <Button disabled={isLoading} onClick={handleFinishMatch} variant="outline">
                 {isLoading && <Spinner size="sm" color="gray" />}
                 Encerrar partida
               </Button>
