@@ -281,6 +281,11 @@ const useApi = () => {
     return makeRequest(url, DELETE)
   }
 
+  const finishMatch = async (matchId) => {
+    const url = `matches/${matchId}/finish`
+    return makeRequest(url, POST)
+  }
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -417,6 +422,7 @@ const useApi = () => {
     addScoreToMatch,
     getMatchScores,
     removeScoreFromMatch,
+    finishMatch,
     isLoading
   }
 }

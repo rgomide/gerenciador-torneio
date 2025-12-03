@@ -29,7 +29,7 @@ function MatchForm({ record, onClose, tournament }) {
   const [isOpen, setIsOpen] = useState(false)
   const [match, _] = useState(record)
 
-  const { createMatch, updateMatch, isLoading } = useApi()
+  const { createMatch, updateMatch, finishMatch, isLoading } = useApi()
 
   const isCreate = record === undefined
 
@@ -96,6 +96,16 @@ function MatchForm({ record, onClose, tournament }) {
     setIsOpen(open)
     if (!open) {
       form.reset()
+    }
+  }
+
+  const handleFinishMatch = async () => {
+    const resp = await finishMatch(record.id)
+    if (resp.requestSuccessful) {
+      closeDialog()
+      toast.success('Partida finalizada com sucesso!')
+    } else {
+      toast.error(resp.error)
     }
   }
 
@@ -189,6 +199,12 @@ function MatchForm({ record, onClose, tournament }) {
                 </FormItem>
               )}
             />
+            <DialogTrigger asChild>
+              <Button disabled={isLoading} onClick={handleFinishMatch} variant="outline">
+                {isLoading && <Spinner size="sm" color="gray" />}
+                Encerrar partida
+              </Button>
+            </DialogTrigger>
 
             <DialogTrigger asChild>
               <Button
