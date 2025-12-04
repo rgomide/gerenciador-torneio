@@ -286,6 +286,11 @@ const useApi = () => {
     return makeRequest(url, POST)
   }
 
+  const finishTournament = async (tournamentId) => {
+    const url = `tournaments/${tournamentId}/finish`
+    return makeRequest(url, POST)
+  }
+
   async function makeRequest(url, method, payload) {
     setIsLoading(true)
 
@@ -423,6 +428,7 @@ const useApi = () => {
     getMatchScores,
     removeScoreFromMatch,
     finishMatch,
+    finishTournament,
     isLoading
   }
 }
