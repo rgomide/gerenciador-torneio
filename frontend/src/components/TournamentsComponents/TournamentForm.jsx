@@ -7,6 +7,7 @@ import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 import { z } from 'zod'
 import SelectSearcher from '../common/SelectSearcher'
+import Spinner from '../common/Spinner'
 import { Button } from '../ui/button'
 import {
   Dialog,
@@ -18,7 +19,6 @@ import {
 } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
-import Spinner from '../common/Spinner'
 
 function TournamentsForm({ record, onClose, eventId }) {
   const [isOpen, setIsOpen] = useState(false)
@@ -218,11 +218,7 @@ function TournamentsForm({ record, onClose, eventId }) {
             />
 
             <DialogTrigger asChild>
-              <Button
-                disabled={isLoading}
-                onClick={handleFinishTournament}
-                variant='outline'
-              >
+              <Button disabled={isLoading} onClick={handleFinishTournament} variant="outline">
                 {isLoading && <Spinner size="sm" color="gray" />}
                 Encerrar Torneio
               </Button>
