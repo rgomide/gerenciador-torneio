@@ -109,7 +109,6 @@ function MatchForm({ record, onClose, tournament }) {
     }
   }
 
-
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>

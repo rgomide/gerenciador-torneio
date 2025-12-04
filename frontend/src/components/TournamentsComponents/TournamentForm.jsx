@@ -18,12 +18,13 @@ import {
 } from '../ui/dialog'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form'
 import { Input } from '../ui/input'
+import Spinner from '../common/Spinner'
 
 function TournamentsForm({ record, onClose, eventId }) {
   const [isOpen, setIsOpen] = useState(false)
   const [tournament, setTournament] = useState(record)
 
-  const { getSports, createTournament, updateTournament } = useApi()
+  const { getSports, createTournament, updateTournament, finishTournament, isLoading } = useApi()
 
   const isCreate = record === undefined
 
@@ -112,6 +113,16 @@ function TournamentsForm({ record, onClose, eventId }) {
     setIsOpen(open)
     if (!open) {
       form.reset()
+    }
+  }
+
+  const handleFinishTournament = async () => {
+    const resp = await finishTournament(record.id)
+    if (resp.requestSuccessful) {
+      closeDialog()
+      toast.success('Torneio finalizado com sucesso!')
+    } else {
+      toast.error(resp.error)
     }
   }
 
@@ -205,6 +216,17 @@ function TournamentsForm({ record, onClose, eventId }) {
                 </FormItem>
               )}
             />
+
+            <DialogTrigger asChild>
+              <Button
+                disabled={isLoading}
+                onClick={handleFinishTournament}
+                variant='outline'
+              >
+                {isLoading && <Spinner size="sm" color="gray" />}
+                Encerrar Torneio
+              </Button>
+            </DialogTrigger>
 
             <DialogTrigger asChild>
               <Button onClick={handleSubmit} className="bg-emerald-600 hover:bg-emerald-700">
