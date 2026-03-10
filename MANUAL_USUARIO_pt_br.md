@@ -74,11 +74,11 @@ graph TD
     E --> J
     D --> J
     
-    style A fill:#e1f5ff
-    style B fill:#fff4e1
-    style C fill:#ffe1f5
-    style G fill:#e1ffe1
-    style H fill:#f5e1ff
+    style A fill:#1e40af,color:#fff,stroke:#3b82f6
+    style B fill:#b45309,color:#fff,stroke:#ea580c
+    style C fill:#9d174d,color:#fff,stroke:#db2777
+    style G fill:#047857,color:#fff,stroke:#10b981
+    style H fill:#6d28d9,color:#fff,stroke:#8b5cf6
 ```
 
 ### Entendendo a Hierarquia
@@ -115,19 +115,19 @@ flowchart TD
     J --> K[Registrar Pontuações]
     K --> End([Torneio Pronto!])
     
-    style Start fill:#e1f5ff
-    style End fill:#e1ffe1
-    style A fill:#fff4e1
-    style B fill:#fff4e1
-    style C fill:#fff4e1
-    style D fill:#ffe1f5
-    style E fill:#ffe1f5
-    style F fill:#ffe1f5
-    style G fill:#e1ffe1
-    style H fill:#e1ffe1
-    style I fill:#f5e1ff
-    style J fill:#f5e1ff
-    style K fill:#f5e1ff
+    style Start fill:#1e40af,color:#fff,stroke:#3b82f6
+    style End fill:#047857,color:#fff,stroke:#10b981
+    style A fill:#b45309,color:#fff,stroke:#ea580c
+    style B fill:#b45309,color:#fff,stroke:#ea580c
+    style C fill:#b45309,color:#fff,stroke:#ea580c
+    style D fill:#9d174d,color:#fff,stroke:#db2777
+    style E fill:#9d174d,color:#fff,stroke:#db2777
+    style F fill:#9d174d,color:#fff,stroke:#db2777
+    style G fill:#047857,color:#fff,stroke:#10b981
+    style H fill:#047857,color:#fff,stroke:#10b981
+    style I fill:#6d28d9,color:#fff,stroke:#8b5cf6
+    style J fill:#6d28d9,color:#fff,stroke:#8b5cf6
+    style K fill:#6d28d9,color:#fff,stroke:#8b5cf6
 ```
 
 > ⚠️ **Importante:** Respeite a ordem dos cadastros, pois cada etapa depende da anterior. Por exemplo, você não pode cadastrar uma unidade sem antes ter uma instituição cadastrada.
@@ -458,13 +458,13 @@ graph LR
     E --> F[6. Agendar Partidas]
     F --> G[7. Registrar Resultados]
     
-    style A fill:#e1f5ff
-    style B fill:#ffe1f5
-    style C fill:#ffe1f5
-    style D fill:#e1ffe1
-    style E fill:#e1ffe1
-    style F fill:#f5e1ff
-    style G fill:#f5e1ff
+    style A fill:#1e40af,color:#fff,stroke:#3b82f6
+    style B fill:#9d174d,color:#fff,stroke:#db2777
+    style C fill:#9d174d,color:#fff,stroke:#db2777
+    style D fill:#047857,color:#fff,stroke:#10b981
+    style E fill:#047857,color:#fff,stroke:#10b981
+    style F fill:#6d28d9,color:#fff,stroke:#8b5cf6
+    style G fill:#6d28d9,color:#fff,stroke:#8b5cf6
 ```
 
 ### Solução de Problemas Comuns
