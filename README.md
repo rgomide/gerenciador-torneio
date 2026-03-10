@@ -2,6 +2,8 @@
 
 This project is a web application that allows users to manage their sports teams and players.
 
+Access [user manual](MANUAL_USUARIO_pt_br.md) for more information.
+
 ## Accessing deployed version
 
 - [Frontend](https://gerenciador-torneio.vercel.app/)
