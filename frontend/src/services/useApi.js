@@ -107,6 +107,11 @@ const useApi = () => {
     return makeRequest(url, GET)
   }
 
+  const getPublicEvents = async () => {
+    const url = 'public/events'
+    return makeRequest(url, GET)
+  }
+
   const getPublicEventById = async (eventId) => {
     const url = `public/events/${eventId}`
     return makeRequest(url, GET)
@@ -427,6 +432,7 @@ const useApi = () => {
     getTournamentById,
     getMatchesByTournamentId,
     getPublicMatchesByEventId,
+    getPublicEvents,
     getPublicEventById,
     getRequestLogs,
     createMatch,

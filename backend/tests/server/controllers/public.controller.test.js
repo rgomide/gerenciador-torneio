@@ -12,6 +12,35 @@ const {
 const app = require('@server/app')
 
 describe('Public Controller', () => {
+  describe('GET /api/public/events', () => {
+    it('should return all events for public listing without authentication', async () => {
+      const institution = await Institution.create({ name: 'Inst Lista' })
+      const unit = await Unit.create({ name: 'Unidade Lista', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Evento Lista',
+        unitId: unit.id,
+        startDate: new Date('2024-03-01'),
+        endDate: new Date('2024-03-10')
+      })
+
+      const response = await request(app).get('/api/public/events')
+
+      expect(response.status).toBe(200)
+      expect(Array.isArray(response.body)).toBe(true)
+      expect(response.body.length).toBeGreaterThanOrEqual(1)
+      expect(response.body).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            id: event.id,
+            name: 'Evento Lista',
+            unitName: 'Unidade Lista',
+            institutionName: 'Inst Lista'
+          })
+        ])
+      )
+    })
+  })
+
   describe('GET /api/public/events/:eventId', () => {
     it('should return public event summary without authentication', async () => {
       const institution = await Institution.create({ name: 'Inst Público' })

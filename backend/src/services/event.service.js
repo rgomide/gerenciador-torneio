@@ -156,6 +156,26 @@ const findByIdForPublic = async (id) => {
   return event
 }
 
+const findAllForPublic = async () => {
+  return Event.findAll({
+    include: [
+      {
+        model: Unit,
+        as: 'unit',
+        include: [
+          {
+            model: Institution,
+            as: 'institution',
+            attributes: ['id', 'name']
+          }
+        ],
+        attributes: ['id', 'name', 'institutionId']
+      }
+    ],
+    order: [['startDate', 'DESC']]
+  })
+}
+
 const update = async (id, eventData, user) => {
   validateName(eventData.name)
   validateDates(eventData.startDate, eventData.endDate)
@@ -206,6 +226,7 @@ const validateUser = (user, event) => {
 module.exports = {
   create,
   findAll,
+  findAllForPublic,
   findByUnit,
   findById,
   findByIdForPublic,

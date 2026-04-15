@@ -15,6 +15,10 @@ class PublicEventVO {
       institutionName: unit && unit.institution ? unit.institution.name : null
     }
   }
+
+  static parseCollection(events) {
+    return events.map((event) => new PublicEventVO(event).toJSON())
+  }
 }
 
 module.exports = PublicEventVO

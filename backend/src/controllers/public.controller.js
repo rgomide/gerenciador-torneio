@@ -1,9 +1,29 @@
 const router = require('express').Router({ mergeParams: true })
-const { findByIdForPublic } = require('@server/services/event.service')
+const { findAllForPublic, findByIdForPublic } = require('@server/services/event.service')
 const { findByEventForPublic } = require('@server/services/match.service')
 const MatchVO = require('@server/vo/MatchVO')
 const MatchSnapshotVO = require('@server/vo/MatchSnapshotVO')
 const PublicEventVO = require('@server/vo/PublicEventVO')
+
+/**
+ * @openapi
+ * /api/public/events:
+ *   get:
+ *     description: Lista todos os eventos (página pública, sem autenticação)
+ *     tags:
+ *       - Public
+ *     responses:
+ *       200:
+ *         description: Lista de eventos
+ */
+router.get('/public/events', async (req, res, next) => {
+  try {
+    const events = await findAllForPublic()
+    return res.json(PublicEventVO.parseCollection(events))
+  } catch (error) {
+    next(error)
+  }
+})
 
 /**
  * @openapi
