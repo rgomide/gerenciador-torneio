@@ -9,8 +9,10 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { formatDate } from '@/services/dateUtil'
+import { cn } from '@/lib/utils'
+import { formatDate, removeTime } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
+import { ChevronDown } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -20,7 +22,6 @@ function formatSnapshotDate(value) {
   return formatDate(d, true)
 }
 
-/** Agrupa partidas mantendo a ordem cronológica global dentro de cada torneio. */
 function groupMatchesByTournament(matches) {
   const map = new Map()
   for (const m of matches) {
@@ -39,25 +40,48 @@ function groupMatchesByTournament(matches) {
   )
 }
 
+function SectionLabel({ children }) {
+  return (
+    <h4 className="text-muted-foreground mb-2 text-[11px] font-semibold uppercase tracking-[0.12em]">
+      {children}
+    </h4>
+  )
+}
+
+function DataTableShell({ children, className }) {
+  return (
+    <div
+      className={cn(
+        'overflow-hidden rounded-lg border border-border/60 bg-background/80 shadow-[0_1px_2px_0_rgb(0_0_0_/0.03)]',
+        className
+      )}
+    >
+      {children}
+    </div>
+  )
+}
+
 function MatchExpandedContent({ match }) {
   const snap = match.snapshot
 
   if (snap) {
     return (
-      <div className="space-y-4 text-sm">
-        <p className="text-muted-foreground">
+      <div className="space-y-5 text-sm leading-relaxed">
+        <div className="bg-muted/50 text-muted-foreground rounded-lg border border-border/40 px-3 py-2.5 text-xs leading-relaxed">
           {[snap.institutionName, snap.unitName, snap.sportName].filter(Boolean).join(' · ')}
-        </p>
+        </div>
         {snap.matchParticipants && snap.matchParticipants.length > 0 && (
           <div>
-            <h4 className="mb-2 font-medium text-foreground">Participantes</h4>
-            <ul className="list-inside list-disc space-y-1 text-muted-foreground">
+            <SectionLabel>Participantes</SectionLabel>
+            <ul className="space-y-2">
               {snap.matchParticipants.map((p, i) => (
-                <li key={`${p.id}-${i}`}>
-                  <span className="text-foreground">{p.name}</span>
-                  <span className="text-xs text-muted-foreground">
-                    {' '}
-                    ({p.participantType === 'team' ? 'equipe' : 'jogador'})
+                <li
+                  key={`${p.id}-${i}`}
+                  className="border-border/50 flex items-baseline justify-between gap-3 border-b border-dashed pb-2 last:border-0 last:pb-0"
+                >
+                  <span className="text-foreground font-medium">{p.name}</span>
+                  <span className="text-muted-foreground shrink-0 text-xs">
+                    {p.participantType === 'team' ? 'Equipe' : 'Jogador'}
                   </span>
                 </li>
               ))}
@@ -66,50 +90,70 @@ function MatchExpandedContent({ match }) {
         )}
         {snap.totalScores && snap.totalScores.length > 0 && (
           <div>
-            <h4 className="mb-2 font-medium text-foreground">Totais</h4>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Participante</TableHead>
-                  <TableHead className="text-right">Pontos</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {snap.totalScores.map((row, i) => (
-                  <TableRow key={`${row.id}-${i}`}>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell className="text-right tabular-nums">{row.totalScore}</TableCell>
+            <SectionLabel>Totais</SectionLabel>
+            <DataTableShell>
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/50 hover:bg-transparent">
+                    <TableHead className="bg-muted/40 text-muted-foreground h-9 text-xs font-medium">
+                      Participante
+                    </TableHead>
+                    <TableHead className="bg-muted/40 text-muted-foreground h-9 text-right text-xs font-medium">
+                      Pontos
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {snap.totalScores.map((row, i) => (
+                    <TableRow key={`${row.id}-${i}`} className="border-border/40">
+                      <TableCell className="py-2.5 font-medium">{row.name}</TableCell>
+                      <TableCell className="text-foreground py-2.5 text-right text-base font-semibold tabular-nums tracking-tight">
+                        {row.totalScore}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </DataTableShell>
           </div>
         )}
         {snap.matchScores && snap.matchScores.length > 0 && (
           <div>
-            <h4 className="mb-2 font-medium text-foreground">Lançamentos</h4>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Participante</TableHead>
-                  <TableHead className="text-right">Pts</TableHead>
-                  <TableHead>Detalhes</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {snap.matchScores.map((row, i) => (
-                  <TableRow key={`${row.id}-${i}`}>
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell className="text-right tabular-nums">{row.score}</TableCell>
-                    <TableCell className="text-muted-foreground">{row.details || '—'}</TableCell>
+            <SectionLabel>Lançamentos</SectionLabel>
+            <DataTableShell>
+              <Table>
+                <TableHeader>
+                  <TableRow className="border-border/50 hover:bg-transparent">
+                    <TableHead className="bg-muted/40 text-muted-foreground h-9 text-xs font-medium">
+                      Participante
+                    </TableHead>
+                    <TableHead className="bg-muted/40 text-muted-foreground h-9 text-right text-xs font-medium">
+                      Pts
+                    </TableHead>
+                    <TableHead className="bg-muted/40 text-muted-foreground h-9 text-xs font-medium">
+                      Detalhes
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {snap.matchScores.map((row, i) => (
+                    <TableRow key={`${row.id}-${i}`} className="border-border/40">
+                      <TableCell className="py-2.5">{row.name}</TableCell>
+                      <TableCell className="py-2.5 text-right font-medium tabular-nums">
+                        {row.score}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground py-2.5 text-xs">
+                        {row.details || '—'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </DataTableShell>
           </div>
         )}
         {snap.snapshotTakenAt && (
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground border-border/40 border-t pt-3 text-[11px]">
             Registro finalizado em {formatSnapshotDate(snap.snapshotTakenAt)}
           </p>
         )}
@@ -121,16 +165,19 @@ function MatchExpandedContent({ match }) {
   const totals = match.totalScores
 
   return (
-    <div className="space-y-4 text-sm">
+    <div className="space-y-5 text-sm leading-relaxed">
       {participants && participants.length > 0 && (
         <div>
-          <h4 className="mb-2 font-medium text-foreground">Participantes</h4>
-          <ul className="list-inside list-disc space-y-1">
+          <SectionLabel>Participantes</SectionLabel>
+          <ul className="space-y-2">
             {participants.map((p, i) => (
-              <li key={i}>
-                {p.name}{' '}
-                <span className="text-xs text-muted-foreground">
-                  ({p.participantType === 'team' ? 'equipe' : 'jogador'})
+              <li
+                key={i}
+                className="border-border/50 flex items-baseline justify-between gap-3 border-b border-dashed pb-2 last:border-0 last:pb-0"
+              >
+                <span className="font-medium">{p.name}</span>
+                <span className="text-muted-foreground text-xs">
+                  {p.participantType === 'team' ? 'Equipe' : 'Jogador'}
                 </span>
               </li>
             ))}
@@ -139,27 +186,37 @@ function MatchExpandedContent({ match }) {
       )}
       {totals && totals.length > 0 && (
         <div>
-          <h4 className="mb-2 font-medium text-foreground">Parciais / totais</h4>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Participante</TableHead>
-                <TableHead className="text-right">Pontos</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {totals.map((row, i) => (
-                <TableRow key={`${row.id}-${i}`}>
-                  <TableCell>{row.name}</TableCell>
-                  <TableCell className="text-right tabular-nums">{row.totalScore}</TableCell>
+          <SectionLabel>Parciais / totais</SectionLabel>
+          <DataTableShell>
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border/50 hover:bg-transparent">
+                  <TableHead className="bg-muted/40 text-muted-foreground h-9 text-xs font-medium">
+                    Participante
+                  </TableHead>
+                  <TableHead className="bg-muted/40 text-muted-foreground h-9 text-right text-xs font-medium">
+                    Pontos
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {totals.map((row, i) => (
+                  <TableRow key={`${row.id}-${i}`} className="border-border/40">
+                    <TableCell className="py-2.5 font-medium">{row.name}</TableCell>
+                    <TableCell className="py-2.5 text-right text-base font-semibold tabular-nums">
+                      {row.totalScore}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </DataTableShell>
         </div>
       )}
       {!participants?.length && !totals?.length && (
-        <p className="text-muted-foreground">Sem participantes ou pontuação registrada ainda.</p>
+        <p className="text-muted-foreground text-sm italic">
+          Sem participantes ou pontuação registrada ainda.
+        </p>
       )}
     </div>
   )
@@ -187,32 +244,50 @@ function matchSummaryLine(match) {
     .join(' · ')
 }
 
-function MatchAccordionItem({ match }) {
+function StatusBadge({ match }) {
   const snap = match.snapshot
-
+  if (snap) {
+    return (
+      <span className="bg-emerald-500/12 text-emerald-800 ring-emerald-500/25 dark:bg-emerald-500/15 dark:text-emerald-100 dark:ring-emerald-400/20 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ring-inset">
+        Consolidado
+      </span>
+    )
+  }
+  if (match.finished) {
+    return (
+      <span className="bg-foreground/6 text-muted-foreground ring-border inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ring-inset">
+        Encerrada
+      </span>
+    )
+  }
   return (
-    <details className="group rounded-lg border border-border/80 bg-muted/20 open:bg-muted/35">
-      <summary className="flex cursor-pointer list-none items-start justify-between gap-2 px-3 py-3 text-left transition-colors hover:bg-muted/50 [&::-webkit-details-marker]:hidden">
-        <div className="min-w-0 flex-1">
-          <p className="text-foreground text-sm font-medium leading-snug">
+    <span className="bg-sky-500/10 text-sky-800 ring-sky-500/20 dark:bg-sky-400/15 dark:text-sky-100 dark:ring-sky-400/25 inline-flex shrink-0 items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ring-1 ring-inset">
+      Em andamento
+    </span>
+  )
+}
+
+function MatchAccordionItem({ match }) {
+  return (
+    <details className="group border-border/60 bg-card open:border-border open:shadow-sm rounded-xl border transition-[box-shadow,background-color] duration-200">
+      <summary className="flex cursor-pointer list-none items-start gap-3 px-4 py-3.5 text-left [&::-webkit-details-marker]:hidden">
+        <ChevronDown
+          className="text-muted-foreground mt-0.5 size-4 shrink-0 transition-transform duration-200 group-open:rotate-180"
+          aria-hidden
+        />
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <StatusBadge match={match} />
+          </div>
+          <p className="text-foreground text-[15px] font-medium leading-snug tracking-tight">
             {matchSummaryLine(match)}
           </p>
-          <p className="text-muted-foreground mt-0.5 text-xs">
-            {snap ? (
-              <>
-                Dados consolidados
-                {snap.tournamentFinished ? ' · torneio encerrado' : ''}
-              </>
-            ) : (
-              <>{match.finished ? 'Partida encerrada' : 'Em aberto ou em andamento'}</>
-            )}
-          </p>
+          {match.snapshot?.tournamentFinished && (
+            <p className="text-muted-foreground text-xs">Torneio encerrado</p>
+          )}
         </div>
-        <span className="text-muted-foreground mt-0.5 shrink-0 text-xs transition-transform group-open:rotate-180">
-          ▼
-        </span>
       </summary>
-      <div className="border-t border-border/60 px-3 py-3">
+      <div className="border-border/50 border-t px-4 py-4">
         <MatchExpandedContent match={match} />
       </div>
     </details>
@@ -220,14 +295,24 @@ function MatchAccordionItem({ match }) {
 }
 
 function TournamentCard({ group }) {
-  const sportName = group.matches.find((m) => m.snapshot?.sportName)?.snapshot?.sportName
+  const sportName =
+    group.matches.find((m) => m.sportName)?.sportName ??
+    group.matches.find((m) => m.snapshot?.sportName)?.snapshot?.sportName
 
   return (
-    <Card className="overflow-hidden">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">{group.tournamentName}</CardTitle>
-        <CardDescription>
-          {sportName ? `${sportName} · ` : null}
+    <Card className="border-border/50 from-card to-muted/20 shadow-sm ring-1 ring-black/[0.04] transition-shadow duration-300 dark:ring-white/[0.06] rounded-2xl border bg-gradient-to-b hover:shadow-md">
+      <CardHeader className="space-y-1 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-2">
+          <CardTitle className="text-lg font-semibold tracking-tight md:text-xl">
+            {group.tournamentName}
+          </CardTitle>
+          {sportName && (
+            <span className="bg-secondary text-secondary-foreground rounded-md px-2.5 py-1 text-xs font-medium">
+              {sportName}
+            </span>
+          )}
+        </div>
+        <CardDescription className="text-[13px] font-normal">
           {group.matches.length} partida{group.matches.length !== 1 ? 's' : ''}
         </CardDescription>
       </CardHeader>
@@ -240,22 +325,40 @@ function TournamentCard({ group }) {
   )
 }
 
-function TournamentSection({ title, matches }) {
+function BlockTitle({ children, tone }) {
+  return (
+    <div className="mb-6 flex items-center gap-3">
+      <span
+        className={cn(
+          'h-7 w-0.5 shrink-0 rounded-full',
+          tone === 'ongoing' && 'bg-emerald-500/70 shadow-[0_0_12px_-2px_rgba(16,185,129,0.5)]',
+          tone === 'finished' && 'bg-foreground/20'
+        )}
+        aria-hidden
+      />
+      <h2 className="text-foreground text-lg font-semibold tracking-tight md:text-xl">
+        {children}
+      </h2>
+    </div>
+  )
+}
+
+function TournamentSection({ title, matches, tone }) {
   const groups = useMemo(() => groupMatchesByTournament(matches), [matches])
 
   if (matches.length === 0) {
     return (
       <section>
-        <h2 className="mb-3 text-lg font-semibold tracking-tight">{title}</h2>
-        <p className="text-muted-foreground text-sm">Nenhum torneio nesta categoria.</p>
+        <BlockTitle tone={tone}>{title}</BlockTitle>
+        <p className="text-muted-foreground pl-3.5 text-sm">Nenhum torneio nesta categoria.</p>
       </section>
     )
   }
 
   return (
     <section>
-      <h2 className="mb-4 text-lg font-semibold tracking-tight">{title}</h2>
-      <div className="flex flex-col gap-4">
+      <BlockTitle tone={tone}>{title}</BlockTitle>
+      <div className="flex flex-col gap-5">
         {groups.map((g) => (
           <TournamentCard key={String(g.tournamentId)} group={g} />
         ))}
@@ -264,10 +367,49 @@ function TournamentSection({ title, matches }) {
   )
 }
 
+function EventHeaderSkeleton() {
+  return (
+    <header className="border-border/50 mb-12 rounded-2xl border bg-card/80 px-5 py-6 shadow-sm ring-1 ring-black/[0.03] backdrop-blur-sm dark:bg-card/60 dark:ring-white/[0.05]">
+      <div className="bg-muted mb-3 h-3 w-28 animate-pulse rounded" />
+      <div className="bg-muted mb-4 h-8 max-w-md animate-pulse rounded-md" />
+      <div className="bg-muted h-4 w-48 animate-pulse rounded" />
+    </header>
+  )
+}
+
+function EventHeader({ event }) {
+  const locationLine = [event.institutionName, event.unitName].filter(Boolean).join(' · ')
+  const start = formatDate(removeTime(event.startDate))
+  const end = formatDate(removeTime(event.endDate))
+
+  return (
+    <header className="border-border/50 mb-12 rounded-2xl border bg-card/80 px-5 py-6 shadow-sm ring-1 ring-black/[0.03] backdrop-blur-sm dark:bg-card/60 dark:ring-white/[0.05]">
+      <p className="text-muted-foreground mb-3 text-xs font-medium uppercase tracking-[0.14em]">
+        Evento
+      </p>
+      <h1 className="text-foreground text-2xl font-semibold tracking-tight md:text-3xl">
+        {event.name}
+      </h1>
+      {locationLine ? (
+        <p className="text-muted-foreground mt-3 text-sm leading-relaxed">{locationLine}</p>
+      ) : null}
+      <p className="text-muted-foreground mt-2 text-sm">
+        <span className="text-foreground/80 font-medium">Período</span>
+        {' · '}
+        <time dateTime={event.startDate}>{start}</time>
+        {' — '}
+        <time dateTime={event.endDate}>{end}</time>
+      </p>
+    </header>
+  )
+}
+
 export default function PublicEventPage() {
   const { eventId } = useParams()
-  const { getPublicMatchesByEventId, isLoading } = useApi()
+  const { getPublicMatchesByEventId, getPublicEventById } = useApi()
   const [matches, setMatches] = useState([])
+  const [eventInfo, setEventInfo] = useState(null)
+  const [pageLoading, setPageLoading] = useState(true)
   const [error, setError] = useState(null)
 
   const ongoingMatches = useMemo(() => matches.filter((m) => !m.tournamentFinished), [matches])
@@ -281,19 +423,35 @@ export default function PublicEventPage() {
 
     let cancelled = false
 
-    async function loadMatches() {
-      const resp = await getPublicMatchesByEventId(eventId)
+    async function load() {
+      setPageLoading(true)
+      setError(null)
+
+      const [evRes, mtRes] = await Promise.all([
+        getPublicEventById(eventId),
+        getPublicMatchesByEventId(eventId)
+      ])
+
       if (cancelled) return
-      if (resp.requestSuccessful) {
-        setMatches(Array.isArray(resp.data) ? resp.data : [])
-        setError(null)
+
+      setPageLoading(false)
+
+      if (!evRes.requestSuccessful) {
+        setEventInfo(null)
+        setMatches([])
+        setError(evRes.error)
+        return
+      }
+
+      setEventInfo(evRes.data)
+      if (mtRes.requestSuccessful) {
+        setMatches(Array.isArray(mtRes.data) ? mtRes.data : [])
       } else {
         setMatches([])
-        setError(resp.error)
       }
     }
 
-    void loadMatches()
+    void load()
 
     return () => {
       cancelled = true
@@ -301,27 +459,42 @@ export default function PublicEventPage() {
   }, [eventId])
 
   return (
-    <main className="mx-auto min-h-screen max-w-3xl px-4 py-8 md:px-8">
-      <header className="mb-8 border-b pb-6">
-        <p className="text-muted-foreground text-sm">Evento público</p>
-        <p className="font-mono text-lg font-semibold tabular-nums">{String(eventId ?? '')}</p>
-      </header>
+    <div className="from-muted/30 via-background to-muted/20 min-h-screen bg-gradient-to-b">
+      <main className="mx-auto max-w-3xl px-4 py-10 md:px-8 md:py-14">
+        {pageLoading ? (
+          <EventHeaderSkeleton />
+        ) : eventInfo ? (
+          <EventHeader event={eventInfo} />
+        ) : null}
+        {error && (
+          <div className="border-destructive/25 bg-destructive/5 text-destructive rounded-xl border px-4 py-3 text-sm">
+            {error}
+          </div>
+        )}
 
-      {isLoading && <p className="text-muted-foreground">Carregando…</p>}
-      {error && <p className="text-red-600">{error}</p>}
-
-      {!isLoading && !error && (
-        <>
-          {matches.length === 0 ? (
-            <p className="text-muted-foreground">Nenhuma partida neste evento.</p>
-          ) : (
-            <div className="flex flex-col gap-12">
-              <TournamentSection title="Torneios em andamento" matches={ongoingMatches} />
-              <TournamentSection title="Torneios encerrados" matches={finishedTournamentMatches} />
-            </div>
-          )}
-        </>
-      )}
-    </main>
+        {!pageLoading && !error && eventInfo && (
+          <>
+            {matches.length === 0 ? (
+              <p className="text-muted-foreground text-center text-sm">
+                Nenhuma partida neste evento.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-16 md:gap-20">
+                <TournamentSection
+                  title="Torneios em andamento"
+                  matches={ongoingMatches}
+                  tone="ongoing"
+                />
+                <TournamentSection
+                  title="Torneios encerrados"
+                  matches={finishedTournamentMatches}
+                  tone="finished"
+                />
+              </div>
+            )}
+          </>
+        )}
+      </main>
+    </div>
   )
 }

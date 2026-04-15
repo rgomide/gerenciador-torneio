@@ -2,6 +2,7 @@ const {
   Match,
   MatchSnapshot,
   Tournament,
+  Sport,
   MatchScore,
   Team,
   Player,
@@ -144,7 +145,14 @@ const findByEventForPublic = async (eventId) => {
         as: 'tournament',
         where: { eventId: event.id },
         required: true,
-        attributes: ['id', 'name', 'finished']
+        attributes: ['id', 'name', 'finished', 'sportId'],
+        include: [
+          {
+            model: Sport,
+            as: 'sport',
+            attributes: ['id', 'name']
+          }
+        ]
       },
       {
         model: MatchParticipant,

@@ -12,6 +12,38 @@ const {
 const app = require('@server/app')
 
 describe('Public Controller', () => {
+  describe('GET /api/public/events/:eventId', () => {
+    it('should return public event summary without authentication', async () => {
+      const institution = await Institution.create({ name: 'Inst Público' })
+      const unit = await Unit.create({ name: 'Unidade Pública', institutionId: institution.id })
+      const event = await Event.create({
+        name: 'Campeonato Verão',
+        unitId: unit.id,
+        startDate: new Date('2024-06-01'),
+        endDate: new Date('2024-06-15')
+      })
+
+      const response = await request(app).get(`/api/public/events/${event.id}`)
+
+      expect(response.status).toBe(200)
+      expect(response.body).toEqual({
+        id: event.id,
+        name: 'Campeonato Verão',
+        startDate: event.startDate.toISOString(),
+        endDate: event.endDate.toISOString(),
+        unitName: 'Unidade Pública',
+        institutionName: 'Inst Público'
+      })
+    })
+
+    it('should return 404 when event does not exist', async () => {
+      const response = await request(app).get('/api/public/events/999999')
+
+      expect(response.status).toBe(404)
+      expect(response.body.message).toBe('Evento não encontrado')
+    })
+  })
+
   describe('GET /api/public/events/:eventId/matches', () => {
     it('should return all matches of the event without authentication', async () => {
       const institution = await Institution.create({ name: 'Test Institution' })
@@ -49,6 +81,7 @@ describe('Public Controller', () => {
           tournamentId: tournament.id,
           tournamentName: 'Tournament A',
           tournamentFinished: false,
+          sportName: 'Test Sport',
           snapshot: null,
           participants: [],
           date: match.date.toISOString(),
@@ -151,6 +184,7 @@ describe('Public Controller', () => {
         ])
       })
       expect(response.body[0].participants).toBeUndefined()
+      expect(response.body[0].sportName).toBe('Sport Snap')
     })
 
     it('should return 404 when event does not exist', async () => {

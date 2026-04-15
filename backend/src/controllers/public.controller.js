@@ -1,7 +1,38 @@
 const router = require('express').Router({ mergeParams: true })
+const { findByIdForPublic } = require('@server/services/event.service')
 const { findByEventForPublic } = require('@server/services/match.service')
 const MatchVO = require('@server/vo/MatchVO')
 const MatchSnapshotVO = require('@server/vo/MatchSnapshotVO')
+const PublicEventVO = require('@server/vo/PublicEventVO')
+
+/**
+ * @openapi
+ * /api/public/events/{eventId}:
+ *   get:
+ *     description: Dados resumidos do evento para página pública (sem autenticação)
+ *     tags:
+ *       - Public
+ *     parameters:
+ *       - name: eventId
+ *         in: path
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Evento encontrado
+ *       404:
+ *         description: Evento não encontrado
+ */
+router.get('/public/events/:eventId', async (req, res, next) => {
+  try {
+    const { eventId } = req.params
+    const event = await findByIdForPublic(eventId)
+    return res.json(new PublicEventVO(event).toJSON())
+  } catch (error) {
+    next(error)
+  }
+})
 
 /**
  * @openapi
@@ -54,6 +85,7 @@ router.get('/public/events/:eventId/matches', async (req, res, next) => {
         ...base,
         tournamentName: match.tournament ? match.tournament.name : null,
         tournamentFinished: match.tournament ? Boolean(match.tournament.finished) : false,
+        sportName: match.tournament?.sport ? match.tournament.sport.name : null,
         snapshot,
         participants: snapshot ? undefined : participants
       }
