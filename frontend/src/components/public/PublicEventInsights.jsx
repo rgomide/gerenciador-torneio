@@ -112,7 +112,7 @@ export function PublicEventInsights({ matches, className }) {
           Visão geral
         </CardTitle>
         <CardDescription className="text-[13px] leading-relaxed">
-          Resumo dos torneios e partidas deste evento — útil para ver o panorama em um relance.
+          Resumo dos torneios e partidas deste evento.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-8 pt-2">
