@@ -2,6 +2,7 @@ const {
   Match,
   MatchSnapshot,
   Tournament,
+  Sport,
   MatchScore,
   Team,
   Player,
@@ -131,6 +132,71 @@ const update = async (id, matchData, user) => {
   return findById(id)
 }
 
+const findByEventForPublic = async (eventId) => {
+  const event = await Event.findByPk(eventId)
+  if (!event) {
+    throw new AppError('Evento não encontrado', 404)
+  }
+
+  const matches = await Match.findAll({
+    include: [
+      {
+        model: Tournament,
+        as: 'tournament',
+        where: { eventId: event.id },
+        required: true,
+        attributes: ['id', 'name', 'finished', 'sportId'],
+        include: [
+          {
+            model: Sport,
+            as: 'sport',
+            attributes: ['id', 'name']
+          }
+        ]
+      },
+      {
+        model: MatchParticipant,
+        as: 'participants',
+        include: [
+          {
+            model: Team,
+            as: 'team',
+            attributes: ['id', 'name']
+          },
+          {
+            model: Player,
+            as: 'player',
+            attributes: ['id', 'name']
+          }
+        ]
+      },
+      {
+        model: MatchScore,
+        as: 'scores',
+        include: [
+          {
+            model: Team,
+            as: 'team',
+            attributes: ['id', 'name']
+          },
+          {
+            model: Player,
+            as: 'player',
+            attributes: ['id', 'name']
+          }
+        ]
+      }
+    ],
+    order: [['date', 'ASC']]
+  })
+
+  const snapshots = await MatchSnapshot.findAll({
+    where: { eventId: event.id }
+  })
+
+  return { matches, snapshots }
+}
+
 const remove = async (id, user) => {
   const match = await Match.findByPk(id, {
     include: [
@@ -231,6 +297,7 @@ module.exports = {
   findAll,
   findById,
   findByTournament,
+  findByEventForPublic,
   update,
   remove
 }

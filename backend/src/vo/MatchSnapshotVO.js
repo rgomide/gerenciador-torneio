@@ -5,6 +5,46 @@ class MatchSnapshotVO {
     this.matchSnapshot = matchSnapshot
   }
 
+  /**
+   * Reidrata o mesmo formato consolidado de `fromMatch` a partir de um registro
+   * persistido em `match_snapshots` (uso em APIs públicas / dashboard).
+   */
+  static fromPersistedSnapshot(snapshotRow) {
+    if (!snapshotRow) {
+      return null
+    }
+
+    const s =
+      typeof snapshotRow.get === 'function' ? snapshotRow.get({ plain: true }) : snapshotRow
+
+    return {
+      matchId: s.matchId,
+      matchDate: s.matchDate,
+      matchLocation: s.matchLocation,
+      matchRoundNumber: s.matchRoundNumber,
+      matchOccurrences: s.matchOccurrences,
+      tournamentId: s.tournamentId,
+      tournamentName: s.tournamentName,
+      tournamentStartDate: s.tournamentStartDate,
+      tournamentEndDate: s.tournamentEndDate,
+      tournamentFinished: s.tournamentFinished,
+      eventId: s.eventId,
+      eventName: s.eventName,
+      eventStartDate: s.eventStartDate,
+      eventEndDate: s.eventEndDate,
+      unitId: s.unitId,
+      unitName: s.unitName,
+      institutionId: s.institutionId,
+      institutionName: s.institutionName,
+      sportId: s.sportId,
+      sportName: s.sportName,
+      matchScores: s.matchScores,
+      matchParticipants: s.matchParticipants,
+      totalScores: s.totalScores,
+      snapshotTakenAt: s.snapshotTakenAt
+    }
+  }
+
   static fromMatch(match) {
     match = match.toJSON()
 
@@ -80,14 +120,6 @@ class MatchSnapshotVO {
       eventId,
       eventName,
       eventStartDate,
-      eventEndDate,
-      unitId,
-      unitName,
-      institutionId,
-      institutionName,
-      sportId,
-      sportName,
-      eventName,
       eventEndDate,
       unitId,
       unitName,

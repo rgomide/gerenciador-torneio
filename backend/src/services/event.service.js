@@ -131,6 +131,51 @@ const findById = async (id) => {
   return event
 }
 
+const findByIdForPublic = async (id) => {
+  const event = await Event.findByPk(id, {
+    include: [
+      {
+        model: Unit,
+        as: 'unit',
+        include: [
+          {
+            model: Institution,
+            as: 'institution',
+            attributes: ['id', 'name']
+          }
+        ],
+        attributes: ['id', 'name', 'institutionId']
+      }
+    ]
+  })
+
+  if (!event) {
+    throw new AppError('Evento não encontrado', 404)
+  }
+
+  return event
+}
+
+const findAllForPublic = async () => {
+  return Event.findAll({
+    include: [
+      {
+        model: Unit,
+        as: 'unit',
+        include: [
+          {
+            model: Institution,
+            as: 'institution',
+            attributes: ['id', 'name']
+          }
+        ],
+        attributes: ['id', 'name', 'institutionId']
+      }
+    ],
+    order: [['startDate', 'DESC']]
+  })
+}
+
 const update = async (id, eventData, user) => {
   validateName(eventData.name)
   validateDates(eventData.startDate, eventData.endDate)
@@ -181,8 +226,10 @@ const validateUser = (user, event) => {
 module.exports = {
   create,
   findAll,
+  findAllForPublic,
   findByUnit,
   findById,
+  findByIdForPublic,
   findUnfinished,
   validateUser,
   update,
