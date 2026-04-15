@@ -204,4 +204,72 @@ describe('MatchSnapshotVO', () => {
       })
     )
   })
+
+  it('should rebuild consolidated JSON from a persisted match_snapshots row', async () => {
+    const sport = await Sport.create({ name: 'Sport Persist' })
+    const institution = await Institution.create({ name: 'Inst Persist' })
+    const unit = await Unit.create({ name: 'Unit Persist', institutionId: institution.id })
+    const event = await Event.create({
+      name: 'Event Persist',
+      unitId: unit.id,
+      startDate: new Date('2024-02-01'),
+      endDate: new Date('2024-02-10')
+    })
+    const tournament = await Tournament.create({
+      name: 'Tournament Persist',
+      eventId: event.id,
+      sportId: sport.id,
+      startDate: new Date('2024-02-01'),
+      endDate: new Date('2024-02-05')
+    })
+    const match = await Match.create({
+      tournamentId: tournament.id,
+      date: new Date('2024-02-03T12:00:00.000Z'),
+      location: 'Ginásio',
+      finished: true,
+      roundNumber: 1
+    })
+
+    const row = await MatchSnapshot.create({
+      matchId: match.id,
+      matchDate: match.date,
+      matchLocation: 'Ginásio',
+      matchRoundNumber: 1,
+      matchOccurrences: null,
+      tournamentId: tournament.id,
+      tournamentName: tournament.name,
+      tournamentStartDate: tournament.startDate,
+      tournamentEndDate: tournament.endDate,
+      tournamentFinished: false,
+      eventId: event.id,
+      eventName: event.name,
+      eventStartDate: event.startDate,
+      eventEndDate: event.endDate,
+      unitId: unit.id,
+      unitName: unit.name,
+      institutionId: institution.id,
+      institutionName: institution.name,
+      sportId: sport.id,
+      sportName: sport.name,
+      matchScores: [],
+      matchParticipants: [],
+      totalScores: null
+    })
+
+    const reloaded = await MatchSnapshot.findByPk(row.id)
+    const json = MatchSnapshotVO.fromPersistedSnapshot(reloaded)
+
+    expect(json).toEqual(
+      expect.objectContaining({
+        matchId: match.id,
+        matchLocation: 'Ginásio',
+        tournamentName: tournament.name,
+        eventName: event.name,
+        sportName: sport.name,
+        matchScores: [],
+        matchParticipants: [],
+        totalScores: null
+      })
+    )
+  })
 })

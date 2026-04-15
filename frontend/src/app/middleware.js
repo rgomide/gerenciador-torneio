@@ -1,3 +1,5 @@
+import { NextResponse } from 'next/server'
+
 export function middleware(req) {
   const token = req.cookies.get('authToken')
 
@@ -9,5 +11,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: ['private/path*']
+  matcher: ['/private/:path*']
 }
