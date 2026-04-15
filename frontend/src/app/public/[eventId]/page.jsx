@@ -1,5 +1,6 @@
 'use client'
 
+import { PublicEventInsights } from '@/components/public/PublicEventInsights'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -466,6 +467,11 @@ export default function PublicEventPage() {
         ) : eventInfo ? (
           <EventHeader event={eventInfo} />
         ) : null}
+
+        {!pageLoading && !error && eventInfo && matches.length > 0 && (
+          <PublicEventInsights matches={matches} />
+        )}
+
         {error && (
           <div className="border-destructive/25 bg-destructive/5 text-destructive rounded-xl border px-4 py-3 text-sm">
             {error}
