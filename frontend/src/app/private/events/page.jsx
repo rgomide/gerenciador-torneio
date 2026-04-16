@@ -33,7 +33,7 @@ import useApi from '@/services/useApi'
 import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-function page() {
+function Page() {
   const [events, setEvents] = useState([])
   const [units, setUnits] = useState([])
   const [selectedUnit, setSelectedUnit] = useState(null)
@@ -180,4 +180,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

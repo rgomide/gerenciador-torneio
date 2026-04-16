@@ -31,11 +31,11 @@ import {
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { Swords, Trash } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-function page() {
+function Page() {
   const [tournaments, setTournaments] = useState([])
   const [events, setEvents] = useState([])
   const [selectedEvent, setSelectedEvent] = useState(null)
@@ -164,7 +164,7 @@ function page() {
                   onClose={fetchTournaments}
                 />
 
-                <Link href={`./matches/${tournament.id}`}>
+                <Link to={`/private/matches/${tournament.id}`}>
                   <Button variant="gray">
                     <Swords />
                     Ver partidas
@@ -211,4 +211,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

@@ -3,7 +3,7 @@ import '../src/app/globals.css'
 
 initialize()
 
-/** @type { import('@storybook/nextjs').Preview } */
+/** @type { import('@storybook/react-vite').Preview } */
 const preview = {
   parameters: {
     controls: {
@@ -11,9 +11,6 @@ const preview = {
         color: /(background|color)$/i,
         date: /Date$/i
       }
-    },
-    nextjs: {
-      appDirectory: true
     }
   },
   loaders: [mswLoader]

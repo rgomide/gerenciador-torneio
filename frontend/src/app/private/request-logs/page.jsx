@@ -15,7 +15,7 @@ import useApi from '@/services/useApi'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-function page() {
+function Page() {
   const [requestLogs, setRequestLogs] = useState([])
 
   const { getRequestLogs, isLoading } = useApi()
@@ -107,4 +107,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

@@ -16,21 +16,21 @@ import {
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { ArrowLeft } from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-function page() {
+function Page() {
   const [tournament, setTournament] = useState(null)
   const [matches, setMatches] = useState([])
 
-  const router = useRouter()
+  const navigate = useNavigate()
   const { tournamentId } = useParams()
   const { getTournamentById, getMatchesByTournamentId, isLoading } = useApi()
 
   useEffect(() => {
     fetchTournament()
-  }, [])
+  }, [tournamentId])
 
   useEffect(() => {
     if (tournament) {
@@ -107,11 +107,11 @@ function page() {
         </TableBody>
       </Table>
 
-      <Button variant="outline" onClick={router.back}>
+      <Button variant="outline" onClick={() => navigate(-1)}>
         <ArrowLeft /> Voltar para torneios
       </Button>
     </div>
   )
 }
 
-export default page
+export default Page

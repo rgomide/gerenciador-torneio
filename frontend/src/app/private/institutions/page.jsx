@@ -14,9 +14,9 @@ import {
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { SquareArrowUpRight } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-function page() {
+function Page() {
   const { getInstitutions, isLoading } = useApi()
   const [institutions, setInstitutions] = useState([])
 
@@ -61,7 +61,7 @@ function page() {
                 {formatDate(institution.updatedAt, true)}
               </TableCell>
               <TableCell className="font-medium flex gap-2">
-                <Link href={`./units/${institution.id}`}>
+                <Link to={`/private/units/${institution.id}`}>
                   <Button variant="outline">
                     <SquareArrowUpRight />
                     Ver unidades
@@ -77,4 +77,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

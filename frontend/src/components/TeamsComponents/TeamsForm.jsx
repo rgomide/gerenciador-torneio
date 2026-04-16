@@ -21,7 +21,7 @@ import { Input } from '../ui/input'
 
 function TeamsForm({ record, unit, onClose }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [team, setTeam] = useState(record)
+  const [team] = useState(record)
   const [selectedSport, setSelectedSport] = useState(record?.sport)
 
   const { getSports, createTeam, updateTeam } = useApi()

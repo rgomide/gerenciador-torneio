@@ -8,7 +8,7 @@ const PUT = 'put'
 const DELETE = 'delete'
 
 const useApi = () => {
-  const BASE_URL = process.env.NEXT_PUBLIC_API_SERVER
+  const BASE_URL = import.meta.env.VITE_API_SERVER ?? ''
   const [isLoading, setIsLoading] = useState(false)
   const { getAuthCookie } = useCookies()
 
@@ -424,6 +424,7 @@ const useApi = () => {
     updatePlayer,
     deletePlayerById,
     getUsers,
+    getUser,
     addPlayersToTeam,
     getPlayersByTeamId,
     createUser,

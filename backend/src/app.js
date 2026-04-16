@@ -59,6 +59,12 @@ app.use(
 app.use('/api', apiMiddleware)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
 
+app.use('/', express.static(path.join(__dirname, '../public/')))
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'))
+})
+
 app.use(errorHandlingMiddleware)
 
 module.exports = app

@@ -39,7 +39,7 @@ const SelectSearcher = ({
         } else {
           setOptions([])
         }
-      } catch (error) {
+      } catch {
         setOptions([])
       } finally {
         setIsLoading(false)

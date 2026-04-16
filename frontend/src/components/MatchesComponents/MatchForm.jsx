@@ -27,7 +27,7 @@ import { z } from 'zod'
 
 function MatchForm({ record, onClose, tournament }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [match, _] = useState(record)
+  const [match] = useState(record)
 
   const { createMatch, updateMatch, finishMatch, isLoading } = useApi()
 

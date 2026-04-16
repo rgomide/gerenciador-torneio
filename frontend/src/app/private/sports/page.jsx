@@ -25,7 +25,7 @@ import { Trash } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
-function page() {
+function Page() {
   const { getSports, deleteSportById, isLoading } = useApi()
   const [sports, setSports] = useState([])
 
@@ -119,4 +119,4 @@ function page() {
   )
 }
 
-export default page
+export default Page
