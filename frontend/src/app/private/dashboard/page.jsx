@@ -3,8 +3,8 @@ import OverlaySpinner from '@/components/common/OverlaySpinner'
 import EventCard from '@/components/EventsComponents/EventCard'
 import useApi from '@/services/useApi'
 import useCookies from '@/services/useCookies'
-import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 function Page() {

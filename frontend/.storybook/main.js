@@ -17,6 +17,8 @@ const config = {
   staticDirs: ['../public'],
   async viteFinal(config) {
     return mergeConfig(config, {
+      // App build uses base /app/; Storybook must stay at /
+      base: '/',
       plugins: [tailwindcss()],
       resolve: {
         alias: {

@@ -14,8 +14,8 @@ import {
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { SquareArrowUpRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 function Page() {
   const { getInstitutions, isLoading } = useApi()
   const [institutions, setInstitutions] = useState([])

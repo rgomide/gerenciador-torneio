@@ -11,7 +11,13 @@ export default function PublicLayout() {
             to="/public"
             className="text-foreground hover:text-foreground/90 flex items-center gap-3 transition-opacity hover:opacity-90"
           >
-            <img src="/file.svg" alt="" className="h-8 w-8 shrink-0" width={32} height={32} />
+            <img
+              src={`${import.meta.env.BASE_URL}file.svg`}
+              alt=""
+              className="h-8 w-8 shrink-0"
+              width={32}
+              height={32}
+            />
             <span className="text-base font-semibold tracking-tight md:text-lg">
               Gerenciador de torneio
             </span>

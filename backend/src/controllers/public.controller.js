@@ -84,17 +84,12 @@ router.get('/public/events/:eventId/matches', async (req, res, next) => {
     const { eventId } = req.params
     const { matches, snapshots } = await findByEventForPublic(eventId)
 
-    const snapshotByMatchId = new Map(
-      snapshots.map((row) => [String(row.matchId), row])
-    )
+    const snapshotByMatchId = new Map(snapshots.map((row) => [String(row.matchId), row]))
 
     const matchesVO = matches.map((match) => {
       const base = new MatchVO(match).toJSON()
-      const snapshotRow =
-        match.finished ? snapshotByMatchId.get(String(match.id)) : null
-      const snapshot = snapshotRow
-        ? MatchSnapshotVO.fromPersistedSnapshot(snapshotRow)
-        : null
+      const snapshotRow = match.finished ? snapshotByMatchId.get(String(match.id)) : null
+      const snapshot = snapshotRow ? MatchSnapshotVO.fromPersistedSnapshot(snapshotRow) : null
 
       const participants = (match.participants || []).map((p) => ({
         participantType: p.participantType,

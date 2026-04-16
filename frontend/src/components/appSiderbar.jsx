@@ -36,8 +36,8 @@ import {
   Users,
   Volleyball
 } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const menuItems = [

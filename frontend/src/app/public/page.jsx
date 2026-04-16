@@ -4,8 +4,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { formatDate, removeTime } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { ChevronRight } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function PublicEventsListPage() {
   const { getPublicEvents } = useApi()

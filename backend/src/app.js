@@ -7,7 +7,6 @@ const helmet = require('helmet')
 const rateLimit = require('express-rate-limit')
 const swaggerUi = require('swagger-ui-express')
 const specs = require('@server/config/swagger.js')
-const history = require('connect-history-api-fallback')
 
 const apiMiddleware = require('@server/middleware/api')
 const errorHandlingMiddleware = require('@server/middleware/errorHandling')
@@ -59,11 +58,26 @@ app.use(
 app.use('/api', apiMiddleware)
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(specs))
 
-app.use('/', express.static(path.join(__dirname, '../public/')))
+const publicPath = path.join(__dirname, '../public')
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, '../public/index.html'))
+// SPA under /app: serve files first; anything else (e.g. /app/private/dashboard) → index.html.
+// connect-history-api-fallback is unreliable when mounted on a subpath (/app) with Express req.url.
+const spaApp = express.Router()
+// redirect: false avoids 301 /app ↔ /app/ fights (and loops with proxies). index is still served.
+spaApp.use(
+  express.static(publicPath, {
+    index: 'index.html',
+    redirect: false
+  })
+)
+spaApp.use((req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return next()
+  }
+  res.sendFile(path.join(publicPath, 'index.html'), next)
 })
+
+app.use('/app', spaApp)
 
 app.use(errorHandlingMiddleware)
 
