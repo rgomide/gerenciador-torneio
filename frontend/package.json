@@ -23,7 +23,7 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tooltip": "^1.1.8",
     "@storybook/react": "^10.3.5",
-    "axios": "^1.8.4",
+    "axios": "^1.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cookies-next": "^5.1.0",
