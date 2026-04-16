@@ -3,7 +3,7 @@ import '../src/app/globals.css'
 
 initialize()
 
-/** @type { import('@storybook/react').Preview } */
+/** @type { import('@storybook/nextjs').Preview } */
 const preview = {
   parameters: {
     controls: {
