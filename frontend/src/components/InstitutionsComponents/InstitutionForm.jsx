@@ -19,7 +19,7 @@ import { Input } from '../ui/input'
 
 function InstitutionForm({ record, onClose }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [institution, setInstitution] = useState(record)
+  const [institution] = useState(record)
 
   const { createInstitution, updateInstitution } = useApi()
   const isCreate = record === undefined

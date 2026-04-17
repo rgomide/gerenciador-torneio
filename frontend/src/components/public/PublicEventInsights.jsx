@@ -165,7 +165,7 @@ export function PublicEventInsights({ matches, className }) {
                       paddingAngle={2}
                       strokeWidth={0}
                     >
-                      {data.statusChartData.map((entry, i) => (
+                      {data.statusChartData.map((entry) => (
                         <Cell key={entry.name} fill={entry.fill} />
                       ))}
                     </Pie>

@@ -36,8 +36,8 @@ import {
   Users,
   Volleyball
 } from 'lucide-react'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
 const menuItems = [
@@ -99,7 +99,7 @@ const menuItems = [
 ]
 
 export function AppSidebar() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const [userItems, setUserItems] = useState([])
   const [user, setUser] = useState(null)
 
@@ -126,7 +126,7 @@ export function AppSidebar() {
   const deleteSession = () => {
     deleteAuthCookie()
     toast.success('Sessão deletada com sucesso!')
-    router.replace('/')
+    navigate('/', { replace: true })
   }
 
   return (
@@ -140,10 +140,10 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   {item.addSeparator && <Separator />}
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

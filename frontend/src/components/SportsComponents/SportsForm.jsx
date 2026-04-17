@@ -18,7 +18,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '../ui/input'
 
 function SportsForm({ record, onClose }) {
-  const [sport, setSport] = useState(record)
+  const [sport] = useState(record)
   const [isOpen, setIsOpen] = useState(false)
 
   const { createSport, updateSport } = useApi()

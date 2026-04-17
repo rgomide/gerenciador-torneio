@@ -23,21 +23,21 @@ import { sha256 } from '@/services/cryptoUtil'
 import useApi from '@/services/useApi'
 import useCookies from '@/services/useCookies'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 import { z } from 'zod'
 
 export default function Home() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const { auth, isLoading } = useApi()
   const { getAuthCookie, setAuthCookie } = useCookies()
 
   useEffect(() => {
     const authCookie = getAuthCookie()
     if (authCookie?.token) {
-      router.replace('/private/dashboard')
+      navigate('/private/dashboard', { replace: true })
     }
   }, [])
 
@@ -62,7 +62,7 @@ export default function Home() {
       setAuthCookie(resp.data)
 
       toast.success('Login realizado com sucesso!')
-      router.replace('/private/dashboard')
+      navigate('/private/dashboard', { replace: true })
     } else {
       toast.error(resp.error)
     }

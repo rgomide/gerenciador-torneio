@@ -19,7 +19,7 @@ import { Input } from '../ui/input'
 
 function UnitForm({ record, institutionId, onClose }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [unit, setUnit] = useState(record)
+  const [unit] = useState(record)
 
   const { createUnit, updateUnit } = useApi()
   const isCreate = record === undefined

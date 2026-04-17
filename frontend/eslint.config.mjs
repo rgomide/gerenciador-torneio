@@ -1,14 +1,48 @@
-import { FlatCompat } from '@eslint/eslintrc'
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
+import js from '@eslint/js'
+import eslintPluginReact from 'eslint-plugin-react'
+import reactHooks from 'eslint-plugin-react-hooks'
+import reactRefresh from 'eslint-plugin-react-refresh'
+import globals from 'globals'
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname
-})
-
-const eslintConfig = [...compat.extends('next/core-web-vitals')]
-
-export default eslintConfig
+export default [
+  {
+    settings: {
+      react: {
+        version: 'detect'
+      }
+    }
+  },
+  {
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      '.next/**',
+      'node_modules/**',
+      'public/mockServiceWorker.js',
+      'src/stories/**'
+    ]
+  },
+  js.configs.recommended,
+  eslintPluginReact.configs.flat.recommended,
+  eslintPluginReact.configs.flat['jsx-runtime'],
+  {
+    files: ['**/*.{js,jsx}'],
+    languageOptions: {
+      globals: { ...globals.browser },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        ecmaFeatures: { jsx: true },
+        sourceType: 'module'
+      }
+    },
+    plugins: {
+      'react-hooks': reactHooks,
+      'react-refresh': reactRefresh
+    },
+    rules: {
+      'react/prop-types': 'off',
+      ...reactHooks.configs.recommended.rules,
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }]
+    }
+  }
+]

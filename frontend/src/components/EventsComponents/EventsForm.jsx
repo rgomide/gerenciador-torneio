@@ -21,7 +21,7 @@ import { Input } from '../ui/input'
 
 function EventsForm({ record, onClose, unitId }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [event, _] = useState(record)
+  const [event] = useState(record)
 
   const { createEvent, updateEvent } = useApi()
   const isCreate = record === undefined

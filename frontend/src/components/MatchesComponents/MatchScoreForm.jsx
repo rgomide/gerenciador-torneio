@@ -13,7 +13,7 @@ import { Label } from '../ui/label'
 import { ScrollArea } from '../ui/scroll-area'
 
 function MatchScoreForm({ record: matchRecord }) {
-  const [participants, setParticipants] = useState([])
+  const [, setParticipants] = useState([])
   const [selectedParticipant, setSelectedParticipant] = useState(null)
   const [score, setScore] = useState(0)
   const [details, setDetails] = useState('')

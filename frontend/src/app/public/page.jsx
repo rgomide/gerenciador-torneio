@@ -4,8 +4,8 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { formatDate, removeTime } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { ChevronRight } from 'lucide-react'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function PublicEventsListPage() {
   const { getPublicEvents } = useApi()
@@ -82,7 +82,7 @@ export default function PublicEventsListPage() {
               const end = formatDate(removeTime(ev.endDate))
               return (
                 <li key={ev.id}>
-                  <Link href={`/public/event/${ev.id}`} className="block">
+                  <Link to={`/public/event/${ev.id}`} className="block">
                     <Card className="border-border/50 hover:border-border group transition-colors duration-200 hover:shadow-md">
                       <CardHeader className="flex flex-row items-center gap-4 space-y-0 py-5">
                         <div className="min-w-0 flex-1 space-y-1">

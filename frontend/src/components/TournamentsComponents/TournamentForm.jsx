@@ -22,7 +22,7 @@ import { Input } from '../ui/input'
 
 function TournamentsForm({ record, onClose, eventId }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [tournament, setTournament] = useState(record)
+  const [tournament] = useState(record)
 
   const { getSports, createTournament, updateTournament, finishTournament, isLoading } = useApi()
 
@@ -33,7 +33,7 @@ function TournamentsForm({ record, onClose, eventId }) {
   const formSchema = z.object({
     name: z.string().min(3, 'O nome do Torneio deve ter pelo menos 3 caracteres'),
     startDate: z.string().min(1, 'A data de início é obrigatória'),
-    endDate: z.string().min(1, 'A data de término \é obrigatória')
+    endDate: z.string().min(1, 'A data de término é obrigatória')
   })
 
   const form = useForm({

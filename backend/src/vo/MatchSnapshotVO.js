@@ -14,8 +14,7 @@ class MatchSnapshotVO {
       return null
     }
 
-    const s =
-      typeof snapshotRow.get === 'function' ? snapshotRow.get({ plain: true }) : snapshotRow
+    const s = typeof snapshotRow.get === 'function' ? snapshotRow.get({ plain: true }) : snapshotRow
 
     return {
       matchId: s.matchId,

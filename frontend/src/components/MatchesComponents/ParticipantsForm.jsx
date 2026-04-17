@@ -24,8 +24,8 @@ import {
 function ParticipantsForm({ record: matchRecord }) {
   const [participants, setParticipants] = useState([])
   const [participantType, setParticipantType] = useState('')
-  const [teams, setTeams] = useState([])
-  const [playres, setPlayers] = useState([])
+  const [, setTeams] = useState([])
+  const [, setPlayers] = useState([])
   const [selectedParticipant, setSelectedParticipant] = useState(null)
 
   const {

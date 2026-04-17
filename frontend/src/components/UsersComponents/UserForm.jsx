@@ -26,7 +26,7 @@ import { toast } from 'sonner'
 import { z } from 'zod'
 
 function UserForm({ record, onClose }) {
-  const [userRecord, setUserRecord] = useState(record)
+  const [userRecord] = useState(record)
   const [isOpen, setIsOpen] = useState(false)
 
   const { createUser, updateUser } = useApi()

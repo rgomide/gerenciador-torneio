@@ -14,20 +14,20 @@ import UnitForm from '@/components/unitsComponents/UnitForm'
 import { formatDate } from '@/services/dateUtil'
 import useApi from '@/services/useApi'
 import { ArrowLeft } from 'lucide-react'
-import { useParams, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 import { toast } from 'sonner'
 
-function page() {
+function Page() {
   const [units, setUnits] = useState([])
 
-  const router = useRouter()
+  const navigate = useNavigate()
   const { institutionId } = useParams()
   const { getUnitsByInstitutionId, isLoading } = useApi()
 
   useEffect(() => {
     fetchUnits()
-  }, [])
+  }, [institutionId])
 
   const fetchUnits = async () => {
     const response = await getUnitsByInstitutionId(institutionId)
@@ -69,7 +69,7 @@ function page() {
         </TableBody>
       </Table>
 
-      <Button variant="outline" onClick={router.back}>
+      <Button variant="outline" onClick={() => navigate(-1)}>
         {' '}
         <ArrowLeft /> Voltar para Instituições{' '}
       </Button>
@@ -77,4 +77,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

@@ -1,17 +1,17 @@
-// import { useGetCookies, useSetCookie, useDeleteCookie } from 'cookies-next'
-import { deleteCookie, getCookie, setCookie } from 'cookies-next'
+import Cookies from 'js-cookie'
+
+const AUTH_KEY = 'auth'
 
 const useCookies = () => {
-  // const getCookie = useGetCookies()
-  // const setCookie = useSetCookie()
-  // const deleteCookie = useDeleteCookie()
-
   const getAuthCookie = () => {
-    const authCookie = getCookie('auth')
+    const authCookie = Cookies.get(AUTH_KEY)
 
     if (authCookie) {
-      const auth = JSON.parse(authCookie)
-      return auth
+      try {
+        return JSON.parse(authCookie)
+      } catch {
+        return null
+      }
     }
 
     return null
@@ -19,16 +19,16 @@ const useCookies = () => {
 
   // TODO: cipher the cookie!!!
   const setAuthCookie = (auth) => {
-    setCookie('auth', JSON.stringify(auth), {
-      maxAge: 60 * 60 * 24,
+    Cookies.set(AUTH_KEY, JSON.stringify(auth), {
+      expires: 1,
       path: '/',
-      secure: true,
-      httpOnly: false
+      secure: import.meta.env.PROD,
+      sameSite: 'lax'
     })
   }
 
   const deleteAuthCookie = () => {
-    deleteCookie('auth', { path: '/' })
+    Cookies.remove(AUTH_KEY, { path: '/' })
   }
 
   return {

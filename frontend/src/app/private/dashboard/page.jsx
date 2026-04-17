@@ -3,12 +3,12 @@ import OverlaySpinner from '@/components/common/OverlaySpinner'
 import EventCard from '@/components/EventsComponents/EventCard'
 import useApi from '@/services/useApi'
 import useCookies from '@/services/useCookies'
-import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
 
-function page() {
-  const router = useRouter()
+function Page() {
+  const navigate = useNavigate()
   const { getUnfinishedEvents, isLoading } = useApi()
   const { getAuthCookie } = useCookies()
   const [unfinishedEvents, setUnfinishedEvents] = useState([])
@@ -17,7 +17,7 @@ function page() {
     const { token } = getAuthCookie()
 
     if (!token) {
-      router.replace('/')
+      navigate('/', { replace: true })
     } else {
       fetchUnfinishedEvents()
     }
@@ -53,4 +53,4 @@ function page() {
   )
 }
 
-export default page
+export default Page

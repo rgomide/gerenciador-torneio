@@ -20,7 +20,7 @@ import { Input } from '../ui/input'
 
 function PlayersForm({ record, onClose, unitId }) {
   const [isOpen, setIsOpen] = useState(false)
-  const [player, setPlayer] = useState(record)
+  const [player] = useState(record)
 
   const { createPlayer, updatePlayer } = useApi()
   const isCreate = record === undefined
